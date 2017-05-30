@@ -5,7 +5,7 @@ const Schema = use('Schema')
 class UsersTableSchema extends Schema {
 
   up () {
-    this.create('users', table = > {
+    this.create('users', table => {
       table.increments()
       table.string('username', 80).notNullable().unique()
       table.string('email', 254).notNullable().unique()
@@ -18,7 +18,7 @@ class UsersTableSchema extends Schema {
       table.float('last_lng', 10, 6)
       table.timestamps()
       table.softDeletes()
-  })
+    })
   }
 
   down () {
