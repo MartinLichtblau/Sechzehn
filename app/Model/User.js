@@ -4,6 +4,9 @@ const Lucid = use('Lucid')
 const Hash = use('Hash')
 
 class User extends Lucid {
+  static get visible () {
+    return ['username', 'real_name', 'city', 'profile_picture', 'last_lat', 'last_lng']
+  }
 
   static boot () {
     super.boot()
@@ -21,7 +24,6 @@ class User extends Lucid {
   apiTokens () {
     return this.hasMany('App/Model/Token')
   }
-
 }
 
 module.exports = User

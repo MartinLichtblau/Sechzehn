@@ -1,7 +1,8 @@
 'use strict'
 
-class UserController {
+const User = use('App/Model/User')
 
+class UserController {
   * index (request, response) {
     const users = yield User.all() // fetch users
     response.json(users)
@@ -30,7 +31,6 @@ class UserController {
   * destroy (request, response) {
     //
   }
-
 }
 
 module.exports = UserController
