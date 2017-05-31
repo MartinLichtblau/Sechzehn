@@ -4,6 +4,19 @@ const Lucid = use('Lucid')
 const Hash = use('Hash')
 
 class User extends Lucid {
+  static rules (userId) {
+    return {
+      username: 'required|unique:users',
+      email: `required|email|unique:users,email,id,${userId}`,
+      password: 'required|confirmed'
+    }
+  }
+
+  /**
+   * The fields which are visible per default for this Model.
+   *
+   * @returns {[string,string,string,string,string,string]}
+   */
   static get visible () {
     return ['username', 'real_name', 'city', 'profile_picture', 'last_lat', 'last_lng']
   }

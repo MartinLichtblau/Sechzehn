@@ -12,7 +12,8 @@ class UserController {
 
   * store (request, response) {
     const userData = request.all()
-    const validation = yield Validator.validate(userData, User.rules)
+    const rules = User.rules(-1)
+    const validation = yield Validator.validate(userData, rules)
 
     if (validation.fails()) {
       response.json(validation.messages())
@@ -46,6 +47,33 @@ class UserController {
 
   * update (request, response) {
     const user = yield User.findBy('id', request.param('id', null))
+    const userData = request.all()
+
+    const rules = User.rules(user.id)
+    const validation = yield Validator.validate(userData, rules)
+
+    if (validation.fails()) {
+      response.json(validation.messages())
+      return
+    }
+
+    const {
+      username,
+      email,
+      password
+    } = userData
+
+    user.fill({
+      username,
+      email,
+      password: yield Hash.make(password)
+    })
+    const token = yield this._generateToken(request, user)
+
+    response.status(201).send({
+      user,
+      token
+    })
   }
 
   * destroy (request, response) {
