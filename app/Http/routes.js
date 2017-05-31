@@ -20,5 +20,10 @@ const Route = use('Route')
 Route.on('/').render('welcome')
 
 Route.group('v1', function () {
-  Route.resource('users', 'UserController')
+  Route
+    .resource('users', 'UserController')
+    .middleware({
+      auth: ['update', 'destroy']
+    })
 }).prefix('/api/v1')
+  .formats(['json'], false)
