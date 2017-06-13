@@ -80,7 +80,7 @@ module.exports = {
    |
    */
   csrf: {
-    enable: true,
+    enable: false,
     methods: ['POST', 'PUT', 'DELETE'],
     filterUris: [],
     compareHostAndOrigin: true
