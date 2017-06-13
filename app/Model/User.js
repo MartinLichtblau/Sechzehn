@@ -6,9 +6,16 @@ const Hash = use('Hash')
 const Wkx = require('wkx')
 
 class User extends Lucid {
-  static rules (userId) {
+  static rules () {
     return {
       username: 'required|unique:users',
+      email: `required|email|unique:users`,
+      password: 'required|confirmed'
+    }
+  }
+
+  static rulesForUpdate (userId) {
+    return {
       email: `required|email|unique:users,email,id,${userId}`,
       password: 'required|confirmed'
     }
@@ -17,10 +24,17 @@ class User extends Lucid {
   /**
    * The fields which are visible per default for this Model.
    *
-   * @returns {[string,string,string,string,string,string]}
+   * @returns {[string,string,string,string,string]}
    */
   static get visible () {
-    return ['username', 'real_name', 'city', 'profile_picture', 'location']
+    return [
+      'id',
+      'username',
+      'real_name',
+      'city',
+      'profile_picture',
+      'location'
+    ]
   }
 
   static boot () {
@@ -36,7 +50,7 @@ class User extends Lucid {
     })
 
     /**
-     * Hashing password before updating to the
+     * Hashing password before updating the
      * database.
      */
     this.addHook('beforeUpdate', function * (next) {

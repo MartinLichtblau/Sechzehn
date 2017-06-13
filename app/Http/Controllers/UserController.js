@@ -5,13 +5,13 @@ const User = use('App/Model/User')
 
 class UserController {
   * index (request, response) {
-    const users = yield User.all() // fetch users
+    const users = yield User.paginate(request.input('page', 1), 10)
     response.ok(users)
   }
 
   * store (request, response) {
-    const userData = request.all()
-    const rules = User.rules(-1)
+    const userData = request.only('username', 'real_name', 'email', 'password', 'password_confirmation', 'city', 'profile_picture')
+    const rules = User.rules()
     const validation = yield Validator.validate(userData, rules)
 
     if (validation.fails()) {
@@ -19,25 +19,11 @@ class UserController {
       return
     }
 
-    const {
-      username,
-      real_name,
-      email,
-      password,
-      city
-    } = userData
-
-    const user = yield User.create({
-      username,
-      real_name,
-      email,
-      city,
-      password
-    })
+    const user = yield User.create(userData)
 
     const token = yield this._generateToken(request, user)
 
-    response.status(201).send({
+    response.created({
       user,
       token
     })
@@ -50,7 +36,7 @@ class UserController {
 
   * update (request, response) {
     const user = yield User.findBy('id', request.param('id', null))
-    const userData = request.all()
+    const userData = request.only('real_name', 'email', 'password', 'password_confirmation', 'city', 'profile_picture')
 
     const decodedAuthData = yield request.auth.decode()
 
@@ -60,7 +46,7 @@ class UserController {
       return
     }
 
-    const rules = User.rules(user.id)
+    const rules = User.rulesForUpdate(user.id)
     const validation = yield Validator.validate(userData, rules)
 
     if (validation.fails()) {
@@ -68,24 +54,10 @@ class UserController {
       return
     }
 
-    const {
-      username,
-      real_name,
-      email,
-      password,
-      city
-    } = userData
-
-    user.fill({
-      username,
-      real_name,
-      email,
-      city,
-      password
-    })
+    user.fill(userData)
     const token = yield this._generateToken(request, user)
 
-    response.created({
+    response.ok({
       user,
       token
     })
