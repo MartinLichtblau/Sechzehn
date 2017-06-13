@@ -3,6 +3,8 @@
 const Lucid = use('Lucid')
 const Hash = use('Hash')
 
+const Wkx = require('wkx')
+
 class User extends Lucid {
   static rules (userId) {
     return {
@@ -18,7 +20,7 @@ class User extends Lucid {
    * @returns {[string,string,string,string,string,string]}
    */
   static get visible () {
-    return ['username', 'real_name', 'city', 'profile_picture', 'last_lat', 'last_lng']
+    return ['username', 'real_name', 'city', 'profile_picture', 'location']
   }
 
   static boot () {
@@ -36,6 +38,15 @@ class User extends Lucid {
 
   apiTokens () {
     return this.hasMany('App/Model/Token')
+  }
+
+  /**
+   * Transform the buffered WKT representation used by PostGIS into a GeoJson Point object with longitude and latitude.
+   * @param location
+   */
+  getLocation (location) {
+    const wkbBuffer = Buffer.from(location, 'hex')
+    return Wkx.Geometry.parse(wkbBuffer).toGeoJSON()
   }
 }
 
