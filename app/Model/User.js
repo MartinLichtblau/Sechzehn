@@ -34,6 +34,15 @@ class User extends Lucid {
       this.password = yield Hash.make(this.password)
       yield next
     })
+
+    /**
+     * Hashing password before updating to the
+     * database.
+     */
+    this.addHook('beforeUpdate', function * (next) {
+      this.password = yield Hash.make(this.password)
+      yield next
+    })
   }
 
   /**

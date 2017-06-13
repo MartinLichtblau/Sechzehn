@@ -2,7 +2,6 @@
 
 const Validator = use('Validator')
 const User = use('App/Model/User')
-const Hash = use('Hash')
 
 class UserController {
   * index (request, response) {
@@ -33,7 +32,7 @@ class UserController {
       real_name,
       email,
       city,
-      password: yield Hash.make(password)
+      password
     })
 
     const token = yield this._generateToken(request, user)
@@ -82,11 +81,11 @@ class UserController {
       real_name,
       email,
       city,
-      password: yield Hash.make(password)
+      password
     })
     const token = yield this._generateToken(request, user)
 
-    response.status(201).send({
+    response.created({
       user,
       token
     })
@@ -94,8 +93,38 @@ class UserController {
 
   * destroy (request, response) {
     const user = yield User.findBy('id', request.param('id', null))
+
+    const decodedAuthData = yield request.auth.decode()
+
+    // Check if the authenicated user is the user that should be deleted
+    if (decodedAuthData.payload.uid !== user.id) {
+      response.unauthorized({error: 'Not allowed to delete other users'})
+      return
+    }
+
     yield user.delete()
-    response.noContent().send()
+    response.noContent()
+  }
+
+  * login (request, response) {
+    const userData = request.all()
+
+    const {
+      email,
+      password
+    } = userData
+
+    try {
+      const token = yield request.auth.attempt(email, password)
+
+      console.log(token)
+
+      response.ok({
+        token: token
+      })
+    } catch (e) {
+      response.unauthorized({error: e.message})
+    }
   }
 
   * _generateToken (request, user) {

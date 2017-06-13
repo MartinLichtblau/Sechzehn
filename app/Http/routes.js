@@ -20,6 +20,8 @@ const Route = use('Route')
 Route.on('/').render('welcome')
 
 Route.group('api', function () {
+  Route.post('login', 'UserController.login')
+
   Route
     .resource('users', 'UserController')
     .except('create', 'edit')
