@@ -117,8 +117,6 @@ class UserController {
     try {
       const token = yield request.auth.attempt(email, password)
 
-      console.log(token)
-
       response.ok({
         token: token
       })
