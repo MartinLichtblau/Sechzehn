@@ -45,8 +45,10 @@ class User extends Lucid {
    * @param location
    */
   getLocation (location) {
-    const wkbBuffer = Buffer.from(location, 'hex')
-    return Wkx.Geometry.parse(wkbBuffer).toGeoJSON()
+    if (typeof location !== 'undefined' && location !== null) {
+      const wkbBuffer = Buffer.from(location, 'hex')
+      return Wkx.Geometry.parse(wkbBuffer).toGeoJSON()
+    } else return ''
   }
 }
 
