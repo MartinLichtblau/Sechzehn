@@ -19,11 +19,11 @@ const Route = use('Route')
 
 Route.on('/').render('welcome')
 
-Route.group('v1', function () {
+Route.group('api', function () {
   Route
     .resource('users', 'UserController')
     .middleware({
       auth: ['update', 'destroy']
     })
-}).prefix('/api/v1')
+}).prefix('/api')
   .formats(['json'], false)
