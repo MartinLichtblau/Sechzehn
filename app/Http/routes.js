@@ -22,6 +22,7 @@ Route.on('/').render('welcome')
 Route.group('api', function () {
   Route
     .resource('users', 'UserController')
+    .except('create', 'edit')
     .middleware({
       auth: ['update', 'destroy']
     })
