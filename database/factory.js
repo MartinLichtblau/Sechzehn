@@ -1,5 +1,11 @@
 'use strict'
 
+const knex = require('knex')({
+  dialect: 'postgres'
+})
+
+const gis = require('knex-postgis')(knex)
+
 /*
  |--------------------------------------------------------------------------
  | Model and Database Factory
@@ -30,8 +36,7 @@ Factory.blueprint('App/Model/User', (fake) => {
     date_of_birth: fake.date(),
     city: fake.city(),
     profile_picture: fake.avatar({fileExtension: 'jpg'}),
-    last_lat: fake.latitude(),
-    last_lng: fake.longitude()
+    location: gis.point(fake.longitude({min: 7, max: 10}), fake.latitude({min: 49, max: 51}))
   }
 }
 )
