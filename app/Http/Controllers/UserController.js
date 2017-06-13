@@ -22,13 +22,17 @@ class UserController {
 
     const {
       username,
+      real_name,
       email,
-      password
+      password,
+      city
     } = userData
 
     const user = yield User.create({
       username,
+      real_name,
       email,
+      city,
       password: yield Hash.make(password)
     })
 
@@ -49,6 +53,14 @@ class UserController {
     const user = yield User.findBy('id', request.param('id', null))
     const userData = request.all()
 
+    const decodedAuthData = yield request.auth.decode()
+
+    // Check if the authenicated user is the user that should be edited
+    if (decodedAuthData.payload.uid !== user.id) {
+      response.unauthorized({error: 'Not allowed to edit other users'})
+      return
+    }
+
     const rules = User.rules(user.id)
     const validation = yield Validator.validate(userData, rules)
 
@@ -59,13 +71,17 @@ class UserController {
 
     const {
       username,
+      real_name,
       email,
-      password
+      password,
+      city
     } = userData
 
     user.fill({
       username,
+      real_name,
       email,
+      city,
       password: yield Hash.make(password)
     })
     const token = yield this._generateToken(request, user)
@@ -79,7 +95,7 @@ class UserController {
   * destroy (request, response) {
     const user = yield User.findBy('id', request.param('id', null))
     yield user.delete()
-    response.status(204).send()
+    response.noContent().send()
   }
 
   * _generateToken (request, user) {
