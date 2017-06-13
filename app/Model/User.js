@@ -36,10 +36,6 @@ class User extends Lucid {
     })
   }
 
-  apiTokens () {
-    return this.hasMany('App/Model/Token')
-  }
-
   /**
    * Transform the buffered WKT representation used by PostGIS into a GeoJson Point object with longitude and latitude.
    * @param location
