@@ -13,7 +13,7 @@
         app:srcCompat="@drawable/googleg_standard_color_18" />
 
     <EditText
-        android:id="@+id/emailLogin"
+        android:id="@+id/loginEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -21,7 +21,7 @@
         android:inputType="textEmailAddress" />
 
     <EditText
-        android:id="@+id/passwordLogin"
+        android:id="@+id/loginPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -29,7 +29,7 @@
         android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/buttonLogin"
+        android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login" />
@@ -40,7 +40,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/loginToRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -49,7 +49,7 @@
             android:textAlignment="center" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/loginToForgotpassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
