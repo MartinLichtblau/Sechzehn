@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs xmlns:android="http://schemas.android.com/apk/res/android">
+    <tab
+        id="@+id/bb_menu_nearby"
+        icon="@drawable/ic_nearby"
+        title="Nearby"
+        activeColor="#FFFFFF"
+
+        />
+    <tab
+        id="@+id/bb_menu_friends"
+        icon="@drawable/ic_friends"
+        title="Friends"
+        activeColor="#FFFFFF"
+
+        />
+    <tab
+        id="@+id/bb_menu_favorites"
+        icon="@drawable/ic_favorites"
+        title="Favorites"
+        activeColor="#FFFFFF"
+
+        />
+</tabs>

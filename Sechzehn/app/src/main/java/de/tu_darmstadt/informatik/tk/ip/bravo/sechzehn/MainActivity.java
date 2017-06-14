@@ -1,61 +1,41 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.Button;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity {
 
-    private TextView mTextMessage;
-    private GoogleMap mMap;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-
-            }
-            return false;
-        }
-
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_main);
 
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        Button btnBottomTabs = (Button) findViewById(R.id.btnBottomTabs);
+        if (btnBottomTabs != null) {
+            btnBottomTabs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        try {
-            mMap.setMyLocationEnabled(true);
-        } catch (SecurityException e) {
+                    startActivity(new Intent(MainActivity.this, BottomTabsActivity.class));
+                }
+            });
         }
 
-        // Add a marker in Sydney and move the camera
-//        LatLng tuDarmstadt = new LatLng(49.877452, 8.654454);
-//        mMap.addMarker(new MarkerOptions().position(tuDarmstadt).title("TU Darmstadt"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(tuDarmstadt));
-//
-//        mMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+        Button btnNavDrawer = (Button) findViewById(R.id.btnNavDrawer);
+        if (btnNavDrawer != null) {
+            btnNavDrawer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, NavDrawerActivity.class));
+                }
+            });
+        }
     }
 }
