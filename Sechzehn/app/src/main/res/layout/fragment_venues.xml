@@ -18,19 +18,7 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:cameraBearing="112.5"
-            app:cameraTargetLat="-33.796923"
-            app:cameraTargetLng="150.922433"
-            app:cameraTilt="30"
-            app:cameraZoom="13"
-            app:mapType="normal"
-            app:uiCompass="false"
-            app:uiRotateGestures="true"
-            app:uiScrollGestures="true"
-            app:uiTiltGestures="true"
-            app:uiZoomControls="false"
-            app:uiZoomGestures="true"/>
+            android:layout_weight="1" />
 
         <SearchView
             android:layout_width="match_parent"

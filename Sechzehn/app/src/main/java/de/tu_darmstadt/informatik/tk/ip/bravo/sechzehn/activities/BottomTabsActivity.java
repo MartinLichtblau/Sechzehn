@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.ncapdevi.fragnav.FragNavController;
 
@@ -66,10 +67,12 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
 
     @Override
     public void onBackPressed() {
-        if (!mNavController.isRootFragment()) {
-            mNavController.popFragment();
-        } else {
+        if (mNavController.isRootFragment()) { //Bottom of fragment stack is reached
+            //go back to home tab fragment
+            mBottomBar.selectTabAtPosition(0);
             mNavController.switchTab(INDEX_VENUES);
+        } else {
+            mNavController.popFragment();
         }
     }
 
