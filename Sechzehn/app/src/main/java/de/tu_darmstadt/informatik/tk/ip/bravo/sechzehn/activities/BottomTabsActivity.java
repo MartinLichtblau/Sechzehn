@@ -1,4 +1,4 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.ncapdevi.fragnav.FragNavController;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SettingsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
@@ -33,7 +34,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         mBottomBar.selectTabAtPosition(INDEX_VENUES);
         mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
                 .transactionListener(this)
-                .rootFragmentListener(this, 5)
+                .rootFragmentListener(this, 3)
                 .build();
 
 

@@ -1,4 +1,4 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SettingsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;

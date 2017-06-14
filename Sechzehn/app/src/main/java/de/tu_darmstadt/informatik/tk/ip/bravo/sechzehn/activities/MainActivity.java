@@ -1,4 +1,4 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
