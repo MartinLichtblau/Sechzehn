@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Sechzehn</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_nav_drawer">NavDrawerActivity</string>
+
+    <string name="google_maps_api_key">AIzaSyBtdfao0LtiFiuIGTc03r2TVaVBZRlR5oo</string>
+
+
+</resources>
