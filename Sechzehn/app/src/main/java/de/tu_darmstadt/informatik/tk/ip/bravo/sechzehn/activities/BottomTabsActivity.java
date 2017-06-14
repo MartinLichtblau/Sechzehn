@@ -69,7 +69,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         if (!mNavController.isRootFragment()) {
             mNavController.popFragment();
         } else {
-            super.onBackPressed();
+            mNavController.switchTab(INDEX_VENUES);
         }
     }
 
