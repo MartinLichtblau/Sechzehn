@@ -14,28 +14,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_main);
 
-
-        Button btnBottomTabs = (Button) findViewById(R.id.btnBottomTabs);
-        if (btnBottomTabs != null) {
-            btnBottomTabs.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    startActivity(new Intent(MainActivity.this, BottomTabsActivity.class));
-                }
-            });
+        /*
+        if (loggedin == true) {
+            startActivity(new Intent(MainActivity.this, BottomTabsActivity.class));
         }
-
-        Button btnNavDrawer = (Button) findViewById(R.id.btnNavDrawer);
-        if (btnNavDrawer != null) {
-            btnNavDrawer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(MainActivity.this, NavDrawerActivity.class));
-                }
-            });
+        else {
+            start Login/Registration
         }
+        */
+
+        startActivity(new Intent(MainActivity.this, BottomTabsActivity.class));
     }
 }

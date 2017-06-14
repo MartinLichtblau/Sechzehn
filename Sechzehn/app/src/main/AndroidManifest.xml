@@ -25,11 +25,6 @@
         </activity>
         <activity android:name=".activities.BottomTabsActivity">
         </activity>
-        <activity
-            android:name=".activities.NavDrawerActivity"
-            android:label="@string/title_activity_nav_drawer"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
 
         <uses-library android:required="true" android:name="com.google.android.maps" />
 
