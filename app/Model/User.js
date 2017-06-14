@@ -3,8 +3,6 @@
 const Lucid = use('Lucid')
 const Hash = use('Hash')
 
-const Wkx = require('wkx')
-
 class User extends Lucid {
   static rules () {
     return {
@@ -33,7 +31,8 @@ class User extends Lucid {
       'real_name',
       'city',
       'profile_picture',
-      'location'
+      'lat',
+      'lng'
     ]
   }
 
@@ -57,17 +56,6 @@ class User extends Lucid {
       this.password = yield Hash.make(this.password)
       yield next
     })
-  }
-
-  /**
-   * Transform the buffered WKT representation used by PostGIS into a GeoJson Point object with longitude and latitude.
-   * @param location
-   */
-  getLocation (location) {
-    if (typeof location !== 'undefined' && location !== null) {
-      const wkbBuffer = Buffer.from(location, 'hex')
-      return Wkx.Geometry.parse(wkbBuffer).toGeoJSON()
-    } else return ''
   }
 }
 

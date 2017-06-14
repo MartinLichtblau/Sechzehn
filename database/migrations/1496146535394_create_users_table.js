@@ -14,7 +14,8 @@ class UsersTableSchema extends Schema {
       table.date('date_of_birth')
       table.string('city', 254)
       table.string('profile_picture')
-      table.specificType('location', 'geometry(point, 0)') // for easier calculations, we assume a flat world
+      table.float('lat', 10, 6)
+      table.float('lng', 10, 6)
       table.timestamps()
       table.softDeletes()
     })

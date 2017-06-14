@@ -5,7 +5,17 @@ const User = use('App/Model/User')
 
 class UserController {
   * index (request, response) {
-    const users = yield User.paginate(request.input('page', 1), 10)
+    const lat = request.input('lat')
+    const lng = request.input('lng')
+
+    const query = User
+
+    if (lat !== null && lng !== null) {
+      query.whereRaw()
+    }
+
+    const users = yield query.paginate(request.input('page', 1), 10)
+
     response.ok(users)
   }
 
