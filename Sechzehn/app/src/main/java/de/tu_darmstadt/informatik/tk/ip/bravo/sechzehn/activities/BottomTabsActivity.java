@@ -69,8 +69,8 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     public void onBackPressed() {
         if (mNavController.isRootFragment()) { //Bottom of fragment stack is reached
             //go back to home tab fragment
-            mBottomBar.selectTabAtPosition(0);
-            mNavController.switchTab(INDEX_VENUES);
+            mBottomBar.selectTabAtPosition(2);
+            mNavController.switchTab(INDEX_SETTINGS);
         } else {
             mNavController.popFragment();
         }
