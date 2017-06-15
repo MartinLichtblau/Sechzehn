@@ -20,7 +20,7 @@ const Route = use('Route')
 Route.on('/').render('welcome')
 
 Route.group('api', function () {
-  Route.post('login', 'UserController.login')
+  Route.post('login', 'AuthController.login')
 
   Route
     .resource('users', 'UserController')

@@ -33,13 +33,15 @@ class UserController {
 
   * store (request, response) {
     const userData = request.only('username', 'real_name', 'email', 'password', 'password_confirmation', 'city', 'profile_picture')
-    const rules = User.rules()
-    const validation = yield Validator.validate(userData, rules)
+    const validation = yield Validator.validate(userData, User.rules())
 
     if (validation.fails()) {
       response.json(validation.messages())
       return
     }
+
+    // Remove password_confirmation from userData object because this value should and could not be persisted
+    delete userData.password_confirmation
 
     const user = yield User.create(userData)
 
@@ -76,6 +78,9 @@ class UserController {
       return
     }
 
+    // Remove password_confirmation from userData object because this value should and could not be persisted
+    delete userData.password_confirmation
+
     user.fill(userData)
     const token = yield this._generateToken(request, user)
 
@@ -98,25 +103,6 @@ class UserController {
 
     yield user.delete()
     response.noContent()
-  }
-
-  * login (request, response) {
-    const userData = request.all()
-
-    const {
-      email,
-      password
-    } = userData
-
-    try {
-      const token = yield request.auth.attempt(email, password)
-
-      response.ok({
-        token: token
-      })
-    } catch (e) {
-      response.unauthorized({error: e.message})
-    }
   }
 
   * _generateToken (request, user) {
