@@ -30,8 +30,8 @@ Factory.blueprint('App/Model/User', (fake) => {
     date_of_birth: fake.date(),
     city: fake.city(),
     profile_picture: fake.avatar({fileExtension: 'jpg'}),
-    lat: fake.latitude({min: 49, max: 51}),
-    lng: fake.longitude({min: 7, max: 10})
+    lat: fake.latitude({min: 49.5, max: 50}),
+    lng: fake.longitude({min: 8, max: 9})
   }
 }
 )

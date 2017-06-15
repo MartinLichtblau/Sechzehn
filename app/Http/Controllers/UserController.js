@@ -7,11 +7,23 @@ class UserController {
   * index (request, response) {
     const lat = request.input('lat')
     const lng = request.input('lng')
+    const radius = request.input('radius', 10)
 
-    const query = User
+    const query = User.query()
 
     if (lat !== null && lng !== null) {
-      query.whereRaw()
+      const validation = yield Validator.validate({lat, lng, radius}, {
+        lat: 'required|range:-180,180',
+        lng: 'required|range:-180,180',
+        radius: 'required|range:0,6371'
+      })
+
+      if (validation.fails()) {
+        response.json(validation.messages())
+        return
+      }
+
+      query.whereRaw('earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)', [lat, lng, radius * 1000])
     }
 
     const users = yield query.paginate(request.input('page', 1), 10)
