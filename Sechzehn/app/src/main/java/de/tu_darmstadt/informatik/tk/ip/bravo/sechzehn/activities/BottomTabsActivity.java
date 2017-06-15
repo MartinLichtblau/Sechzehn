@@ -38,7 +38,6 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                 .rootFragmentListener(this, 3)
                 .build();
 
-
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
@@ -69,11 +68,16 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     public void onBackPressed() {
         if (mNavController.isRootFragment()) { //Bottom of fragment stack is reached
             //go back to home tab fragment
-            mBottomBar.selectTabAtPosition(2);
-            mNavController.switchTab(INDEX_SETTINGS);
+            switchTabAndBar(2);
         } else {
             mNavController.popFragment();
         }
+    }
+
+    //To switch tab fragment, and at the same time, select the according tab in bottom bar
+    public void switchTabAndBar(int tabId){
+        mBottomBar.selectTabAtPosition(tabId);
+        mNavController.switchTab(tabId);
     }
 
     @Override
