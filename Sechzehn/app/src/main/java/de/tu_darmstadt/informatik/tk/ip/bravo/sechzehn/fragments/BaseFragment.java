@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.ncapdevi.fragnav.FragNavController;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 
 /**
  * Created by niccapdevila on 3/26/16.
@@ -18,7 +21,7 @@ public class BaseFragment extends Fragment {
     public static final String ARGS_INSTANCE = "de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.argsInstance";
 
     Button mButton;
-    FragmentNavigation mFragmentNavigation;
+ protected FragNavController mFragmentNavigation;
     int mInt = 0;
 
     @Override
@@ -39,12 +42,9 @@ public class BaseFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof FragmentNavigation) {
-            mFragmentNavigation = (FragmentNavigation) context;
+        if (context instanceof BottomTabsActivity) {
+            mFragmentNavigation = ((BottomTabsActivity) context).getNavController();
         }
     }
 
-    public interface FragmentNavigation {
-        public void pushFragment(Fragment fragment);
-    }
 }

@@ -17,7 +17,7 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
-public class BottomTabsActivity extends AppCompatActivity implements BaseFragment.FragmentNavigation, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
+public class BottomTabsActivity extends AppCompatActivity implements FragNavController.TransactionListener, FragNavController.RootFragmentListener {
     //Better convention to properly name the indices what they are in your app
     private final int INDEX_VENUES = FragNavController.TAB1;
     private final int INDEX_FRIENDS = FragNavController.TAB2;
@@ -63,6 +63,10 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
 
     }
 
+    public FragNavController getNavController(){
+        return mNavController;
+    }
+
     @Override
     public void onBackPressed() {
         if (mNavController.isRootFragment()) { //Bottom of fragment stack is reached
@@ -87,7 +91,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         }
     }
 
-    @Override
+
     public void pushFragment(Fragment fragment) {
         if (mNavController != null) {
             mNavController.pushFragment(fragment);
