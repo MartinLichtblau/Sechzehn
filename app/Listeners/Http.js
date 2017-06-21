@@ -15,7 +15,7 @@ Http.handleError = function * (error, request, response) {
   const status = error.status || 500
 
   if (error.name === 'ModelNotFoundException') {
-    yield response.status(404).json({error: 'Ressource Not Found'})
+    yield response.status(404).json({error: 'Resource Not Found'})
     return
   }
 

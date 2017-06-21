@@ -17,7 +17,7 @@ class User extends Lucid {
       username: `required|unique:users,username,id,${userId}`,
       real_name: 'string|max:255',
       city: 'string|max:255',
-      day_of_birth: 'date_format:YYYY-MM-DD|after:1900-01-01|before_offset_of:14,year'
+      date_of_birth: 'date|after:1900-01-01|before_offset_of:14,year'
     }
   }
 
