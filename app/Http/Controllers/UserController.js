@@ -6,6 +6,7 @@ const User = use('App/Model/User')
 const Route = use('Route')
 const Config = use('Config')
 const Url = require('url')
+const Fs = require('fs')
 
 class UserController {
   * index (request, response) {
@@ -80,6 +81,7 @@ class UserController {
     }
 
     user.fill(userData)
+    yield user.save()
 
     response.ok(user)
   }
@@ -109,12 +111,28 @@ class UserController {
       allowedExtensions: ['jpg', 'png', 'jpeg']
     })
 
+    if (profilePicture === null || profilePicture === '') {
+      user.profile_picture = null
+      yield user.save()
+      response.ok(user)
+      return
+    }
+
     const fileName = `${new Date().getTime()}.${profilePicture.extension()}`
     yield profilePicture.move(Helpers.storagePath(), fileName)
 
     if (!profilePicture.moved()) {
       response.badRequest(profilePicture.errors())
       return
+    }
+
+    // Delete the old picture
+    if (user.profile_picture.startsWith(Config.get('app.absoluteUrl'))) {
+      const oldPath = Helpers.storagePath(user.profile_picture.split('/').pop())
+
+      Fs.unlink(oldPath, (err) => {
+        if (err) console.warn(err)
+      })
     }
 
     user.profile_picture = Url.resolve(Config.get('app.absoluteUrl'), Route.url('media', {filename: fileName}))
