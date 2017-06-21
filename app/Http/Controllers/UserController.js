@@ -162,7 +162,7 @@ class UserController {
     }
 
     try {
-      yield request.auth.validate(user.email, userData.old_password)
+      request.auth.validate(user.email, userData.old_password)
     } catch (e) {
       response.unprocessableEntity([
         {
@@ -199,13 +199,13 @@ class UserController {
     }
 
     try {
-      yield request.auth.validate(user.email, userData.password)
+      request.auth.validate(user.email, userData.password)
     } catch (e) {
       response.unprocessableEntity([
         {
           'field': 'password',
           'validation': 'password_match',
-          'message': 'password does not not match'
+          'message': e.message
         }
       ])
       return
