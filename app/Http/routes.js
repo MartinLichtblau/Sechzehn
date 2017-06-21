@@ -27,6 +27,7 @@ Route.group('auth', function () {
   .formats(['json'], false)
 
 Route.group('api', function () {
+  Route.get('users/:id/complete', 'UserController.showComplete').middleware('auth')
   Route.patch('users/:id/profile_picture', 'UserController.updateProfilePicture').middleware('auth')
   // Route.patch('users/:id/password', 'UserController.updatePassword')
   // Route.patch('users/:id/email', 'UserController.updateEmail')

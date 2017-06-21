@@ -14,7 +14,7 @@ class UserController {
     const lng = request.input('lng')
     const radius = request.input('radius', 10)
 
-    const query = User.query()
+    const query = User.query().unhidden()
 
     if (lat !== null && lng !== null) {
       const validation = yield Validator.validate({lat, lng, radius}, {
@@ -60,12 +60,29 @@ class UserController {
 
   * show (request, response) {
     const user = yield User.findOrFail(Number(request.param('id', null)))
+
     response.ok(user)
+  }
+
+  /**
+   * Let the user get his own profile with all information.
+   * @param request
+   * @param response
+   */
+  * showComplete (request, response) {
+    const user = yield User.findOrFail(Number(request.param('id', null)))
+
+    if (request.authUser.id !== user.id) {
+      response.unauthorized({error: 'Not allowed to show all information of other users'})
+      return
+    }
+
+    response.ok(user.complete())
   }
 
   * update (request, response) {
     const user = yield User.findOrFail(Number(request.param('id', null)))
-    const userData = request.only('username', 'real_name', 'city', 'date_of_birth')
+    const userData = request.only('username', 'real_name', 'city', 'date_of_birth', 'incognito')
 
     if (request.authUser.id !== user.id) {
       response.unauthorized({error: 'Not allowed to edit other users'})
@@ -83,7 +100,7 @@ class UserController {
     user.fill(userData)
     yield user.save()
 
-    response.ok(user)
+    response.ok(user.complete())
   }
 
   * destroy (request, response) {
