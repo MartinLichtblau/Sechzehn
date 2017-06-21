@@ -189,7 +189,7 @@ class UserController {
 
     const userData = request.only('password', 'email')
     const validation = yield Validator.validate(userData, {
-      password: 'required|confirmed',
+      password: 'required',
       email: `required|email|unique:users,email,id,${user.id}`
     })
 
