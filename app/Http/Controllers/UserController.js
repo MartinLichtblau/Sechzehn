@@ -1,7 +1,11 @@
 'use strict'
 
+const Helpers = use('Helpers')
 const Validator = use('Validator')
 const User = use('App/Model/User')
+const Route = use('Route')
+const Config = use('Config')
+const Url = require('url')
 
 class UserController {
   * index (request, response) {
@@ -19,7 +23,7 @@ class UserController {
       })
 
       if (validation.fails()) {
-        response.json(validation.messages())
+        response.unprocessableEntity(validation.messages())
         return
       }
 
@@ -36,7 +40,7 @@ class UserController {
     const validation = yield Validator.validate(userData, User.rules())
 
     if (validation.fails()) {
-      response.json(validation.messages())
+      response.unprocessableEntity(validation.messages())
       return
     }
 
@@ -45,7 +49,7 @@ class UserController {
 
     const user = yield User.create(userData)
 
-    const token = yield this._generateToken(request, user)
+    const token = yield request.auth.generate(user)
 
     response.created({
       user,
@@ -60,9 +64,9 @@ class UserController {
 
   * update (request, response) {
     const user = yield User.findOrFail(Number(request.param('id', null)))
-    const userData = request.only('username', 'real_name', 'city')
+    const userData = request.only('username', 'real_name', 'city', 'date_of_birth')
 
-    if (request.authUser !== user) {
+    if (request.authUser.id !== user.id) {
       response.unauthorized({error: 'Not allowed to edit other users'})
       return
     }
@@ -71,7 +75,7 @@ class UserController {
     const validation = yield Validator.validate(userData, rules)
 
     if (validation.fails()) {
-      response.json(validation.messages())
+      response.unprocessableEntity(validation.messages())
       return
     }
 
@@ -83,7 +87,7 @@ class UserController {
   * destroy (request, response) {
     const user = yield User.findOrFail(Number(request.param('id', null)))
 
-    if (request.authUser !== user) {
+    if (request.authUser.id !== user.id) {
       response.unauthorized({error: 'Not allowed to delete other users'})
       return
     }
@@ -92,9 +96,30 @@ class UserController {
     response.noContent()
   }
 
-  // noinspection JSMethodCanBeStatic
-  * _generateToken (request, user) {
-    return yield request.auth.generate(user)
+  * updateProfilePicture (request, response) {
+    const user = yield User.findOrFail(Number(request.param('id', null)))
+
+    if (request.authUser.id !== user.id) {
+      response.unauthorized({error: 'Not allowed to edit other users'})
+      return
+    }
+
+    const profilePicture = request.file('profile_picture', {
+      maxSize: '1mb',
+      allowedExtensions: ['jpg', 'png', 'jpeg']
+    })
+
+    const fileName = `${new Date().getTime()}.${profilePicture.extension()}`
+    yield profilePicture.move(Helpers.storagePath(), fileName)
+
+    if (!profilePicture.moved()) {
+      response.badRequest(profilePicture.errors())
+      return
+    }
+
+    user.profile_picture = Url.resolve(Config.get('app.absoluteUrl'), Route.url('media', {filename: fileName}))
+    yield user.save()
+    response.ok(user)
   }
 }
 

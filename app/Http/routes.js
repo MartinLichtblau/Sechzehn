@@ -19,12 +19,17 @@ const Route = use('Route')
 
 Route.on('/').render('welcome')
 
+Route.get('/media/:filename', 'MediaController.show').as('media')
+
 Route.group('auth', function () {
   Route.post('login', 'AuthController.login')
 }).prefix('/api/auth')
   .formats(['json'], false)
 
 Route.group('api', function () {
+  Route.patch('users/:id/profile_picture', 'UserController.updateProfilePicture').middleware('auth')
+  // Route.patch('users/:id/password', 'UserController.updatePassword')
+  // Route.patch('users/:id/email', 'UserController.updateEmail')
   Route
     .resource('users', 'UserController')
     .except('create', 'edit')

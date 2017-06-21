@@ -15,6 +15,17 @@ module.exports = {
    */
   appKey: Env.get('APP_KEY'),
 
+  /*
+   |--------------------------------------------------------------------------
+   | Absolute Url
+   |--------------------------------------------------------------------------
+   |
+   | The absolute url to the app's home.
+   | Needed for generating absolute media urls.
+   |
+   */
+  absoluteUrl: Env.get('ABSOLUTE_URL', 'http://localhost:3333'),
+
   encryption: {
     /*
      |--------------------------------------------------------------------------
