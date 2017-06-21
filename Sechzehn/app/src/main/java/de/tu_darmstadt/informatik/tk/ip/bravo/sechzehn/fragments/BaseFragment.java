@@ -17,34 +17,44 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActi
 /**
  * Created by niccapdevila on 3/26/16.
  */
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
+
     public static final String ARGS_INSTANCE = "de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.argsInstance";
 
-    Button mButton;
- protected FragNavController mFragmentNavigation;
+    FragNavController mFragmentNavigation;
     int mInt = 0;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        if (args != null) {
-            mInt = args.getInt(ARGS_INSTANCE);
-        }
-    }
-    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        mButton = (Button) view.findViewById(R.id.button);
+        View view = inflater.inflate(layoutID(), container, false);
+        initView(view);
         return view;
+    }
+
+    protected int layoutID() {
+        throw new RuntimeException("The child class must provide an layoutID or overwrite onCreateView().");
+    }
+
+    protected void initView(View view) {
+    }
+
+    public FragNavController fragNavController() {
+        if(mFragmentNavigation==null){
+            throw new NullPointerException("The FragNavController is not available.");
+        }
+        return mFragmentNavigation;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof BottomTabsActivity) {
-            mFragmentNavigation = ((BottomTabsActivity) context).getNavController();
+        if (context instanceof NavController) {
+            mFragmentNavigation = ((NavController) context).getNavController();
         }
+    }
+
+    public interface NavController {
+        FragNavController getNavController();
     }
 
 }

@@ -20,25 +20,22 @@ public class ForgotPwFragment extends BaseFragment {
         // Required empty public constructor
     }
 
-public static ForgotPwFragment newInstance(){
-    return new ForgotPwFragment();
-}
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view =inflater.inflate(R.layout.fragment_forgot_pw, container, false);
-        initView(view);
-        return view;
+    public static ForgotPwFragment newInstance() {
+        return new ForgotPwFragment();
     }
 
-    private void initView(View v){
-v.findViewById(R.id.forgotPwToLogin).setOnClickListener(new View.OnClickListener() {
     @Override
-    public void onClick(View v) {
-        mFragmentNavigation.popFragment();
+    protected int layoutID() {
+        return R.layout.fragment_forgot_pw;
     }
-});
+
+    protected void initView(View v) {
+        v.findViewById(R.id.forgotPwToLogin).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragNavController().popFragment();
+            }
+        });
     }
 
 }

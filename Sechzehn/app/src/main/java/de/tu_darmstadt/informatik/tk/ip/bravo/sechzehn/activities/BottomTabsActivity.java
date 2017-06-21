@@ -17,7 +17,7 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
-public class BottomTabsActivity extends AppCompatActivity implements FragNavController.TransactionListener, FragNavController.RootFragmentListener {
+public class BottomTabsActivity extends AppCompatActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
     //Better convention to properly name the indices what they are in your app
     private final int INDEX_VENUES = FragNavController.TAB1;
     private final int INDEX_FRIENDS = FragNavController.TAB2;

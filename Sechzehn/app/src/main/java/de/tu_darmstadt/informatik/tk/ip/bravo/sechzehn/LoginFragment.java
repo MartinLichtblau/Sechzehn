@@ -17,7 +17,6 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
  * create an instance of this fragment.
  */
 public class LoginFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
 
@@ -32,35 +31,27 @@ public class LoginFragment extends BaseFragment {
      * @return A new instance of fragment LoginFragment.
      */
     public static LoginFragment newInstance() {
-        LoginFragment fragment = new LoginFragment();
-        return fragment;
+        return new LoginFragment();
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
-        initViews(view);
-        return view;
+    protected int layoutID() {
+        return R.layout.fragment_login;
     }
 
-    private void initViews(View v) {
+    @Override
+    protected void initView(View v) {
         v.findViewById(R.id.loginToRegister).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(RegisterFragment.newInstance());
-                }
+                fragNavController().pushFragment(RegisterFragment.newInstance());
             }
         });
         v.findViewById(R.id.loginToForgotpassword).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mFragmentNavigation!=null){
-                    mFragmentNavigation.pushFragment(ForgotPwFragment.newInstance());
-                }
+                fragNavController().pushFragment(ForgotPwFragment.newInstance());
             }
         });
     }
