@@ -14,6 +14,11 @@ const Http = exports = module.exports = {}
 Http.handleError = function * (error, request, response) {
   const status = error.status || 500
 
+  if (error.name === 'ModelNotFoundException') {
+    yield response.status(404).json({status: 404, message: 'Ressource Not Found'})
+    return
+  }
+
   /**
    * DEVELOPMENT REPORTER
    */
@@ -30,7 +35,7 @@ Http.handleError = function * (error, request, response) {
    * PRODUCTION REPORTER
    */
   console.error(error.stack)
-  yield response.status(status).sendView('errors/index', {error})
+  yield response.status(status).json({status: status, message: error})
 }
 
 /**
