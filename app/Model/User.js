@@ -16,8 +16,21 @@ class User extends Lucid {
     return {
       username: `required|unique:users,username,id,${userId}`,
       real_name: 'string|max:255',
-      city: 'string|max:255'
+      city: 'string|max:255',
+      day_of_birth: 'date_format:YYYY-MM-DD|after:1900-01-01|before_offset_of:14,year'
     }
+  }
+
+  /**
+   * date format to be used for setting dates inside the table.
+   * dates will be manipulated with moment.
+   *
+   * @return {String}
+   *
+   * @public
+   */
+  static get dateFormat () {
+    return 'YYYY-MM-DD'
   }
 
   /**
@@ -32,6 +45,7 @@ class User extends Lucid {
       'real_name',
       'city',
       'profile_picture',
+      'date_of_birth',
       'lat',
       'lng'
     ]
@@ -57,6 +71,15 @@ class User extends Lucid {
       this.password = yield Hash.make(this.password)
       yield next
     })
+  }
+
+  /**
+   * Format the date of birth before its returned (i.e. in JSON).
+   * @param date
+   * @returns {String}
+   */
+  getDateOfBirth (date) {
+    return this.formatDate(date)
   }
 }
 
