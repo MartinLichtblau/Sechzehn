@@ -19,9 +19,12 @@ const Route = use('Route')
 
 Route.on('/').render('welcome')
 
-Route.group('api', function () {
+Route.group('auth', function () {
   Route.post('login', 'AuthController.login')
+}).prefix('/api/auth')
+  .formats(['json'], false)
 
+Route.group('api', function () {
   Route
     .resource('users', 'UserController')
     .except('create', 'edit')
