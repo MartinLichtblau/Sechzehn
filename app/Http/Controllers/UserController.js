@@ -32,7 +32,7 @@ class UserController {
   }
 
   * store (request, response) {
-    const userData = request.only('username', 'real_name', 'email', 'password', 'password_confirmation', 'city', 'profile_picture')
+    const userData = request.only('username', 'email', 'password', 'password_confirmation')
     const validation = yield Validator.validate(userData, User.rules())
 
     if (validation.fails()) {
@@ -54,18 +54,15 @@ class UserController {
   }
 
   * show (request, response) {
-    const user = yield User.findBy('id', request.param('id', null))
+    const user = yield User.findOrFail(Number(request.param('id', null)))
     response.ok(user)
   }
 
   * update (request, response) {
-    const user = yield User.findBy('id', request.param('id', null))
-    const userData = request.only('real_name', 'email', 'password', 'password_confirmation', 'city', 'profile_picture')
+    const user = yield User.findOrFail(Number(request.param('id', null)))
+    const userData = request.only('username', 'real_name', 'city')
 
-    const decodedAuthData = yield request.auth.decode()
-
-    // Check if the authenicated user is the user that should be edited
-    if (decodedAuthData.payload.uid !== user.id) {
+    if (request.authUser !== user) {
       response.unauthorized({error: 'Not allowed to edit other users'})
       return
     }
@@ -78,25 +75,15 @@ class UserController {
       return
     }
 
-    // Remove password_confirmation from userData object because this value should and could not be persisted
-    delete userData.password_confirmation
-
     user.fill(userData)
-    const token = yield this._generateToken(request, user)
 
-    response.ok({
-      user,
-      token
-    })
+    response.ok(user)
   }
 
   * destroy (request, response) {
-    const user = yield User.findBy('id', request.param('id', null))
+    const user = yield User.findOrFail(Number(request.param('id', null)))
 
-    const decodedAuthData = yield request.auth.decode()
-
-    // Check if the authenicated user is the user that should be deleted
-    if (decodedAuthData.payload.uid !== user.id) {
+    if (request.authUser !== user) {
       response.unauthorized({error: 'Not allowed to delete other users'})
       return
     }
@@ -105,6 +92,7 @@ class UserController {
     response.noContent()
   }
 
+  // noinspection JSMethodCanBeStatic
   * _generateToken (request, user) {
     return yield request.auth.generate(user)
   }
