@@ -26,7 +26,7 @@ class UserController {
       query.whereRaw('earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)', [lat, lng, radius * 1000])
     }
 
-    const users = yield query.paginate(request.input('page', 1), 10)
+    const users = yield query.paginate(request.input('page', 1), request.input('per_page', 10))
 
     response.ok(users)
   }
