@@ -29,8 +29,9 @@ Route.group('auth', function () {
 Route.group('api', function () {
   Route.get('users/:id/complete', 'UserController.showComplete').middleware('auth')
   Route.patch('users/:id/profile_picture', 'UserController.updateProfilePicture').middleware('auth')
-  // Route.patch('users/:id/password', 'UserController.updatePassword')
-  // Route.patch('users/:id/email', 'UserController.updateEmail')
+  Route.patch('users/:id/password', 'UserController.updatePassword').middleware('auth')
+  Route.patch('users/:id/email', 'UserController.updateEmail').middleware('auth')
+
   Route
     .resource('users', 'UserController')
     .except('create', 'edit')

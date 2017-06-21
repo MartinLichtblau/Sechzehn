@@ -103,18 +103,6 @@ class UserController {
     response.ok(user.complete())
   }
 
-  * destroy (request, response) {
-    const user = yield User.findOrFail(Number(request.param('id', null)))
-
-    if (request.authUser.id !== user.id) {
-      response.unauthorized({error: 'Not allowed to delete other users'})
-      return
-    }
-
-    yield user.delete()
-    response.noContent()
-  }
-
   * updateProfilePicture (request, response) {
     const user = yield User.findOrFail(Number(request.param('id', null)))
 
@@ -154,8 +142,93 @@ class UserController {
 
     user.profile_picture = Url.resolve(Config.get('app.absoluteUrl'), Route.url('media', {filename: fileName}))
     yield user.save()
-    response.ok(user)
+    response.ok(user.complete())
+  }
+
+  * updatePassword (request, response) {
+    const user = yield User.findOrFail(Number(request.param('id', null)))
+
+    if (request.authUser.id !== user.id) {
+      response.unauthorized({error: 'Not allowed to edit other users'})
+      return
+    }
+
+    const userData = request.only('old_password', 'password', 'password_confirmation')
+    const validation = yield Validator.validate(userData, {password: 'required|confirmed', old_password: 'required'})
+
+    if (validation.fails()) {
+      response.unprocessableEntity(validation.messages())
+      return
+    }
+
+    try {
+      yield request.auth.validate(user.email, userData.old_password)
+    } catch (e) {
+      response.unprocessableEntity([
+        {
+          'field': 'old_password',
+          'validation': 'password_match',
+          'message': 'old_password does not not match'
+        }
+      ])
+      return
+    }
+
+    user.password = userData.password
+    yield user.save()
+    response.ok(user.complete())
+  }
+
+  * updateEmail (request, response) {
+    const user = yield User.findOrFail(Number(request.param('id', null)))
+
+    if (request.authUser.id !== user.id) {
+      response.unauthorized({error: 'Not allowed to edit other users'})
+      return
+    }
+
+    const userData = request.only('password', 'email')
+    const validation = yield Validator.validate(userData, {
+      password: 'required|confirmed',
+      email: `required|email|unique:users,email,id,${user.id}`
+    })
+
+    if (validation.fails()) {
+      response.unprocessableEntity(validation.messages())
+      return
+    }
+
+    try {
+      yield request.auth.validate(user.email, userData.password)
+    } catch (e) {
+      response.unprocessableEntity([
+        {
+          'field': 'password',
+          'validation': 'password_match',
+          'message': 'password does not not match'
+        }
+      ])
+      return
+    }
+
+    user.email = userData.email
+    yield user.save()
+    response.ok(user.complete())
+  }
+
+  *
+  destroy (request, response) {
+    const user = yield User.findOrFail(Number(request.param('id', null)))
+
+    if (request.authUser.id !== user.id) {
+      response.unauthorized({error: 'Not allowed to delete other users'})
+      return
+    }
+
+    yield user.delete()
+    response.noContent()
   }
 }
 
-module.exports = UserController
+module
+  .exports = UserController
