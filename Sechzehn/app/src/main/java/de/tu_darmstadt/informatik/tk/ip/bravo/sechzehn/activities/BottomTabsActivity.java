@@ -23,7 +23,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     private final int INDEX_FRIENDS = FragNavController.TAB2;
     private final int INDEX_USER = FragNavController.TAB3;
     private BottomBar mBottomBar;
-    private FragNavController mNavController;
+    public FragNavController mNavController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
