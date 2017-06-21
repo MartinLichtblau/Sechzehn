@@ -4,13 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.ncapdevi.fragnav.FragNavController;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SettingsFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.UserFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenuesFragment;
 
@@ -22,7 +21,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     //Better convention to properly name the indices what they are in your app
     private final int INDEX_VENUES = FragNavController.TAB1;
     private final int INDEX_FRIENDS = FragNavController.TAB2;
-    private final int INDEX_SETTINGS = FragNavController.TAB3;
+    private final int INDEX_USER = FragNavController.TAB3;
     private BottomBar mBottomBar;
     private FragNavController mNavController;
 
@@ -49,7 +48,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                         mNavController.switchTab(INDEX_FRIENDS);
                         break;
                     case R.id.bb_menu_favorites:
-                        mNavController.switchTab(INDEX_SETTINGS);
+                        mNavController.switchTab(INDEX_USER);
                         break;
                 }
             }
@@ -120,8 +119,8 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                 return VenuesFragment.newInstance(0);
             case INDEX_FRIENDS:
                 return FriendsFragment.newInstance(0);
-            case INDEX_SETTINGS:
-                return SettingsFragment.newInstance(0);
+            case INDEX_USER:
+                return UserFragment.newInstance(0);
         }
         throw new IllegalStateException("Need to send an index that we know");
     }
