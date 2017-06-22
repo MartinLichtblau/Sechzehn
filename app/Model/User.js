@@ -23,18 +23,6 @@ class User extends Lucid {
   }
 
   /**
-   * date format to be used for setting dates inside the table.
-   * dates will be manipulated with moment.
-   *
-   * @return {String}
-   *
-   * @public
-   */
-  static get dateFormat () {
-    return 'YYYY-MM-DD'
-  }
-
-  /**
    * The fields which are visible per default for this Model.
    *
    * @returns {[string,string,string,string,string,string,string,string,string]}
@@ -64,15 +52,6 @@ class User extends Lucid {
       yield next
     })
   }
-
-  /**
-   * Format the date of birth before its returned (i.e. in JSON).
-   * @param date
-   * @returns {String}
-   */
-  // getDateOfBirth (date) {
-  //   return this.formatDate(date)
-  // }
 
   static scopeUnhidden (builder) {
     builder.whereNot('incognito', true)
