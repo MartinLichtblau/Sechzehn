@@ -6,7 +6,7 @@ class UsersTableSchema extends Schema {
   up () {
     this.table('users', (table) => {
       table.boolean('confirmed').defaultTo(false)
-      table.string('confirmation_token', 16).nullable()
+      table.string('confirmation_token').nullable()
     })
   }
 
