@@ -27,9 +27,9 @@ module.exports = {
     pool: true,
     port: 465,
     host: Env.get('MAIL_HOST', 'smtp.sendgrid.net'),
-    secure: true,
+    secure: Env.get('MAIL_SECURE', true),
     auth: {
-      user: Env.get('MAIL_USERNAME', 'apikey'),
+      user: Env.get('MAIL_USER', 'apikey'),
       pass: Env.get('MAIL_PASSWORD')
     },
     maxConnections: 5,

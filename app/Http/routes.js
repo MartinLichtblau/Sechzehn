@@ -21,8 +21,12 @@ Route.on('/').render('welcome')
 
 Route.get('/media/:filename', 'MediaController.show').as('media')
 
+Route.get('confirm/:token', 'AuthController.confirmEmail').as('confirm')
+
 Route.group('auth', function () {
   Route.post('login', 'AuthController.login')
+  Route.get('reset/:email', 'AuthController.requestReset')
+  Route.post('reset/:token', 'AuthController.confirmReset')
 }).prefix('/api/auth')
   .formats(['json'], false)
 

@@ -3,7 +3,8 @@
 {% block content %}
   {% include 'header' %}
   <main class="__content">
-    <h1>{{ error.status }}</h1>
-    <p> Something bad happened! <a href="/">Go Back</a> </p>
+    {% block main %}
+      <p>{{ message }}</p>
+    {% endblock %}
   </main>
 {% endblock %}

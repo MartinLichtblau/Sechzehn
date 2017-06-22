@@ -68,7 +68,8 @@ class User extends Lucid {
       profile_picture: this.profile_picture,
       lat: this.lat,
       lng: this.lng,
-      incognito: this.incognito
+      incognito: this.incognito,
+      confirmed: this.confirmed
     }
   }
 }

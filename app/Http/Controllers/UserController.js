@@ -7,6 +7,8 @@ const Database = use('Database')
 const User = use('App/Model/User')
 const Route = use('Route')
 const Config = use('Config')
+const TokenGenerator = use('TokenGenerator')
+const Mail = use('Mail')
 const Url = require('url')
 const Fs = require('fs')
 
@@ -73,11 +75,26 @@ class UserController {
 
     const user = yield User.create(userData)
 
-    const token = yield request.auth.generate(user)
+    // Create an email confirmation token and send the email
+    const token = yield TokenGenerator.make('hex', 16)
+    user.confirmation_token = token
+    yield user.save()
+
+    yield Mail.send('emails.confirmation', {
+      username: user.username,
+      email: user.email,
+      confirmLink: Url.resolve(Config.get('app.absoluteUrl'), Route.url('confirm', {token: token}))
+    }, (message) => {
+      message.to(user.email, user.username)
+      message.from('sechzehn@tw-co.de')
+      message.subject('Sechzehn: Verify Your Account')
+    })
+
+    const authToken = yield request.auth.generate(user)
 
     response.created({
       user,
-      token
+      token: authToken
     })
   }
 
