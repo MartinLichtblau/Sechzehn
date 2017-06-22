@@ -63,15 +63,6 @@ class User extends Lucid {
       this.password = yield Hash.make(this.password)
       yield next
     })
-
-    /**
-     * Hashing password before updating the
-     * database.
-     */
-    this.addHook('beforeUpdate', function * (next) {
-      this.password = yield Hash.make(this.password)
-      yield next
-    })
   }
 
   /**
@@ -79,9 +70,9 @@ class User extends Lucid {
    * @param date
    * @returns {String}
    */
-  getDateOfBirth (date) {
-    return this.formatDate(date)
-  }
+  // getDateOfBirth (date) {
+  //   return this.formatDate(date)
+  // }
 
   static scopeUnhidden (builder) {
     builder.whereNot('incognito', true)

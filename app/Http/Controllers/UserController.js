@@ -2,6 +2,8 @@
 
 const Helpers = use('Helpers')
 const Validator = use('Validator')
+const Hash = use('Hash')
+const Database = use('Database')
 const User = use('App/Model/User')
 const Route = use('Route')
 const Config = use('Config')
@@ -13,8 +15,8 @@ class UserController {
     const lat = request.input('lat')
     const lng = request.input('lng')
     const radius = request.input('radius', 10)
-
-    const query = User.query().unhidden()
+    const page = Number(request.input('page', 1))
+    const perPage = Number(request.input('per_page', 10))
 
     if (lat !== null && lng !== null) {
       const validation = yield Validator.validate({lat, lng, radius}, {
@@ -28,11 +30,32 @@ class UserController {
         return
       }
 
-      query.whereRaw('earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)', [lat, lng, radius * 1000])
+      const query = User.query().unhidden().column(User.visible)
+        // Calculate the distance between the search point and the user's position
+        .select(Database.raw('(earth_distance(ll_to_earth(lat, lng), ll_to_earth(?, ?)) / 1000) as distance', [lat, lng]))
+
+      // Check if location of the user is in the circle around the search point
+      // See https://www.postgresql.org/docs/8.3/static/earthdistance.html
+      const inRadiusQuery = 'earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
+      query.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
+      // query.orderByRaw('distance ASC')
+      const users = yield query.forPage(page, perPage)
+
+      // Total count needed for manually creating the pagination
+      const totalQuery = yield User.query().unhidden().whereRaw(inRadiusQuery, [lat, lng, radius * 1000]).count().first()
+      const total = Number(totalQuery.count)
+
+      response.ok({
+        total: Number(total),
+        perPage: perPage,
+        currentPage: page,
+        lastPage: Math.ceil(total / perPage),
+        data: users
+      })
+      return
     }
 
-    const users = yield query.paginate(request.input('page', 1), request.input('per_page', 10))
-
+    const users = yield User.query().unhidden().paginate(page, perPage)
     response.ok(users)
   }
 
@@ -132,7 +155,7 @@ class UserController {
     }
 
     // Delete the old picture
-    if (user.profile_picture.startsWith(Config.get('app.absoluteUrl'))) {
+    if (user.profile_picture !== null && user.profile_picture.startsWith(Config.get('app.absoluteUrl'))) {
       const oldPath = Helpers.storagePath(user.profile_picture.split('/').pop())
 
       Fs.unlink(oldPath, (err) => {
@@ -174,7 +197,7 @@ class UserController {
       return
     }
 
-    user.password = userData.password
+    user.password = Hash.make(userData.password)
     yield user.save()
     response.ok(user.complete())
   }
@@ -230,5 +253,4 @@ class UserController {
   }
 }
 
-module
-  .exports = UserController
+module.exports = UserController
