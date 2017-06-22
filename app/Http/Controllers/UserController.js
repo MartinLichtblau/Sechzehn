@@ -31,7 +31,7 @@ class UserController {
       }
 
       const query = User.query().unhidden().column(User.visible)
-        // Calculate the distance between the search point and the user's position
+      // Calculate the distance between the search point and the user's position
         .select(Database.raw('(earth_distance(ll_to_earth(lat, lng), ll_to_earth(?, ?)) / 1000) as distance', [lat, lng]))
 
       // Check if location of the user is in the circle around the search point
@@ -139,6 +139,15 @@ class UserController {
       allowedExtensions: ['jpg', 'png', 'jpeg']
     })
 
+    // Delete the old picture
+    if (user.profile_picture !== null && user.profile_picture.startsWith(Config.get('app.absoluteUrl'))) {
+      const oldPath = Helpers.storagePath(user.profile_picture.split('/').pop())
+
+      Fs.unlink(oldPath, (err) => {
+        if (err) console.warn(err)
+      })
+    }
+
     if (profilePicture === null || profilePicture === '') {
       user.profile_picture = null
       yield user.save()
@@ -152,15 +161,6 @@ class UserController {
     if (!profilePicture.moved()) {
       response.badRequest(profilePicture.errors())
       return
-    }
-
-    // Delete the old picture
-    if (user.profile_picture !== null && user.profile_picture.startsWith(Config.get('app.absoluteUrl'))) {
-      const oldPath = Helpers.storagePath(user.profile_picture.split('/').pop())
-
-      Fs.unlink(oldPath, (err) => {
-        if (err) console.warn(err)
-      })
     }
 
     user.profile_picture = Url.resolve(Config.get('app.absoluteUrl'), Route.url('media', {filename: fileName}))
