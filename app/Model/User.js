@@ -4,6 +4,10 @@ const Lucid = use('Lucid')
 const Hash = use('Hash')
 
 class User extends Lucid {
+  /**
+   * The validation rules for creating a User.
+   * @returns {{username: string, email: string, password: string}}
+   */
   static rules () {
     return {
       username: 'required|unique:users',
@@ -12,6 +16,11 @@ class User extends Lucid {
     }
   }
 
+  /**
+   * The validation rules for updating a User.
+   * @param userId
+   * @returns {{username: string, real_name: string, city: string, date_of_birth: string, incognito: string}}
+   */
   static rulesForUpdate (userId) {
     return {
       username: `required|unique:users,username,id,${userId}`,
@@ -23,7 +32,7 @@ class User extends Lucid {
   }
 
   /**
-   * The fields which are visible per default for this Model.
+   * The fields which are visible per default for this Model (i.e for JSON serialization).
    *
    * @returns {[string,string,string,string,string,string,string,string,string]}
    */
@@ -53,10 +62,18 @@ class User extends Lucid {
     })
   }
 
+  /**
+   * A query scope to filter all Users that are not in incognito mode.
+   * @param builder the query builder
+   */
   static scopeUnhidden (builder) {
     builder.whereNot('incognito', true)
   }
 
+  /**
+   * Builds an object with all relevant properties of this user for the complete profile view.
+   * @returns {{id: number, username: string, email: string, real_name: (string|null), date_of_birth: (Date|null), city: (string|null), profile_picture: (string|null), lat: (null|float), lng: (null|float), incognito: boolean, confirmed: boolean}}
+   */
   complete () {
     return {
       id: this.id,
@@ -71,6 +88,14 @@ class User extends Lucid {
       incognito: this.incognito,
       confirmed: this.confirmed
     }
+  }
+
+  /**
+   * List all ResetTokens for this User.
+   * @returns {Object}
+   */
+  resetTokens () {
+    return this.belongsToMany('App/Model/ResetToken')
   }
 }
 
