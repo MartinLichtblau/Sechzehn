@@ -1,9 +1,6 @@
-{% extends 'master' %}
+{% extends 'layouts.simple' %}
 
-{% block content %}
-  {% include 'partials/header' %}
-  <main class="__content">
-    <h1>{{ error.status }}</h1>
-    <p> Something bad happened! <a href="/">Go Back</a> </p>
-  </main>
+{% block main %}
+  <h2>{{ error.status }}</h2>
+  <p>{{ error.message }}</p>
 {% endblock %}
