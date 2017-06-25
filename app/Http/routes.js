@@ -17,20 +17,33 @@
 
 const Route = use('Route')
 
+/**
+ * Homepage
+ */
 Route.on('/').render('welcome')
 
+/**
+ * Media handling
+ */
 Route.get('/media/:filename', 'MediaController.show').as('media')
 
-Route.get('confirm/:token', 'AuthController.confirmEmail').as('confirm')
-Route.get('reset', 'AuthController.requestResetForm').as('requestReset')
-Route.get('reset/:token', 'AuthController.confirmResetForm').as('confirmReset')
-
+/**
+ * Login and email verification
+ */
 Route.group('auth', function () {
   Route.post('login', 'AuthController.login')
-  Route.post('reset', 'AuthController.requestReset')
-  Route.post('reset/:token', 'AuthController.confirmReset')
-}).prefix('/api/auth')
-  .formats(['json'], false)
+  Route.get('confirm/:token', 'AuthController.confirmEmail').as('confirm')
+})
+
+/**
+ * Password reset
+ */
+Route.group('reset', function () {
+  Route.get('reset', 'ResetController.requestForm')
+  Route.post('reset', 'ResetController.request')
+  Route.get('reset/:token', 'ResetController.confirmForm').as('reset.confirmForm')
+  Route.post('reset/:token', 'ResetController.confirm')
+})
 
 Route.group('api', function () {
   Route.get('users/:id/complete', 'UserController.showComplete').middleware('auth')
