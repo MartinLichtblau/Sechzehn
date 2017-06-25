@@ -12,27 +12,32 @@ const Http = exports = module.exports = {}
  * @param  {Object} response
  */
 Http.handleError = function * (error, request, response) {
-  const status = error.status || 500
+  error.status = error.status || 500
+  const type = request.accepts('json', 'html')
+  // Define if the error is a special case that is handled below
+  let manualHandled = false
+  error.message = 'Something bad happened!'
 
   if (error.name === 'ModelNotFoundException') {
-    yield response.status(404).json({error: 'Resource Not Found'})
-    return
+    error.status = 404
+    error.message = 'Resource Not Found'
+    manualHandled = true
   }
 
   if (error.name === 'PasswordMisMatch') {
-    response.status(400).json({error: 'Invalid Credentials'})
-    return
+    error.status = 400
+    error.message = 'Invalid Credentials'
+    manualHandled = true
   }
 
   /**
    * DEVELOPMENT REPORTER
    */
-  if (Env.get('NODE_ENV') === 'development') {
+  if (!manualHandled && Env.get('NODE_ENV') === 'development') {
     const youch = new Youch(error, request.request)
-    const type = request.accepts('json', 'html')
     const formatMethod = type === 'json' ? 'toJSON' : 'toHTML'
     const formattedErrors = yield youch[formatMethod]()
-    response.status(status).send(formattedErrors)
+    response.status(error.status).send(formattedErrors)
     return
   }
 
@@ -40,7 +45,13 @@ Http.handleError = function * (error, request, response) {
    * PRODUCTION REPORTER
    */
   console.error(error.stack)
-  yield response.status(status).json({error: error})
+
+  if (type === 'json') {
+    response.status(error.status).json({error: error.message})
+    return
+  }
+
+  yield response.status(error.status).sendView('error', {error})
 }
 
 /**
