@@ -119,7 +119,6 @@ class ResetController {
 
     yield response.status(status).sendView('layouts.simple', {message})
   }
-
 }
 
 module.exports = ResetController

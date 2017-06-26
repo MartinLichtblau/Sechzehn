@@ -75,20 +75,8 @@ class UserController {
 
     const user = yield User.create(userData)
 
-    // Create an email confirmation token and send the email
-    const token = yield TokenGenerator.make('hex', 16)
-    user.confirmation_token = token
+    yield this.generateEmailConfirmation(user)
     yield user.save()
-
-    yield Mail.send('emails.confirmation', {
-      username: user.username,
-      email: user.email,
-      confirmLink: Url.resolve(Config.get('app.absoluteUrl'), Route.url('confirm', {token: token}))
-    }, (message) => {
-      message.to(user.email, user.username)
-      message.from('sechzehn@tw-co.de')
-      message.subject('Sechzehn: Verify Your Account')
-    })
 
     const authToken = yield request.auth.generate(user)
 
@@ -251,13 +239,16 @@ class UserController {
       return
     }
 
+    yield this.generateEmailConfirmation(user)
+
     user.email = userData.email
+    user.confirmed = false
+
     yield user.save()
     response.ok(user.complete())
   }
 
-  *
-  destroy (request, response) {
+  * destroy (request, response) {
     const user = yield User.findOrFail(Number(request.param('id', null)))
 
     if (request.authUser.id !== user.id) {
@@ -267,6 +258,29 @@ class UserController {
 
     yield user.delete()
     response.noContent()
+  }
+
+  /**
+   * Generate an email verification token and send it to the user.
+   * Besides, this token is set as user property. To persist it,
+   * the actual user.save action is still needed.
+   * @param user
+   */
+  * generateEmailConfirmation (user) {
+    // Create an email confirmation token
+    const token = yield TokenGenerator.make('hex', 16)
+    user.confirmation_token = token
+
+    // Send the confirmation email
+    yield Mail.send('emails.confirmation', {
+      username: user.username,
+      email: user.email,
+      confirmLink: Url.resolve(Config.get('app.absoluteUrl'), Route.url('confirm', {token: token}))
+    }, (message) => {
+      message.to(user.email, user.username)
+      message.from('sechzehn@tw-co.de')
+      message.subject('Sechzehn: Verify Your Account')
+    })
   }
 }
 
