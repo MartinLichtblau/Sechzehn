@@ -3,6 +3,9 @@
 {% block content %}
   {% include 'layouts.partials.header' %}
   <main class="__content">
+    {% block main %}
+      <p>{{ message }}</p>
+    {% endblock %}
     {% if old('errors') %}
       <div class="alert alert-danger">
         {% for error in old('errors') %}
@@ -10,8 +13,5 @@
         {% endfor %}
       </div>
     {% endif %}
-    {% block main %}
-      <p>{{ message }}</p>
-    {% endblock %}
   </main>
 {% endblock %}

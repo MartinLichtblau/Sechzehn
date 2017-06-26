@@ -89,6 +89,14 @@ form input[type=submit]:active {
   background-color: #d81b60;
 }
 
+.alert {
+  margin-top: 12px;
+}
+
+.alert-danger {
+  color: #E91E63;
+}
+
 .__content {
   background-color: #FFF;
   padding: 24px;
