@@ -1,0 +1,18 @@
+{% extends 'layouts.simple' %}
+
+{% block main %}
+  <h2>Request A Password Reset</h2>
+  {{ form.open({ action: 'ResetController.request' }) }}
+  {{ csrfField }}
+
+  <div class="field">
+    {{ form.label('email', 'Your email address') }}
+    {{ form.email('email') }}
+  </div>
+
+  <div class="button">
+    {{ form.submit('Request') }}
+  </div>
+
+  {{ form.close() }}
+{% endblock %}

@@ -12,13 +12,24 @@ const Url = require('url')
 const Moment = require('moment')
 
 class ResetController {
+  * requestForm (request, response) {
+    yield response.sendView('reset.requestForm')
+  }
+
   * request (request, response) {
     const data = request.only('email')
+    const type = request.accepts('json', 'html')
 
     const validation = yield Validator.validate(data, {email: 'required|email'})
 
     if (validation.fails()) {
-      response.unprocessableEntity(validation.messages())
+      if (type === 'json') {
+        response.unprocessableEntity(validation.messages())
+        return
+      }
+      yield request.with({errors: validation.messages()}).flash()
+
+      response.redirect('back')
       return
     }
 
@@ -45,8 +56,6 @@ class ResetController {
 
     const message = 'If an user exists for this email address, a reset email was successfully sent. Please check your inbox.'
 
-    const type = request.accepts('json', 'html')
-
     if (type === 'json') {
       response.json({message: message})
       return
@@ -57,7 +66,7 @@ class ResetController {
 
   * confirmForm (request, response) {
     const token = request.param('token')
-    const resetToken = yield ResetToken.findOrFail(token)
+    yield ResetToken.findOrFail(token)
 
     const type = request.accepts('json', 'html')
 
@@ -66,7 +75,7 @@ class ResetController {
       return
     }
 
-    yield response.sendView('auth.confirmResetForm', {token})
+    yield response.sendView('reset.confirmForm', {token})
   }
 
   * confirm (request, response) {
@@ -102,8 +111,6 @@ class ResetController {
     }
 
     yield resetToken.delete()
-
-    const type = request.accepts('json', 'html')
 
     if (type === 'json') {
       response.status(status).json({message: message})
