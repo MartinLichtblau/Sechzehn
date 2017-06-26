@@ -16,8 +16,8 @@ Http.handleError = function * (error, request, response) {
   const type = request.accepts('json', 'html')
   // Define if the error is a special case that is handled below
   let manualHandled = false
-  error.message = 'Something bad happened!'
 
+  // Map some exceptions to HTTP status codes with corresponding message
   if (error.name === 'ModelNotFoundException') {
     error.status = 404
     error.message = 'Resource Not Found'
@@ -45,6 +45,8 @@ Http.handleError = function * (error, request, response) {
    * PRODUCTION REPORTER
    */
   console.error(error.stack)
+
+  if (!manualHandled) error.message = 'Something bad happened!'
 
   if (type === 'json') {
     response.status(error.status).json({error: error.message})
