@@ -1,5 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.arch.lifecycle.LifecycleFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,7 +20,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActi
 /**
  * Created by niccapdevila on 3/26/16.
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends LifecycleFragment {
 
     public static final String ARGS_INSTANCE = "de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.argsInstance";
 
@@ -56,8 +57,9 @@ public abstract class BaseFragment extends Fragment {
     }
 
     public String getTextFrom(View v,int id){
+        View v2 = v.findViewById(id);
         if(!(v.findViewById(id) instanceof TextInputEditText)){
-           throw new RuntimeException("The ID must refer to a TextInputEditText.") ;
+           //throw new RuntimeException("The ID must refer to a TextInputEditText.") ;
         }
         return ((TextInputEditText)v.findViewById(id)).getText().toString();
     }

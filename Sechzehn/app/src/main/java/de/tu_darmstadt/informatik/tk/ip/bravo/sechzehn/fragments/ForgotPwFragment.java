@@ -1,14 +1,10 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 
-import android.os.Bundle;
 import android.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 
 /**
  * A simple {@link Fragment} subclass.

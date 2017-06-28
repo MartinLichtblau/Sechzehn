@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.LoginFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 
 /**
