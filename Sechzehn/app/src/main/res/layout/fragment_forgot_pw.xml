@@ -4,7 +4,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.ForgotPwFragment"
+    tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.ForgotPwFragment"
     android:orientation="vertical"
     android:padding="16dp">
 

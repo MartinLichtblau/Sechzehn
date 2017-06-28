@@ -1,5 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
+
 /**
  * Created by Alexander Geiß on 21.06.2017.
  */
