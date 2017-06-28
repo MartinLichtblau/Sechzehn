@@ -46,7 +46,7 @@ Http.handleError = function * (error, request, response) {
    */
   console.error(error.stack)
 
-  if (!manualHandled) error.message = 'Something bad happened!'
+  error.message = error.message | 'Something bad happened!'
 
   if (type === 'json') {
     response.status(error.status).json({error: error.message})
