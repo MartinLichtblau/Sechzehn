@@ -62,16 +62,13 @@ class UserController {
   }
 
   * store (request, response) {
-    const userData = request.only('username', 'email', 'password', 'password_confirmation')
+    const userData = request.only('username', 'email', 'password')
     const validation = yield Validator.validate(userData, User.rules())
 
     if (validation.fails()) {
       response.unprocessableEntity(validation.messages())
       return
     }
-
-    // Remove password_confirmation from userData object because this value should and could not be persisted
-    delete userData.password_confirmation
 
     const user = yield User.create(userData)
 
@@ -181,8 +178,8 @@ class UserController {
       return
     }
 
-    const userData = request.only('old_password', 'password', 'password_confirmation')
-    const validation = yield Validator.validate(userData, {password: 'required|confirmed', old_password: 'required'})
+    const userData = request.only('old_password', 'password')
+    const validation = yield Validator.validate(userData, {password: 'required|string', old_password: 'required'})
 
     if (validation.fails()) {
       response.unprocessableEntity(validation.messages())
@@ -243,6 +240,33 @@ class UserController {
 
     user.email = userData.email
     user.confirmed = false
+
+    yield user.save()
+    response.ok(user.complete())
+  }
+
+  * updateLocation (request, response) {
+    const user = yield User.findOrFail(Number(request.param('id', null)))
+
+    if (request.authUser.id !== user.id) {
+      response.unauthorized({error: 'Not allowed to edit other users'})
+      return
+    }
+
+    const location = request.only('lat', 'lng')
+
+    const validation = yield Validator.validate(location, {
+      lat: 'required|range:-90,90',
+      lng: 'required|range:-180,180'
+    })
+
+    if (validation.fails()) {
+      response.unprocessableEntity(validation.messages())
+      return
+    }
+
+    user.lat = location.lat
+    user.lng = location.lng
 
     yield user.save()
     response.ok(user.complete())
