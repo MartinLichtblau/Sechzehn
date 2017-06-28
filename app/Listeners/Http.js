@@ -18,16 +18,21 @@ Http.handleError = function * (error, request, response) {
   let manualHandled = false
 
   // Map some exceptions to HTTP status codes with corresponding message
-  if (error.name === 'ModelNotFoundException') {
-    error.status = 404
-    error.message = 'Resource Not Found'
-    manualHandled = true
-  }
-
-  if (error.name === 'PasswordMisMatch') {
-    error.status = 400
-    error.message = 'Invalid Credentials'
-    manualHandled = true
+  switch (error.name) {
+    case 'ModelNotFoundException':
+      error.status = 404
+      error.message = 'Resource Not Found'
+      manualHandled = true
+      break
+    case 'HttpException':
+      error.status = 404
+      error.message = 'Route Not Found'
+      manualHandled = true
+      break
+    case 'PasswordMisMatch':
+      error.status = 400
+      error.message = 'Invalid Credentials'
+      manualHandled = true
   }
 
   /**
@@ -44,9 +49,9 @@ Http.handleError = function * (error, request, response) {
   /**
    * PRODUCTION REPORTER
    */
-  console.error(error.stack)
+  console.error(error)
 
-  error.message = error.message | 'Something bad happened!'
+  if (!manualHandled) error.message = 'Something bad happened!'
 
   if (type === 'json') {
     response.status(error.status).json({error: error.message})
