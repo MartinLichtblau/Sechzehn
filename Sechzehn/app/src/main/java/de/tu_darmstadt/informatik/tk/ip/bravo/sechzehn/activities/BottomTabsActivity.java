@@ -129,7 +129,6 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         throw new IllegalStateException("Need to send an index that we know");
     }
 
-
 }
 
 
