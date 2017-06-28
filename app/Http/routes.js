@@ -50,6 +50,7 @@ Route.group('api', function () {
   Route.patch('users/:id/profile_picture', 'UserController.updateProfilePicture').middleware('auth')
   Route.patch('users/:id/password', 'UserController.updatePassword').middleware('auth')
   Route.patch('users/:id/email', 'UserController.updateEmail').middleware('auth')
+  Route.patch('users/:id/location', 'UserController.updateLocation').middleware('auth')
 
   Route
     .resource('users', 'UserController')
