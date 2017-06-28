@@ -4,11 +4,20 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Api;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.User;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.UserToken;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -46,6 +55,23 @@ public class RegisterFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 fragNavController().popFragment();
+            }
+        });
+        v.findViewById(R.id.registerButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User u = new User();
+                u.email=getTextFrom(v,R.id.registerEmail);
+                u.password=getTextFrom(v,R.id.registerPassword);
+                u.passwordConfirmation=getTextFrom(v,R.id.registerPasswordConfirmation);
+                try {
+                   Response<UserToken> response=  Api.getInstance().createUser(u).execute();
+                    if(response.isSuccessful()){
+                     response.body().token
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

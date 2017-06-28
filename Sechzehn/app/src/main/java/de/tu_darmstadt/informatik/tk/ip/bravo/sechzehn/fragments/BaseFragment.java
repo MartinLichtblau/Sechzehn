@@ -3,12 +3,14 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.ncapdevi.fragnav.FragNavController;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
@@ -51,6 +53,13 @@ public abstract class BaseFragment extends Fragment {
         if (context instanceof NavController) {
             mFragmentNavigation = ((NavController) context).getNavController();
         }
+    }
+
+    public String getTextFrom(View v,int id){
+        if(!(v.findViewById(id) instanceof TextInputEditText)){
+           throw new RuntimeException("The ID must refer to a TextInputEditText.") ;
+        }
+        return ((TextInputEditText)v.findViewById(id)).getText().toString();
     }
 
     public interface NavController {
