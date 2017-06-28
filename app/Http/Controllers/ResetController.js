@@ -40,7 +40,7 @@ class ResetController {
 
       yield ResetToken.create({
         token: token,
-        user_id: user.id
+        user: user.username
       })
 
       yield Mail.send('emails.reset', {

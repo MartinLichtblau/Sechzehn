@@ -4,7 +4,7 @@ const Lucid = use('Lucid')
 
 class ResetToken extends Lucid {
   /**
-   * Set the primar key for this Model to token.
+   * Set the primary key for this Model to token.
    * @returns {string}
    */
   static get primaryKey () {
@@ -32,7 +32,7 @@ class ResetToken extends Lucid {
    * @returns {Object}
    */
   user () {
-    return this.belongsTo('App/Model/User')
+    return this.belongsTo('App/Model/User', 'username', 'user')
   }
 }
 

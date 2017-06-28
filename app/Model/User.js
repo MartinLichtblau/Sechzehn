@@ -8,7 +8,7 @@ class User extends Lucid {
    * The validation rules for creating a User.
    * @returns {{username: string, email: string, password: string}}
    */
-  static rules () {
+  static get rules () {
     return {
       username: 'required|unique:users',
       email: `required|email|unique:users`,
@@ -19,16 +19,31 @@ class User extends Lucid {
   /**
    * The validation rules for updating a User.
    * @param userId
-   * @returns {{username: string, real_name: string, city: string, date_of_birth: string, incognito: string}}
+   * @returns {{real_name: string, city: string, date_of_birth: string, incognito: string}}
    */
-  static rulesForUpdate (userId) {
+  static get rulesForUpdate () {
     return {
-      username: `required|unique:users,username,id,${userId}`,
       real_name: 'string|max:255',
       city: 'string|max:255',
       date_of_birth: 'date|after:1900-01-01|before_offset_of:14,year',
       incognito: 'boolean'
     }
+  }
+
+  /**
+   * Set the primary key for this Model to username.
+   * @returns {string}
+   */
+  static get primaryKey () {
+    return 'username'
+  }
+
+  /**
+   * The primary key can not be incremented.
+   * @returns {boolean}
+   */
+  static get incrementing () {
+    return false
   }
 
   /**
@@ -38,7 +53,6 @@ class User extends Lucid {
    */
   static get visible () {
     return [
-      'id',
       'username',
       'real_name',
       'city',
@@ -76,7 +90,6 @@ class User extends Lucid {
    */
   complete () {
     return {
-      id: this.id,
       username: this.username,
       email: this.email,
       real_name: this.real_name,
@@ -95,7 +108,7 @@ class User extends Lucid {
    * @returns {Object}
    */
   resetTokens () {
-    return this.belongsToMany('App/Model/ResetToken')
+    return this.hasMany('App/Model/ResetToken', 'username', 'user')
   }
 }
 

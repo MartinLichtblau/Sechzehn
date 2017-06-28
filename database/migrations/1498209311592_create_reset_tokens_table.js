@@ -6,8 +6,8 @@ class ResetTokensTableSchema extends Schema {
 
   up () {
     this.create('reset_tokens', (table) => {
-      table.integer('user_id').unsigned()
-      table.foreign('user_id').references('users.id')
+      table.string('user', 80)
+      table.foreign('user').references('users.username')
       table.string('token').unique().primary()
       table.timestamp('created_at')
     })
