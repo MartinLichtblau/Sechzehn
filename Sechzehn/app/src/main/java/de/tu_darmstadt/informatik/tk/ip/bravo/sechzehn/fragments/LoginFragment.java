@@ -1,13 +1,23 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.ncapdevi.fragnav.FragNavController;
+import com.ncapdevi.fragnav.FragNavTransactionOptions;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.RegisterFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentLoginBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.LoginService;
 import retrofit2.Call;
@@ -20,7 +30,7 @@ import retrofit2.Response;
  * Use the {@link LoginFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginFragment extends BaseFragment {
+public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
 
@@ -38,49 +48,40 @@ public class LoginFragment extends BaseFragment {
         return new LoginFragment();
     }
 
+    private User user = new User();
 
     @Override
-    protected int layoutID() {
-        return R.layout.fragment_login;
+    protected FragmentLoginBinding initDataBinding(LayoutInflater inflater, @Nullable ViewGroup container) {
+        return FragmentLoginBinding.inflate(inflater, container, false);
     }
 
     @Override
-    protected void initView(final View v) {
-        v.findViewById(R.id.loginToRegister).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fragNavController().pushFragment(RegisterFragment.newInstance());
-            }
-        });
-        v.findViewById(R.id.loginToForgotpassword).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fragNavController().pushFragment(ForgotPwFragment.newInstance());
-            }
-        });
-        v.findViewById(R.id.loginButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                User u = new User();
-                u.setEmail(getTextFrom(v, R.id.loginEmail));
-                u.setPassword(getTextFrom(v, R.id.loginPassword));
-                ServiceGenerator.createService(LoginService.class).login(u).enqueue(new Callback<UserToken>() {
-                    @Override
-                    public void onResponse(Call<UserToken> call, Response<UserToken> response) {
-                        if (response.isSuccessful()) {
-                            getActivity().getPreferences(0).edit().putString("JWT", response.body().token).commit();
-                            fragNavController().popFragment();
-                        } else {
-                            ((TextInputEditText) v.findViewById(R.id.loginEmail)).setError("Email or password wrong.");
-                            ((TextInputEditText) v.findViewById(R.id.loginPassword)).setError("Email or password wrong.");
-                        }
-                    }
+    protected void useDataBinding(FragmentLoginBinding binding) {
+        binding.setUser(user);
+    }
+    public void toRegister(View view){
+        fragNavController().pushFragment(RegisterFragment.newInstance());
+    }
+    public void toForgotpassword(View view){
+        fragNavController().pushFragment(ForgotPwFragment.newInstance());
+    }
 
-                    @Override
-                    public void onFailure(Call<UserToken> call, Throwable t) {
-                        Toast.makeText(getActivity(), "Connectivity error!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+    public void login(View view) {
+        ServiceGenerator.createService(LoginService.class).login(user).enqueue(new Callback<UserToken>() {
+            @Override
+            public void onResponse(Call<UserToken> call, Response<UserToken> response) {
+                if (response.isSuccessful()) {
+                    getActivity().getPreferences(0).edit().putString("JWT", response.body().token).apply();
+                    fragNavController().popFragment();
+                } else {
+                    binding.loginEmail.setError("Email or password wrong.");
+                    binding.loginPassword.setError("Email or password wrong.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserToken> call, Throwable t) {
+                Toast.makeText(getActivity(), "Connectivity error!", Toast.LENGTH_SHORT).show();
             }
         });
     }

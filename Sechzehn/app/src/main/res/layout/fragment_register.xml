@@ -1,3 +1,12 @@
+<layout>
+    <data>
+        <variable
+            name="self"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.RegisterFragment"/>
+        <variable
+            name="user"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User"/>
+    </data>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -32,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Username"
+                android:text="@={user.username}"
                  />
         </android.support.design.widget.TextInputLayout>
 
@@ -45,6 +55,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Email"
+                android:text="@={user.email}"
                 android:inputType="textEmailAddress" />
         </android.support.design.widget.TextInputLayout>
 
@@ -59,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Password"
+                android:text="@={user.password}"
                 android:inputType="textPassword" />
         </android.support.design.widget.TextInputLayout>
 
@@ -80,7 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Register" />
+            android:text="Register"
+            android:onClick="@{self::register}"/>
 
         <TextView
             android:id="@+id/registerToLogin"
@@ -89,7 +102,9 @@
             android:clickable="true"
             android:padding="16dp"
             android:text="Already have an account? Login here"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:onClick="@{()->self.fragNavController().popFragment()}"/>
 
     </LinearLayout>
 </FrameLayout>
+</layout>
