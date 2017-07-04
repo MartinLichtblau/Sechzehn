@@ -121,7 +121,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <EditText
+                        <android.support.design.widget.TextInputEditText
                             android:id="@+id/user_profile_name_edit"
                             android:hint="Name"
                             android:text="Donald Trump"
@@ -135,7 +135,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <EditText
+                        <android.support.design.widget.TextInputEditText
                             android:id="@+id/user_profile_email_edit"
                             android:hint="Email"
                             android:text="donald@iamrichbitch@me"
@@ -148,7 +148,7 @@
                         android:id="@+id/user_profile_age"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-                        <EditText
+                        <android.support.design.widget.TextInputEditText
                             android:id="@+id/user_profile_age_edit"
                             android:hint="Age"
                             android:text="71"
@@ -161,7 +161,7 @@
                         android:id="@+id/user_profile_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-                        <EditText
+                        <android.support.design.widget.TextInputEditText
                             android:id="@+id/user_profile_address_edit"
                             android:hint="Address"
                             android:text="1600 Pennsylvania Ave NW, Washington, DC 20500, USA"

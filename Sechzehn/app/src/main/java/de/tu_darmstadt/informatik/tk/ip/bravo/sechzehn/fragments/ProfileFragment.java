@@ -7,6 +7,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,29 +29,31 @@ public class ProfileFragment extends BaseFragment {
     private ImageView userOptionsButton;
     private FloatingActionButton userProfileSaveFab;
 
-    private static final String UID_KEY = "uid";
+    private static final String USER_ID = "uid";
     private UserProfileViewModel viewModel;
 
-    public static ProfileFragment newInstance(int instance) {
-        Bundle args = new Bundle();
-        args.putInt(ARGS_INSTANCE, instance);
+    public static ProfileFragment newInstance(String userId) {
+        Bundle bundle = new Bundle();
+        bundle.putString(USER_ID, userId);
         ProfileFragment fragment = new ProfileFragment();
-        fragment.setArguments(args);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+
+
+        viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+        viewModel.init(USER_ID);
         viewModel.getUser().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
-                Toast.makeText(getActivity(), "Data received", Toast.LENGTH_SHORT).show();
+                fillInUser(user);
             }
         });
-        String userId = getArguments().getString(UID_KEY);
-        viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
-        viewModel.init(userId);
     }
 
     @Override
@@ -115,5 +118,9 @@ public class ProfileFragment extends BaseFragment {
         }
     }
 
+    private void fillInUser(User user){
+        Toast.makeText(getActivity(), "Linked to user: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+        ((TextInputEditText) this.getView().findViewById(R.id.user_profile_name_edit)).setText(user.getUsername());
+    }
 }
 

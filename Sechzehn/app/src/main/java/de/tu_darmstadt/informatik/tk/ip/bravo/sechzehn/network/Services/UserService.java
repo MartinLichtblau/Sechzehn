@@ -18,9 +18,9 @@ public interface UserService {
      * @Path("user") annotation on the userId parameter marks it as a
      * replacement for the {user} placeholder in the @GET path
      */
-    @GET("users/{user}")
+    @GET("users/{id}")
     Call<User> getUser(
-            @Path("user") String userId
+            @Path("id") String userId
     );
 
     @POST("users")
