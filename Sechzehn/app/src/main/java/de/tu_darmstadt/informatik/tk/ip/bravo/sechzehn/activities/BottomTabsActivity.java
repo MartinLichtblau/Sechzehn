@@ -9,7 +9,7 @@ import com.ncapdevi.fragnav.FragNavController;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.UserFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenuesFragment;
 
@@ -127,7 +127,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             case INDEX_FRIENDS:
                 return FriendsFragment.newInstance(0);
             case INDEX_USER:
-                return UserFragment.newInstance(0);
+                return OwnerFragment.newInstance(0);
         }
         throw new IllegalStateException("Need to send an index that we know");
     }
