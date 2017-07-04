@@ -13,7 +13,7 @@ class AuthController {
     })
 
     if (validation.fails()) {
-      response.unprocessableEntity(validation.messages())
+      response.unauthorized({error: 'Email or password wrong'})
       return
     }
 
@@ -26,7 +26,7 @@ class AuthController {
         token: token
       })
     } catch (e) {
-      response.unauthorized({error: e.message})
+      response.unauthorized({error: 'Email or password wrong'})
     }
   }
 
