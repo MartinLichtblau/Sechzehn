@@ -33,6 +33,11 @@ Http.handleError = function * (error, request, response) {
       error.status = 400
       error.message = 'Invalid Credentials'
       manualHandled = true
+      break
+    case 'InvalidLoginException':
+      error.status = 401
+      error.message = 'Unauthorized'
+      manualHandled = true
   }
 
   /**
