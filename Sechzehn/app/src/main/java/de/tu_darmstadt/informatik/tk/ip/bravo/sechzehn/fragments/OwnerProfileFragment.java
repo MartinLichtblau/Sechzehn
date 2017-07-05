@@ -44,7 +44,7 @@ public class OwnerProfileFragment extends BaseFragment {
 
 
         viewModel = ViewModelProviders.of(this).get(OwnerProfileViewModel.class);
-        viewModel.init(USER_ID);
+        viewModel.initUser(USER_ID);
         viewModel.getUser().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {

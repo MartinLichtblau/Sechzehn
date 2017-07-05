@@ -43,7 +43,7 @@ public class UserFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(UserProfileFragment.newInstance("1"));
+                    mFragmentNavigation.pushFragment(UserProfileFragment.newInstance("socac"));
                 }
             }
         });

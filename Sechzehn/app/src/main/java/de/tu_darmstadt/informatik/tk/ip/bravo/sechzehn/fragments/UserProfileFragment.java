@@ -19,13 +19,10 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfi
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.UserProfileViewModel;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
-/**
- * Created by niccapdevila on 3/26/16.
- */
+
 public class UserProfileFragment extends BaseFragment {
     private ImageView addFriendButton;
     private ImageView optionsButton;
-
     private static final String USERNAME = "username";
     private UserProfileViewModel viewModel;
 
@@ -55,7 +52,7 @@ public class UserProfileFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
         if (viewModel.getUser().getValue() == null)
-            viewModel.initUser("parru");
+            viewModel.initUser(getArguments().getString("username"));
         viewModel.getUser().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -66,8 +63,6 @@ public class UserProfileFragment extends BaseFragment {
                 }
             }
         });
-
-
         return binding.getRoot();
     }
 
