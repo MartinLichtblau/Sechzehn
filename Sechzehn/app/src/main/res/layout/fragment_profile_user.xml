@@ -33,10 +33,8 @@
                 android:layout_below="@+id/userprofile_coverfoto"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="-60dp"
-                android:elevation="5dp"
+                android:elevation="@dimen/dim_normal"
                 android:scaleType="fitCenter"/>
-
-
 
             <RelativeLayout
                 android:id="@+id/userprofile_headerLayout"
@@ -44,25 +42,24 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/userprofile_coverfoto"
                 android:background="@color/colorPrimary"
-                android:elevation="4dp"
-                android:paddingBottom="24dp">
+                android:paddingBottom="@dimen/dim_normal">
 
                 <ImageView
                     android:id="@+id/userprofile_addfriend"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="@dimen/dim_large"
+                    android:layout_height="@dimen/dim_large"
+                    android:layout_marginLeft="@dimen/dim_normal"
+                    android:layout_marginTop="@dimen/dim_normal"
                     android:layout_toLeftOf="@+id/userprofile_options"
                     android:src="@drawable/ic_action_user_add" />
 
                 <ImageView
                     android:id="@+id/userprofile_options"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="@dimen/dim_large"
+                    android:layout_height="@dimen/dim_large"
                     android:layout_alignParentRight="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="@dimen/dim_normal"
+                    android:layout_marginTop="@dimen/dim_normal"
                     android:src="@drawable/ic_vertical_options" />
 
                 <TextView
@@ -72,7 +69,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="76dp"
                     android:textColor="#fff"
-                    android:textSize="24sp"
+                    android:textSize="@dimen/txt_large"
                     android:textStyle="bold"
                     android:text="@{user.username}" />
 
@@ -82,12 +79,11 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/userprofile_username"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="@dimen/dim_small"
                     android:text="I am the best!"
                     android:textColor="#fff"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/txt_normal" />
             </RelativeLayout>
-
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -98,22 +94,21 @@
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="16dp">
+                    android:layout_margin="@dimen/dim_normal">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginTop="6dp"
+                        android:layout_margin="@dimen/dim_normal"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
+                            android:layout_marginBottom="@dimen/dim_small"
                             android:text="Profile"
                             android:textColor="#000"
-                            android:textSize="18sp"
+                            android:textSize="@dimen/txt_normal"
                             android:textStyle="bold" />
 
                         <android.support.design.widget.TextInputLayout
@@ -161,7 +156,7 @@
                         <Space
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp" />
+                            android:layout_marginBottom="@dimen/dim_normal" />
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
@@ -169,39 +164,37 @@
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp">
+                    android:layout_margin="@dimen/dim_normal">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="240dp"
-                        android:layout_marginTop="6dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dim_normal"
                         android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="Location"
-                        android:textColor="#000"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dim_small"
+                            android:layout_marginLeft="@dimen/dim_normal"
+                            android:text="Location"
+                            android:textColor="#000"
+                            android:textSize="@dimen/txt_normal"
+                            android:textStyle="bold" />
 
-                        <!-- Maps lite mode https://developers.google.com/maps/documentation/android-api/lite-->
-                        <fragment
-                            xmlns:map="http://schemas.android.com/apk/res-auto"
+                        <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
                             android:id="@+id/map"
                             android:name="com.google.android.gms.maps.SupportMapFragment"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            map:mapType="normal"
+                            android:layout_height="160dp"
                             map:liteMode="true"
-                            />
+                            map:mapType="normal" />
 
 
                         <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dim_normal" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 
