@@ -57,7 +57,6 @@ class User extends Lucid {
       'real_name',
       'city',
       'profile_picture',
-      'date_of_birth',
       'lat',
       'lng'
     ]
