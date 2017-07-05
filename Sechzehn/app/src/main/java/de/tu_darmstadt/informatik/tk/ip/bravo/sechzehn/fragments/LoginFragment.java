@@ -14,7 +14,7 @@ import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.RegisterFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentLoginBinding;

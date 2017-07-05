@@ -2,7 +2,7 @@
     <data>
         <variable
             name="self"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.RegisterFragment"/>
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment"/>
         <variable
             name="user"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User"/>
