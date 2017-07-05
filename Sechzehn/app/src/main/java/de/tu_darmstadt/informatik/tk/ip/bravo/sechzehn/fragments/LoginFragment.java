@@ -1,5 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -14,6 +15,7 @@ import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
@@ -71,8 +73,9 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
             @Override
             public void onResponse(Call<UserToken> call, Response<UserToken> response) {
                 if (response.isSuccessful()) {
-                    getActivity().getPreferences(0).edit().putString("JWT", response.body().token).apply();
-                    fragNavController().popFragment();
+                    getActivity().getSharedPreferences("Sechzehn",0).edit().putString("JWT", response.body().token).apply();
+                    Intent intent = new Intent(getActivity(), BottomTabsActivity.class);
+                    startActivity(intent);
                 } else {
                     binding.loginEmail.setError("Email or password wrong.");
                     binding.loginPassword.setError("Email or password wrong.");

@@ -1,14 +1,17 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.ncapdevi.fragnav.FragNavController;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.UserFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenuesFragment;
@@ -64,6 +67,16 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             }
         });
 
+
+if(getToken().isEmpty()){
+    Intent intent=new Intent(this,LoginActivity.class);
+    startActivity(intent);
+}
+
+    }
+
+    public String getToken(){
+        return getSharedPreferences("Sechzehn",0).getString("JWT","");
     }
 
     public FragNavController getNavController(){

@@ -59,24 +59,34 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
 
     @Override
     protected void useDataBinding(FragmentRegisterBinding binding) {
-binding.setUser(user);
+        binding.setUser(user);
     }
 
-    public void register(View v){
-        if(!binding.registerPassword.getText().toString().equals(binding.registerPasswordConfirmation.getText().toString())){
+    public void register(View v) {
+        if (!binding.registerPassword.getText().toString().equals(binding.registerPasswordConfirmation.getText().toString())) {
             binding.registerPasswordConfirmation.setError("Passwords do not match.");
             return;
-        }else {
+        } else {
             binding.registerPasswordConfirmation.setError(null);
         }
         ServiceGenerator.createService(UserService.class).createUser(user).enqueue(new Callback<UserToken>() {
             @Override
             public void onResponse(Call<UserToken> call, Response<UserToken> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     getActivity().getPreferences(0).edit().putString("JWT", response.body().token).apply();
                     fragNavController().popFragments(2);
-                }else {
-                    Toast.makeText(getActivity(), "Registration error!", Toast.LENGTH_SHORT).show();
+                } else {
+                    try {
+                        String error = response.errorBody().string();
+                        if (error.contains("email")) {
+                            binding.registerEmail.setError("Email address already in use!");
+                        }
+                        if (error.contains("username")) {
+                            binding.registerUsername.setError("Username is already taken.");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
