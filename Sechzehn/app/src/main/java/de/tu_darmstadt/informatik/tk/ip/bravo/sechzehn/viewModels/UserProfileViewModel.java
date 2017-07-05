@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
@@ -21,6 +22,7 @@ import retrofit2.Response;
 public class UserProfileViewModel extends ViewModel {
     private MutableLiveData<User> user = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
     private UserService userService;
+    private MarkerOptions userMarker;
 
 
     public void initUser(final String username){
@@ -49,8 +51,12 @@ public class UserProfileViewModel extends ViewModel {
         return user;
     }
 
-    public LatLng getLocation(){
-        return new LatLng(user.getValue().getLat(), user.getValue().getLng());
+    public MarkerOptions getMarkerOptions(){
+       if(userMarker == null ){
+           userMarker = new MarkerOptions()
+                   .position(new LatLng(user.getValue().getLat(),user.getValue().getLng()))
+                   .title(user.getValue().getUsername());
+       }
+       return userMarker;
     }
-
 }
