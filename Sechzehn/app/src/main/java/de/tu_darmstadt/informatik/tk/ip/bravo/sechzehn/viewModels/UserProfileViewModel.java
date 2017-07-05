@@ -5,6 +5,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
@@ -45,6 +47,10 @@ public class UserProfileViewModel extends ViewModel {
 
     public LiveData<User> getUser(){
         return user;
+    }
+
+    public LatLng getLocation(){
+        return new LatLng(user.getValue().getLat(), user.getValue().getLng());
     }
 
 }

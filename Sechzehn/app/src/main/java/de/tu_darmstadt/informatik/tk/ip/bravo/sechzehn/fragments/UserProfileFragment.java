@@ -1,5 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
@@ -10,11 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,6 +36,7 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
     private UserProfileViewModel viewModel;
 
     SupportMapFragment mapFragment;
+    GoogleMap mMap;
 
     public static UserProfileFragment newInstance(String username) {
         Bundle bundle = new Bundle();
@@ -47,7 +49,6 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
 
     @Override
@@ -59,6 +60,7 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
 
         addFriendButton = binding.userprofileAddfriend;
         optionsButton = binding.userprofileOptions;
+        initializeMap();
 
         viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
         if (viewModel.getUser().getValue() == null)
@@ -70,17 +72,13 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
                 if(user.getProfilePicture() != null && user.getProfilePicture() != ""){
                     //Picasso.with(getActivity()).setLoggingEnabled(true);
                     Picasso.with(getActivity()).load("http://"+user.getProfilePicture()).transform(new RoundedCornersTransformation(10,10)).into(binding.userprofilePicture); //Picasso needs "http://"
+                    if(mMap == null)
+                        Log.e(this.toString(), "google Maps mMap ist empty. That means it took longer than the database request for User");
+                    else
+                        setUpMap();
                 }
             }
         });
-
-        // Get the SupportMapFragment and request notification
-        // when the map is ready to be used.
-        //
-
-        mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
       return binding.getRoot();
     }
@@ -94,14 +92,18 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
                 .commit();
     }
 
+    private void initializeMap() {
+        if (mMap == null) {
+            Log.d(this.getTag(),"mMap is null. Load new.");
+            SupportMapFragment mapFrag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            mapFrag.getMapAsync(this);
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        // Add a marker in Sydney, Australia,
-        // and move the map's camera to the same location.
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        googleMap.addMarker(new MarkerOptions().position(sydney)
-                .title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        this.mMap = googleMap;
+        //setUpMap();// normally you would do your map stuff here
     }
 
     @Override
@@ -120,6 +122,12 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
             public void onClick(View v) {
             }
         });
+    }
+
+    private void setUpMap(){
+        mMap.addMarker(new MarkerOptions()
+                .position(viewModel.getLocation())
+                .title(getArguments().getString("username")));
     }
 
 }
