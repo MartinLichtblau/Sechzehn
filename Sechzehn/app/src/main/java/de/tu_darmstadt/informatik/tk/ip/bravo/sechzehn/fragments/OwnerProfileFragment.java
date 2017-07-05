@@ -58,7 +58,7 @@ public class OwnerProfileFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_profile_owner, container, false);
         userProfileEditSwitch = (Switch) view.findViewById(R.id.user_profile_edit);
         addFriendButton = (ImageView) view.findViewById(R.id.user_addFriend);
-        userOptionsButton = (ImageView) view.findViewById(R.id.user_options);
+        userOptionsButton = (ImageView) view.findViewById(R.id.userprofile_options);
         userProfileSaveFab = (FloatingActionButton) view.findViewById(R.id.user_profile_save);
 
         return view;

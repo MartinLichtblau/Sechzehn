@@ -9,7 +9,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/user_profile_coverfoto"
+            android:id="@+id/userprofile_coverfoto"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
@@ -19,7 +19,7 @@
             android:id="@+id/user_profile_picture"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_below="@+id/user_profile_coverfoto"
+            android:layout_below="@+id/userprofile_coverfoto"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="-60dp"
             android:background="@drawable/profile_circular_border_imageview"
@@ -33,7 +33,7 @@
             android:id="@+id/user_profile_headerLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_profile_coverfoto"
+            android:layout_below="@+id/userprofile_coverfoto"
             android:background="#ebca0707"
             android:elevation="4dp"
             android:paddingBottom="24dp">
@@ -44,11 +44,11 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_toLeftOf="@+id/user_options"
+                android:layout_toLeftOf="@+id/userprofile_options"
                 android:src="@drawable/ic_action_user_add" />
 
             <ImageView
-                android:id="@+id/user_options"
+                android:id="@+id/userprofile_options"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_alignParentRight="true"
@@ -71,7 +71,7 @@
                 android:id="@+id/user_shortBio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/user_name"
+                android:layout_below="@+id/userprofile_name"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp"
                 android:text="I am the best!"

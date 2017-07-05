@@ -5,37 +5,33 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Switch;
-import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfileUserBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.UserProfileViewModel;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
  * Created by niccapdevila on 3/26/16.
  */
 public class UserProfileFragment extends BaseFragment {
-    private Switch userProfileEditSwitch;
     private ImageView addFriendButton;
-    private ImageView userOptionsButton;
-    private FloatingActionButton userProfileSaveFab;
+    private ImageView optionsButton;
 
-    private static final String USER_ID = "uid";
+    private static final String USERNAME = "username";
     private UserProfileViewModel viewModel;
 
-    Integer i = 0;
-
-    public static UserProfileFragment newInstance(String userId) {
+    public static UserProfileFragment newInstance(String username) {
         Bundle bundle = new Bundle();
-        bundle.putString(USER_ID, userId);
+        bundle.putString(USERNAME, username);
         UserProfileFragment fragment = new UserProfileFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -54,8 +50,8 @@ public class UserProfileFragment extends BaseFragment {
                 inflater, R.layout.fragment_profile_user, container, false);
         binding.setUser(new User());
 
-        addFriendButton = binding.userAddFriend;
-        userOptionsButton = binding.userOptions;
+        addFriendButton = binding.userprofileAddfriend;
+        optionsButton = binding.userprofileOptions;
 
         viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
         if (viewModel.getUser().getValue() == null)
@@ -64,8 +60,13 @@ public class UserProfileFragment extends BaseFragment {
             @Override
             public void onChanged(User user) {
                 binding.setUser(user);
+                if(user.getProfilePicture() != null && user.getProfilePicture() != ""){
+                    //Picasso.with(getActivity()).setLoggingEnabled(true);
+                    Picasso.with(getActivity()).load("http://"+user.getProfilePicture()).transform(new RoundedCornersTransformation(10,10)).into(binding.userprofilePicture); //Picasso needs "http://"
+                }
             }
         });
+
 
         return binding.getRoot();
     }
@@ -78,18 +79,11 @@ public class UserProfileFragment extends BaseFragment {
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                i++;
-                String username;
-                if(i<2)
-                    username = "bekgi";
-                else
-                    username = "socac";
-                viewModel.initUser(username);
-                //Toast.makeText(getActivity(), "onClick: " + username + " " + viewModel.getUser().hasObservers(), Toast.LENGTH_SHORT).show();
+
             }
         });
 
-        userOptionsButton.setOnClickListener(new View.OnClickListener() {
+        optionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }
