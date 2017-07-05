@@ -279,6 +279,29 @@ class UserController {
       return
     }
 
+    const userData = request.only('password')
+    const validation = yield Validator.validate(userData, {
+      password: 'required'
+    })
+
+    if (validation.fails()) {
+      response.unprocessableEntity(validation.messages())
+      return
+    }
+
+    try {
+      yield request.auth.validate(user.email, userData.password)
+    } catch (e) {
+      response.unprocessableEntity([
+        {
+          'field': 'password',
+          'validation': 'password_match',
+          'message': e.message
+        }
+      ])
+      return
+    }
+
     yield user.delete()
     response.noContent()
   }
@@ -301,7 +324,7 @@ class UserController {
       confirmLink: Url.resolve(Config.get('app.absoluteUrl'), Route.url('confirm', {token: token}))
     }, (message) => {
       message.to(user.email, user.username)
-      message.from('sechzehn@tw-co.de')
+      message.from('no-reply@iptk.herokuapp.com')
       message.subject('Sechzehn: Verify Your Account')
     })
   }

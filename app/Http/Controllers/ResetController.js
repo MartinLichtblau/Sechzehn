@@ -49,7 +49,7 @@ class ResetController {
         resetLink: Url.resolve(Config.get('app.absoluteUrl'), Route.url('reset.confirmForm', {token: token}))
       }, (message) => {
         message.to(user.email, user.username)
-        message.from('sechzehn@tw-co.de')
+        message.from('no-reply@iptk.herokuapp.com')
         message.subject('Sechzehn: Reset Your Password')
       })
     }
