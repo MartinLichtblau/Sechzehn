@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity">
+
+
+    <data>
+        <variable
+            name="user"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/user_profile_coverfoto"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/profile_coverfoto_default" />
+
+            <ImageButton
+                android:id="@+id/user_profile_picture"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_below="@+id/user_profile_coverfoto"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-60dp"
+                android:background="@drawable/profile_circular_border_imageview"
+                android:elevation="5dp"
+                android:padding="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/profile_picture_default"/>
+
+
+            <RelativeLayout
+                android:id="@+id/user_profile_headerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_profile_coverfoto"
+                android:background="#ebca0707"
+                android:elevation="4dp"
+                android:paddingBottom="24dp">
+
+                <ImageView
+                    android:id="@+id/user_addFriend"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_toLeftOf="@+id/user_options"
+                    android:src="@drawable/ic_action_user_add" />
+
+                <ImageView
+                    android:id="@+id/user_options"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_vertical_options" />
+
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="76dp"
+                    android:text="@{user.username}"
+                    android:textColor="#fff"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/user_shortBio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/user_name"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="12dp"
+                    android:text="I am the best!"
+                    android:textColor="#fff"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_profile_headerLayout"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp">
+
+                    <Switch
+                        android:id="@+id/user_profile_edit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Edit "
+                        android:textColor="@color/common_google_signin_btn_text_light_default"
+                        android:layout_gravity="top|right"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginTop="6dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/user_profile_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:text="Profile"
+                            android:textColor="#000"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/user_profile_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/user_profile_name_edit"
+                                android:hint="Name"
+                                android:text="@{user.username}"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"/>
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/user_profile_email"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/user_profile_email_edit"
+                                android:hint="Email"
+                                android:text="@{user.email}"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"/>
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/user_profile_age"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/user_profile_age_edit"
+                                android:hint="Age"
+                                android:text="@{user.dateOfBirth}"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"/>
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/user_profile_address"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/user_profile_address_edit"
+                                android:hint="Address"
+                                android:text="@{user.city}"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"/>
+                        </android.support.design.widget.TextInputLayout>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                        />
+                    </LinearLayout>
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/user_profile_save"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|right"
+                        android:src="@drawable/ic_checkdone"
+                        android:tint="#FFFFFF"
+                        android:visibility="invisible" />
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginTop="6dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:text="Account"
+                            android:textColor="#000"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginTop="6dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="History"
+                        android:textColor="#000"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+</layout>

@@ -13,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
 
-    private static final String BASE_URL = "http://private-anon-6e98cb3777-iptk.apiary-mock.com/api/";
+    private static final String BASE_URL = "https://iptk.herokuapp.com/api/";
 
     private static Retrofit.Builder builder =
             new Retrofit.Builder()

@@ -16,29 +16,42 @@ import retrofit2.Response;
  * Created by marti on 28.06.2017.
  */
 
-public class UserProfileViewModel extends ViewModel {
-    private static MutableLiveData<User> user = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
+public class OwnerProfileViewModel extends ViewModel {
+    private LiveData<User> user;
     private UserService userService;
 
+    public void init(String userId) {
+        if (this.user != null) {
+            // ViewModel is created per Fragment so
+            // we know the userId won't change
+            return;
+        }
+        user = fetch(userId);
+    }
 
-    public void initUser(final String username){
+
+    public LiveData<User> getUser() {
+        return user;
+    }
+
+
+    private LiveData<User> fetch(String userId){
+        final MutableLiveData<User> user = new MutableLiveData<>();
         userService = ServiceGenerator.createService(UserService.class, "");
-        userService.getUser(username).enqueue(new Callback<User>() {
+        userService.getUser(userId).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                Log.i(this.toString(),"getUser.onResponse | "  + " REQ username: " + username +  " RET username: " + response.body().getUsername());
                 user.setValue(response.body());
+                Log.i(this.toString(),"onResponse: " + user.toString());
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 // the network call was a failure
-                Log.e(this.toString(),"getUser.onFailure | ",t.getCause());
+                Log.e(this.toString(),"onFailure",t.getCause());
             }
         });
-    }
-
-    public LiveData<User> getUser(){
         return user;
     }
+
 
 }
