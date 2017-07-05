@@ -11,6 +11,7 @@ const TokenGenerator = use('TokenGenerator')
 const Mail = use('Mail')
 const Url = require('url')
 const Fs = require('fs')
+const Path = require('path')
 
 class UserController {
   * index (request, response) {
@@ -303,7 +304,9 @@ class UserController {
     }
 
     yield user.delete()
-    response.noContent()
+    response.ok({
+      message: 'User successfully deleted.'
+    })
   }
 
   /**
@@ -326,6 +329,7 @@ class UserController {
       message.to(user.email, user.username)
       message.from('no-reply@iptk.herokuapp.com')
       message.subject('Sechzehn: Verify Your Account')
+      message.embed(Path.join(__dirname, '../../../public/assets/logo.png'), 'logo')
     })
   }
 }

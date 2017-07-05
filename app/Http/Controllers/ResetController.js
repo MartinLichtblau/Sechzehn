@@ -10,6 +10,7 @@ const Config = use('Config')
 const Hash = use('Hash')
 const Url = require('url')
 const Moment = require('moment')
+const Path = require('path')
 
 class ResetController {
   * requestForm (request, response) {
@@ -51,6 +52,7 @@ class ResetController {
         message.to(user.email, user.username)
         message.from('no-reply@iptk.herokuapp.com')
         message.subject('Sechzehn: Reset Your Password')
+        message.embed(Path.join(__dirname, '../../../public/assets/logo.png'), 'logo')
       })
     }
 
