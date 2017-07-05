@@ -74,7 +74,7 @@ public class UserProfileFragment extends BaseFragment {
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                viewModel.initUser("parru");
             }
         });
 

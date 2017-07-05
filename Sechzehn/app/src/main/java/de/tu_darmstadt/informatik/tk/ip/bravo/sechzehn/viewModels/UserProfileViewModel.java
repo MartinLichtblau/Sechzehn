@@ -17,38 +17,34 @@ import retrofit2.Response;
  */
 
 public class UserProfileViewModel extends ViewModel {
-    private static MutableLiveData<User> user = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
+    private MutableLiveData<User> user = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
     private UserService userService;
 
-    public void initUser(String username){
-        if (this.user != null) {
+
+    public void initUser(final String username){
+        if(user.getValue() != null){
             // ViewModel is created per Fragment so
-            // we know the user won't change
+            // we know the userId won't change
+            Log.d(this.toString(),"a user is already initialized");
             return;
-        } else
-            fetchUser(username);
-    }
-
-    public LiveData<User> getUser(){
-        return user;
-    }
-
-    private void fetchUser(final String username) {
+        }
         userService = ServiceGenerator.createService(UserService.class, "");
         userService.getUser(username).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                    Log.d("onResponse | ", response.toString());
-                    Log.i(this.toString(), "getUser.onResponse | " + " REQ username: " + username + " RET username: " + response.body().getUsername());
-                    user.setValue(response.body());
-
+                Log.i(this.toString(),"getUser.onResponse | "  + " REQ username: " + username +  " RET username: " + response.body().getUsername());
+                user.setValue(response.body());
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 // the network call was a failure
-                Log.e(this.toString(), "getUser.onFailure | ", t.getCause());
+                Log.e(this.toString(),"getUser.onFailure | ",t.getCause());
             }
         });
+    }
+
+    public LiveData<User> getUser(){
+        return user;
     }
 
 }
