@@ -11,6 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
@@ -20,11 +28,13 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.UserProfileVie
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 
-public class UserProfileFragment extends BaseFragment {
+public class UserProfileFragment extends BaseFragment implements OnMapReadyCallback {
     private ImageView addFriendButton;
     private ImageView optionsButton;
     private static final String USERNAME = "username";
     private UserProfileViewModel viewModel;
+
+    SupportMapFragment mapFragment;
 
     public static UserProfileFragment newInstance(String username) {
         Bundle bundle = new Bundle();
@@ -63,9 +73,36 @@ public class UserProfileFragment extends BaseFragment {
                 }
             }
         });
-        return binding.getRoot();
+
+        // Get the SupportMapFragment and request notification
+        // when the map is ready to be used.
+        //
+
+        mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+      return binding.getRoot();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        getChildFragmentManager().beginTransaction()
+                .remove(mapFragment)
+                .commit();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        // Add a marker in Sydney, Australia,
+        // and move the map's camera to the same location.
+        LatLng sydney = new LatLng(-33.852, 151.211);
+        googleMap.addMarker(new MarkerOptions().position(sydney)
+                .title("Marker in Sydney"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
 
     @Override
     public void onStart() {
@@ -84,7 +121,6 @@ public class UserProfileFragment extends BaseFragment {
             }
         });
     }
-
 
 }
 

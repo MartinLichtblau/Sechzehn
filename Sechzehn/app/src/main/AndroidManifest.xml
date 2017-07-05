@@ -27,15 +27,17 @@
         <activity android:name=".activities.BottomTabsActivity">
         </activity>
 
-        <uses-library android:required="true" android:name="com.google.android.maps" />
-
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="@string/google_maps_api_key" />
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <!--
+             The API key for Google Maps-based APIs.
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_api_key" />
 
     </application>
 

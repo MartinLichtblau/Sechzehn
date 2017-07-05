@@ -56,7 +56,7 @@ dependencies {
 
     //Images / Photos download, processing and....
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'jp.wasabeef:picasso-transformations:2.1.2' // > https://github.com/wasabeef/picasso-transformations
+    compile 'jp.wasabeef:picasso-transformations:2.1.2'
 
 
 }
