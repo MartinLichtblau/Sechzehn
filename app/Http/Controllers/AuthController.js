@@ -22,7 +22,7 @@ class AuthController {
       const user = yield User.findBy('email', credentials.email)
 
       response.ok({
-        user: user,
+        user: user.complete(),
         token: token
       })
     } catch (e) {
