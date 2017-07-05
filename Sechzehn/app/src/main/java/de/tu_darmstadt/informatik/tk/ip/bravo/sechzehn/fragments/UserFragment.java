@@ -34,7 +34,7 @@ public class UserFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(ProfileFragment.newInstance(mInt+1));
+                    mFragmentNavigation.pushFragment(OwnerProfileFragment.newInstance("1"));
                 }
             }
         });
@@ -42,7 +42,9 @@ public class UserFragment extends BaseFragment {
         accountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Working on...", Toast.LENGTH_SHORT).show();
+                if (mFragmentNavigation != null) {
+                    mFragmentNavigation.pushFragment(UserProfileFragment.newInstance("socac"));
+                }
             }
         });
 
@@ -69,4 +71,5 @@ public class UserFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
+
 }
