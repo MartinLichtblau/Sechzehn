@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.ncapdevi.fragnav.FragNavController;
@@ -35,14 +36,12 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
-
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
         mBottomBar.selectTabAtPosition(INDEX_VENUES);
         mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
                 .transactionListener(this)
                 .rootFragmentListener(this, 3)
                 .build();
-
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
@@ -59,23 +58,31 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                 }
             }
         });
-
         mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {
             @Override
             public void onTabReSelected(@IdRes int tabId) {
                 mNavController.clearStack();
             }
         });
-
-
-if(getToken().isEmpty()){
-    Intent intent=new Intent(this,LoginActivity.class);
-    startActivity(intent);
-}
-
     }
 
-    public String getToken(){
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(this.getLocalClassName(), "onStart");
+        if(getToken().isEmpty()){
+            Intent intent=new Intent(this,LoginActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(this.getLocalClassName(), "onResume");
+    }
+
+    private String getToken(){
         return getSharedPreferences("Sechzehn",0).getString("JWT","");
     }
 

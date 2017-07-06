@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 
 /**
  * Created by niccapdevila on 3/26/16.
@@ -33,8 +35,12 @@ public class UserFragment extends BaseFragment {
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(getActivity().toString(),"Token: " );
+                //((BottomTabsActivity)getActivity()).getToken(); //Through activity
+                getToken(); //Through BaseFragment
+                //mFragmentNavigation.pushFragment(OwnerProfileFragment.newInstance("1"));
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(OwnerProfileFragment.newInstance("1"));
+                    mFragmentNavigation.pushFragment(OwnerProfileFragment.newInstance("socac"));
                 }
             }
         });

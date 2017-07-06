@@ -2,37 +2,41 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Switch;
-import android.widget.Toast;
-
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerProfileViewModel;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfileUserBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.UserProfileViewModel;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
-/**
- * Created by niccapdevila on 3/26/16.
- */
-public class OwnerProfileFragment extends BaseFragment {
-    private Switch userProfileEditSwitch;
+
+public class OwnerProfileFragment extends BaseFragment implements OnMapReadyCallback {
     private ImageView addFriendButton;
-    private ImageView userOptionsButton;
-    private FloatingActionButton userProfileSaveFab;
+    private ImageView optionsButton;
+    private static final String USERNAME = "username";
+    private UserProfileViewModel viewModel;
+    private FragmentProfileUserBinding binding;
+    SupportMapFragment mapFragment;
+    GoogleMap mMap;
 
-    private static final String USER_ID = "uid";
-    private OwnerProfileViewModel viewModel;
-
-    public static OwnerProfileFragment newInstance(String userId) {
+    public static UserProfileFragment newInstance(String username) {
         Bundle bundle = new Bundle();
-        bundle.putString(USER_ID, userId);
-        OwnerProfileFragment fragment = new OwnerProfileFragment();
+        bundle.putString(USERNAME, username);
+        UserProfileFragment fragment = new UserProfileFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -40,84 +44,69 @@ public class OwnerProfileFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-
-
-        viewModel = ViewModelProviders.of(this).get(OwnerProfileViewModel.class);
-        viewModel.initUser(USER_ID);
-        viewModel.getUser().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                fillInUser(user);
-            }
-        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_owner, container, false);
-        userProfileEditSwitch = (Switch) view.findViewById(R.id.user_profile_edit);
-        addFriendButton = (ImageView) view.findViewById(R.id.user_addFriend);
-        userOptionsButton = (ImageView) view.findViewById(R.id.userprofile_options);
-        userProfileSaveFab = (FloatingActionButton) view.findViewById(R.id.user_profile_save);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile_user, container, false);
+        addFriendButton = binding.userprofileAddfriend;
+        optionsButton = binding.userprofileOptions;
 
-        return view;
+        viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+        if (viewModel.getUser().getValue() == null)
+            viewModel.initUser(getArguments().getString("username"));
+
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        return binding.getRoot();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        getChildFragmentManager().beginTransaction()
+                .remove(mapFragment)
+                .commit();
+        mMap = null;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        setup();
+    }
 
     @Override
     public void onStart() {
         super.onStart();
-        userProfileEditSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(userProfileEditSwitch.isChecked()){
-                    editableProfile(true);
-                }else{
-                    editableProfile(false);
-                }
-            }
-        });
-
-        userProfileSaveFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "Saved", Toast.LENGTH_SHORT).show();
-                editableProfile(false);
-            }
-        });
-
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }
         });
-
-        userOptionsButton.setOnClickListener(new View.OnClickListener() {
+        optionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }
         });
     }
 
-    public void editableProfile(Boolean status){
-        getView().findViewById(R.id.user_profile_name_edit).setEnabled(status);
-        getView().findViewById(R.id.user_profile_email_edit).setEnabled(status);
-        getView().findViewById(R.id.user_profile_age_edit).setEnabled(status);
-        getView().findViewById(R.id.user_profile_address_edit).setEnabled(status);
-
-        userProfileEditSwitch.setChecked(status);
-        if (status){
-            userProfileSaveFab.show();
-        }
-        else{
-            userProfileSaveFab.hide();
-        }
-    }
-
-    private void fillInUser(User user){
-        Toast.makeText(getActivity(), "Linked to user: " + user.getUsername(), Toast.LENGTH_SHORT).show();
-        ((TextInputEditText) this.getView().findViewById(R.id.user_profile_name_edit)).setText(user.getUsername());
+    private void setup(){
+        viewModel.getUser().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                binding.setUser(user);
+                if(user.getProfilePicture() != null && user.getProfilePicture() != ""){
+                    //Picasso.with(getActivity()).setLoggingEnabled(true);
+                    Picasso.with(getActivity()).load("http://"+user.getProfilePicture()).transform(new RoundedCornersTransformation(10,10)).into(binding.userprofilePicture); //Picasso needs "http://"
+                }
+                LatLng pos = new LatLng(viewModel.getUser().getValue().getLat(),viewModel.getUser().getValue().getLng());
+                mMap.addMarker(new MarkerOptions().position(pos)
+                        .title(getArguments().getString("username")));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+            }
+        });
     }
 }
 

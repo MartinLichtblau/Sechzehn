@@ -73,9 +73,12 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
             @Override
             public void onResponse(Call<UserToken> call, Response<UserToken> response) {
                 if (response.isSuccessful()) {
-                    getActivity().getSharedPreferences("Sechzehn",0).edit().putString("JWT", response.body().token).apply();
+                    getActivity().getSharedPreferences("Sechzehn",0).edit()
+                            .putString("JWT", response.body().token)
+                            .putString("ownername", response.body().user.getUsername()).apply(); // > https://stackoverflow.com/questions/28096876/how-to-store-multiple-key-value-pairs-in-shared-preferences
                     Intent intent = new Intent(getActivity(), BottomTabsActivity.class);
                     startActivity(intent);
+                    getActivity().finish(); //Finish LoginFragment or it bugs and resources
                 } else {
                     binding.loginEmail.setError("Email or password wrong.");
                     binding.loginPassword.setError("Email or password wrong.");
