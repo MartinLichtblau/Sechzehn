@@ -25,9 +25,14 @@ class FriendshipController {
   }
 
   * requests (request, response) {
-    const user = request.authUser
+    const user = yield User.findOrFail(request.param('id', null))
     const page = Number(request.input('page', 1))
     const perPage = Number(request.input('per_page', 10))
+
+    if (request.authUser.username !== user.username) {
+      response.unauthorized({error: 'Not allowed to show friend requests for other users'})
+      return
+    }
 
     const validation = yield Validator.validate({page, perPage}, {
       page: 'integer|min:1',
@@ -107,23 +112,28 @@ class FriendshipController {
       return
     }
 
+    if (iAmFriendsWithOther.status === 'CONFIRMED' && otherIsFriendsWithMe.status === 'CONFIRMED') {
+      response.forbidden({
+        message: 'Friendship already confirmed'
+      })
+      return
+    }
+
     if (statusData.status === 'DECLINED') {
       yield iAmFriendsWithOther.delete()
       yield otherIsFriendsWithMe.delete()
 
       response.ok({
-        message: 'Friend request declined.'
+        relating_user: me.username,
+        status: 'DECLINED',
+        related_user: other
       })
       return
     }
 
     // If request should be accepted
 
-    if (iAmFriendsWithOther.status === 'CONFIRMED' && otherIsFriendsWithMe.status === 'CONFIRMED') {
-      response.forbidden({
-        message: 'Friendship already confirmed'
-      })
-    } else if (iAmFriendsWithOther.status === 'RELATING_CONFIRMED' && otherIsFriendsWithMe.status === 'RELATED_CONFIRMED') {
+    if (iAmFriendsWithOther.status === 'RELATING_CONFIRMED' && otherIsFriendsWithMe.status === 'RELATED_CONFIRMED') {
       response.forbidden({
         message: `Friendship must be confirmed from ${other.username}`
       })
