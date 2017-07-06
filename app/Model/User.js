@@ -109,6 +109,14 @@ class User extends Lucid {
   resetTokens () {
     return this.hasMany('App/Model/ResetToken', 'username', 'user')
   }
+
+  /**
+   * List all Friends and requested Friends of this User.
+   * @returns {Object}
+   */
+  friends () {
+    return this.belongsToMany('App/Model/User', 'friendships', 'relating_user', 'related_user')
+  }
 }
 
 module.exports = User

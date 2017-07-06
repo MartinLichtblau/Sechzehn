@@ -52,6 +52,12 @@ Route.group('api', function () {
   Route.patch('users/:id/email', 'UserController.updateEmail').middleware('auth')
   Route.patch('users/:id/location', 'UserController.updateLocation').middleware('auth')
 
+  Route.get('users/:id/friends', 'FriendshipController.index').middleware('auth')
+  Route.get('users/friend-requests', 'FriendshipController.requests').middleware('auth')
+  Route.post('users/:id/friends', 'FriendshipController.store').middleware('auth')
+  Route.patch('users/:id/friends', 'FriendshipController.update').middleware('auth')
+  Route.delete('users/:id/friends', 'FriendshipController.destroy').middleware('auth')
+
   Route
     .resource('users', 'UserController')
     .except('create', 'edit')
