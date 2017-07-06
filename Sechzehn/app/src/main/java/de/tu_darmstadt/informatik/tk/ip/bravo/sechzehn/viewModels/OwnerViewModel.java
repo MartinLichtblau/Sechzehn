@@ -31,6 +31,9 @@ public class OwnerViewModel extends ViewModel {
     public void initOwner(final String ownername, String token){
         Log.d(this.getClass().toString(), "initOwner");
         this.token = token;
+       /* User user = new User();
+        user.setUsername(ownername);
+        this.owner.setValue(user);*/
         if(owner.getValue() != null){
             // ViewModel is created per Fragment so
             // we know the userId won't change

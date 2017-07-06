@@ -151,7 +151,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             case INDEX_FRIENDS:
                 return FriendsFragment.newInstance(0);
             case INDEX_OWNER:
-                return OwnerFragment.newInstance("a");
+                return OwnerFragment.newInstance();         //In Background gets owners data from server
         }
         throw new IllegalStateException("Need to send an index that we know");
     }

@@ -36,10 +36,8 @@ public class UserFragment extends BaseFragment {
             public void onClick(View v) {
                 Log.i(getActivity().toString(),"Token: " );
                 //((BottomTabsActivity)getActivity()).getToken(); //Through activity
-                getToken(); //Through BaseFragment
                 //mFragmentNavigation.pushFragment(OwnerFragment.newInstance("1"));
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(OwnerFragment.newInstance("a"));
                 }
             }
         });

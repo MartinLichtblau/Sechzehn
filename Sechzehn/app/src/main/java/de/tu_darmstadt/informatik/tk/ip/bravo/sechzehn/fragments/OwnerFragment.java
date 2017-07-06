@@ -25,19 +25,14 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 
 public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
-    private ImageView addFriendButton;
     private ImageView optionsButton;
-    private static final String USERNAME = "username";
     private OwnerViewModel viewModel;
     private FragmentOwnerBinding binding;
     SupportMapFragment mapFragment;
     GoogleMap mMap;
 
-    public static OwnerFragment newInstance(String username) {
-        Bundle bundle = new Bundle();
-        bundle.putString(USERNAME, username);
+    public static OwnerFragment newInstance() {
         OwnerFragment fragment = new OwnerFragment();
-        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -49,10 +44,9 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_owner, container, false);
-        addFriendButton = binding.userprofileAddfriend;
         optionsButton = binding.userprofileOptions;
 
-        //Get ViewModel from everywhere like
+        //Get OwnerViewModel from everywhere like
         viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
         // or: viewModel = ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
 
@@ -80,11 +74,6 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onStart() {
         super.onStart();
-        addFriendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
         optionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
