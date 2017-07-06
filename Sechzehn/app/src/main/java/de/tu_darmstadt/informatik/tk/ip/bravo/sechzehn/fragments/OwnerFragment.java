@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,6 +21,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.LoginActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentOwnerBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfileUserBinding;
@@ -84,21 +89,29 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getActivity().getSharedPreferences("Sechzehn", 0).edit().clear().apply();
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+                getActivity().finish(); //Finish BottomTabs
+                Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
             }
         });
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
             }
         });
         changeEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
             }
         });
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
             }
         });
     }
