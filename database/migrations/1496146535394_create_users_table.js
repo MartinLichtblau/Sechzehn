@@ -4,6 +4,8 @@ const Schema = use('Schema')
 
 class UsersTableSchema extends Schema {
   up () {
+    this.raw('CREATE EXTENSION IF NOT EXISTS cube')
+    this.raw('CREATE EXTENSION IF NOT EXISTS earthdistance')
     this.create('users', table => {
       table.string('username', 80).primary()
       table.string('email', 254).notNullable().unique()
