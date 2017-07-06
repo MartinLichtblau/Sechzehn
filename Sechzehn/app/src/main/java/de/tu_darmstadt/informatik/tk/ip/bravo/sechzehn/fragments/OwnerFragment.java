@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,9 +26,12 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 
 public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
-    private ImageView optionsButton;
-    private OwnerViewModel viewModel;
+    private Button logoutButton;
+    private Button changePasswordButton;
+    private Button changeEmailButton;
+    private Button deleteAccountButton;
     private FragmentOwnerBinding binding;
+    private OwnerViewModel viewModel;
     SupportMapFragment mapFragment;
     GoogleMap mMap;
 
@@ -44,7 +48,10 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_owner, container, false);
-        optionsButton = binding.userprofileOptions;
+        logoutButton = binding.ownerLogout;
+        changePasswordButton = binding.ownerChangepassword;
+        changeEmailButton = binding.ownerChangeemail;
+        deleteAccountButton = binding.ownerDeleteaccount;
 
         //Get OwnerViewModel from everywhere like
         viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
@@ -74,7 +81,22 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onStart() {
         super.onStart();
-        optionsButton.setOnClickListener(new View.OnClickListener() {
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+        changePasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+        changeEmailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+        deleteAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }
@@ -88,7 +110,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                 binding.setUser(user);
 
                 if(user.getProfilePicture() != null && user.getProfilePicture() != "")
-                    Picasso.with(getActivity()).load("http://"+user.getProfilePicture()).transform(new RoundedCornersTransformation(10,10)).into(binding.userprofilePicture); //Picasso needs "http://"
+                    Picasso.with(getActivity()).load("http://"+user.getProfilePicture()).transform(new RoundedCornersTransformation(10,10)).into(binding.ownerPicture); //Picasso needs "http://"
 
                 LatLng pos = viewModel.getLatLng();
                 if(pos != null){
