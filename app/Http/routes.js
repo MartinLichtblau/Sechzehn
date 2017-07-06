@@ -46,7 +46,6 @@ Route.group('reset', function () {
 })
 
 Route.group('api', function () {
-  Route.get('users/:id/complete', 'UserController.showComplete').middleware('auth')
   Route.patch('users/:id/profile_picture', 'UserController.updateProfilePicture').middleware('auth')
   Route.patch('users/:id/password', 'UserController.updatePassword').middleware('auth')
   Route.patch('users/:id/email', 'UserController.updateEmail').middleware('auth')
@@ -62,7 +61,7 @@ Route.group('api', function () {
     .resource('users', 'UserController')
     .except('create', 'edit')
     .middleware({
-      auth: ['update', 'destroy']
+      auth: ['show', 'update', 'destroy']
     })
 }).prefix('/api')
   .formats(['json'], false)

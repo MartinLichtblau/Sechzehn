@@ -50,7 +50,7 @@ class FriendshipController {
 
     if (me.username === other.username) {
       response.unprocessableEntity({
-        'message': 'You can not be friends with yourself.'
+        'message': 'You can not be friends with yourself'
       })
       return
     }
@@ -121,11 +121,11 @@ class FriendshipController {
 
     if (iAmFriendsWithOther.status === 'CONFIRMED' && otherIsFriendsWithMe.status === 'CONFIRMED') {
       response.forbidden({
-        message: 'Friendship already confirmed.'
+        message: 'Friendship already confirmed'
       })
     } else if (iAmFriendsWithOther.status === 'RELATING_CONFIRMED' && otherIsFriendsWithMe.status === 'RELATED_CONFIRMED') {
       response.forbidden({
-        message: `Friendship must be confirmed from ${other.username}.`
+        message: `Friendship must be confirmed from ${other.username}`
       })
     } else if (iAmFriendsWithOther.status === 'RELATED_CONFIRMED' && otherIsFriendsWithMe.status === 'RELATING_CONFIRMED') {
       iAmFriendsWithOther.status = 'CONFIRMED'
@@ -156,11 +156,11 @@ class FriendshipController {
       yield otherIsFriendsWithMe.delete()
 
       response.ok({
-        message: 'Friendship deleted.'
+        message: 'Friendship deleted'
       })
     } else {
       response.notFound({
-        message: 'Friendship not found.'
+        message: 'Friendship not found'
       })
     }
   }

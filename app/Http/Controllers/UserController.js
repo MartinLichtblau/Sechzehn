@@ -12,6 +12,7 @@ const Mail = use('Mail')
 const Url = require('url')
 const Fs = require('fs')
 const Path = require('path')
+const Exceptions = require('adonis-lucid/src/Exceptions')
 
 class UserController {
   * index (request, response) {
@@ -90,25 +91,23 @@ class UserController {
   }
 
   * show (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const authUsername = request.authUser.username
+    // const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.query().where('username', request.param('id', null))
+      .leftJoin(Database.raw('friendships on users.username = friendships.relating_user and ? = friendships.related_user', [authUsername]))
+      .first()
 
-    response.ok(user)
-  }
-
-  /**
-   * Let the user get his own profile with all information.
-   * @param request
-   * @param response
-   */
-  * showComplete (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
-
-    if (request.authUser.username !== user.username) {
-      response.unauthorized({error: 'Not allowed to show all information of other users'})
-      return
+    if (user === null) {
+      throw new Exceptions.ModelNotFoundException()
     }
 
-    response.ok(user.complete())
+    if (user.username === authUsername) {
+      response.ok(user.complete())
+    } else if (user.status === 'CONFIRMED') {
+      response.ok(user.friend())
+    } else {
+      response.ok(user.stranger())
+    }
   }
 
   * update (request, response) {
@@ -142,7 +141,7 @@ class UserController {
     }
 
     const profilePicture = request.file('profile_picture', {
-      maxSize: '1mb',
+      maxSize: '500kb',
       allowedExtensions: ['jpg', 'png', 'jpeg']
     })
 

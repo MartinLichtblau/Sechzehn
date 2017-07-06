@@ -84,7 +84,23 @@ class User extends Lucid {
   }
 
   /**
-   * Builds an object with all relevant properties of this user for the complete profile view.
+   * Builds an object with all relevant properties of this user for viewing the profile.
+   * @returns {{username: (string|string), real_name: (*|string), city: (*|string), profile_picture: (*|profile_picture|{fileExtension}|null), lat: (*|lat|{min, max}|string|string), lng: (*|string|lng|{min, max}), friendship_status: string}}
+   */
+  stranger () {
+    return {
+      username: this.username,
+      real_name: this.real_name,
+      city: this.city,
+      profile_picture: this.profile_picture,
+      lat: this.lat,
+      lng: this.lng,
+      friendship_status: this.status || 'NONE'
+    }
+  }
+
+  /**
+   * Builds an object with all relevant properties of this user for viewing the own profile.
    * @returns {{id: number, username: string, email: string, real_name: (string|null), date_of_birth: (Date|null), city: (string|null), profile_picture: (string|null), lat: (null|float), lng: (null|float), incognito: boolean, confirmed: boolean}}
    */
   complete () {
@@ -99,6 +115,23 @@ class User extends Lucid {
       lng: this.lng,
       incognito: this.incognito,
       confirmed: this.confirmed
+    }
+  }
+
+  /**
+   * Builds an object with all relevant properties of this user for viewing the profile as a friend.
+   * @returns {{username: (string|string), email: (string|string), real_name: (*|string), date_of_birth: (string|*), city: (*|string), profile_picture: (*|profile_picture|{fileExtension}|null), lat: (*|string|lat|{min, max}|string), lng: (*|lng|{min, max}|string), friendship_status}}
+   */
+  friend () {
+    return {
+      username: this.username,
+      real_name: this.real_name,
+      date_of_birth: this.date_of_birth,
+      city: this.city,
+      profile_picture: this.profile_picture,
+      lat: this.lat,
+      lng: this.lng,
+      friendship_status: this.status
     }
   }
 
