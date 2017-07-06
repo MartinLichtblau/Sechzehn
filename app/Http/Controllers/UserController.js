@@ -21,6 +21,16 @@ class UserController {
     const page = Number(request.input('page', 1))
     const perPage = Number(request.input('per_page', 10))
 
+    const validation = yield Validator.validate({page, perPage}, {
+      page: 'integer|min:1',
+      perPage: 'integer|min:1'
+    })
+
+    if (validation.fails()) {
+      response.unprocessableEntity(validation.messages())
+      return
+    }
+
     if (lat !== null && lng !== null) {
       const validation = yield Validator.validate({lat, lng, radius}, {
         lat: 'required|range:-180,180',
@@ -76,12 +86,7 @@ class UserController {
     yield this.generateEmailConfirmation(user)
     yield user.save()
 
-    const authToken = yield request.auth.generate(user)
-
-    response.created({
-      user,
-      token: authToken
-    })
+    response.created(user)
   }
 
   * show (request, response) {
@@ -199,7 +204,7 @@ class UserController {
       return
     }
 
-    user.password = Hash.make(userData.password)
+    user.password = yield Hash.make(userData.password)
     yield user.save()
     response.ok(user.complete())
   }
@@ -327,7 +332,7 @@ class UserController {
       confirmLink: Url.resolve(Config.get('app.absoluteUrl'), Route.url('confirm', {token: token}))
     }, (message) => {
       message.to(user.email, user.username)
-      message.from('no-reply@iptk.herokuapp.com')
+      message.from('no-reply@iptk.herokuapp.com', 'Sechzehn')
       message.subject('Sechzehn: Verify Your Account')
       message.embed(Path.join(__dirname, '../../../public/assets/logo.png'), 'logo')
     })

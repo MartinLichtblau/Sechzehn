@@ -50,7 +50,7 @@ class ResetController {
         resetLink: Url.resolve(Config.get('app.absoluteUrl'), Route.url('reset.confirmForm', {token: token}))
       }, (message) => {
         message.to(user.email, user.username)
-        message.from('no-reply@iptk.herokuapp.com')
+        message.from('no-reply@iptk.herokuapp.com', 'Sechzehn')
         message.subject('Sechzehn: Reset Your Password')
         message.embed(Path.join(__dirname, '../../../public/assets/logo.png'), 'logo')
       })
