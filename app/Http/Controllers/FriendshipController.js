@@ -3,6 +3,7 @@
 const User = use('App/Model/User')
 const Friendship = use('App/Model/Friendship')
 const Validator = use('Validator')
+const Exceptions = require('adonis-lucid/src/Exceptions')
 
 class FriendshipController {
   * index (request, response) {
@@ -106,10 +107,7 @@ class FriendshipController {
     const otherIsFriendsWithMe = yield Friendship.query().where('relating_user', other.username).where('related_user', me.username).first()
 
     if (iAmFriendsWithOther === null || otherIsFriendsWithMe === null) {
-      response.notFound({
-        message: 'Friendship not found.'
-      })
-      return
+      throw new Exceptions.ModelNotFoundException()
     }
 
     if (iAmFriendsWithOther.status === 'CONFIRMED' && otherIsFriendsWithMe.status === 'CONFIRMED') {
@@ -169,9 +167,7 @@ class FriendshipController {
         message: 'Friendship deleted'
       })
     } else {
-      response.notFound({
-        message: 'Friendship not found'
-      })
+      throw new Exceptions.ModelNotFoundException()
     }
   }
 }
