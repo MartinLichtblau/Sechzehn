@@ -21,6 +21,12 @@ class AuthController {
       const token = yield request.auth.attempt(credentials.email, credentials.password)
       const user = yield User.findBy('email', credentials.email)
 
+      if (!user.confirmed) {
+        response.status(420).send({
+          message: 'Email not confirmed'
+        })
+      }
+
       response.ok({
         user: user.complete(),
         token: token
