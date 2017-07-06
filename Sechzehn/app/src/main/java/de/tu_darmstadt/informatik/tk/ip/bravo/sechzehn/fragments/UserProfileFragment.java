@@ -1,16 +1,16 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -25,16 +25,16 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 
 public class UserProfileFragment extends BaseFragment implements OnMapReadyCallback {
-    private static final String USERNAME = "username";
     private ImageView addFriendButton;
     private ImageView optionsButton;
+    private static final String USERNAME = "username";
     private UserProfileViewModel viewModel;
     private FragmentProfileUserBinding binding;
     SupportMapFragment mapFragment;
     GoogleMap mMap;
 
     public static UserProfileFragment newInstance(String username) {
-        Bundle bundle = new Bundle(); 
+        Bundle bundle = new Bundle();
         bundle.putString(USERNAME, username);
         UserProfileFragment fragment = new UserProfileFragment();
         fragment.setArguments(bundle);
@@ -51,14 +51,13 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile_user, container, false);
         addFriendButton = binding.userprofileAddfriend;
         optionsButton = binding.userprofileOptions;
-        binding.setUser(new User());
 
         viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
         if (viewModel.getUser().getValue() == null)
             viewModel.initUser(getArguments().getString("username"));
 
-        SupportMapFragment mapFrag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFrag.getMapAsync(this);
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         return binding.getRoot();
     }
@@ -70,6 +69,12 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
                 .remove(mapFragment)
                 .commit();
         mMap = null;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        setup();
     }
 
     @Override
@@ -87,13 +92,7 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
         });
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.mMap = googleMap;
-        setup();
-    }
-
-    private void setup() {
+    private void setup(){
         viewModel.getUser().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -102,12 +101,12 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
                     //Picasso.with(getActivity()).setLoggingEnabled(true);
                     Picasso.with(getActivity()).load("http://"+user.getProfilePicture()).transform(new RoundedCornersTransformation(10,10)).into(binding.userprofilePicture); //Picasso needs "http://"
                 }
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(viewModel.getUser().getValue().getLat(),viewModel.getUser().getValue().getLng()))
+                LatLng pos = new LatLng(viewModel.getUser().getValue().getLat(),viewModel.getUser().getValue().getLng());
+                mMap.addMarker(new MarkerOptions().position(pos)
                         .title(getArguments().getString("username")));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
             }
         });
     }
-
 }
 
