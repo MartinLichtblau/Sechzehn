@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,24 +18,25 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentOwnerBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfileUserBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.UserProfileViewModel;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 
-public class OwnerProfileFragment extends BaseFragment implements OnMapReadyCallback {
+public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     private ImageView addFriendButton;
     private ImageView optionsButton;
     private static final String USERNAME = "username";
-    private UserProfileViewModel viewModel;
-    private FragmentProfileUserBinding binding;
+    private OwnerViewModel viewModel;
+    private FragmentOwnerBinding binding;
     SupportMapFragment mapFragment;
     GoogleMap mMap;
 
-    public static UserProfileFragment newInstance(String username) {
+    public static OwnerFragment newInstance(String username) {
         Bundle bundle = new Bundle();
         bundle.putString(USERNAME, username);
-        UserProfileFragment fragment = new UserProfileFragment();
+        OwnerFragment fragment = new OwnerFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -48,13 +48,13 @@ public class OwnerProfileFragment extends BaseFragment implements OnMapReadyCall
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile_user, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_owner, container, false);
         addFriendButton = binding.userprofileAddfriend;
         optionsButton = binding.userprofileOptions;
 
-        viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
-        if (viewModel.getUser().getValue() == null)
-            viewModel.initUser(getArguments().getString("username"));
+        //Get ViewModel from everywhere like
+        viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
+        // or: viewModel = ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
 
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -93,18 +93,20 @@ public class OwnerProfileFragment extends BaseFragment implements OnMapReadyCall
     }
 
     private void setup(){
-        viewModel.getUser().observe(this, new Observer<User>() {
+        viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
                 binding.setUser(user);
-                if(user.getProfilePicture() != null && user.getProfilePicture() != ""){
-                    //Picasso.with(getActivity()).setLoggingEnabled(true);
+
+                if(user.getProfilePicture() != null && user.getProfilePicture() != "")
                     Picasso.with(getActivity()).load("http://"+user.getProfilePicture()).transform(new RoundedCornersTransformation(10,10)).into(binding.userprofilePicture); //Picasso needs "http://"
+
+                LatLng pos = viewModel.getLatLng();
+                if(pos != null){
+                    mMap.addMarker(new MarkerOptions().position(pos)
+                            .title(getArguments().getString("username")));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                 }
-                LatLng pos = new LatLng(viewModel.getUser().getValue().getLat(),viewModel.getUser().getValue().getLng());
-                mMap.addMarker(new MarkerOptions().position(pos)
-                        .title(getArguments().getString("username")));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
             }
         });
     }

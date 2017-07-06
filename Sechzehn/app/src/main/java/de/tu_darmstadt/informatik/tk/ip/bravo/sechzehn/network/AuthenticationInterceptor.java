@@ -23,7 +23,7 @@ public class AuthenticationInterceptor implements Interceptor {
         Request original = chain.request();
 
         Request.Builder builder = original.newBuilder()
-                .header("Authentication", authToken); //Token goes in Header named "Authentication"
+                .header("Authorization","Bearer "+authToken); //Token goes in Header named "Authorization" in our case not "Authentication"
 
         Request request = builder.build();
         return chain.proceed(request);

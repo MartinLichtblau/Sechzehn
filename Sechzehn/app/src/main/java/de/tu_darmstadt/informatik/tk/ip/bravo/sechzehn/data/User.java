@@ -36,6 +36,29 @@ public class User {
     private String password;
     @Expose
     private String email;
+    @SerializedName("incognito")
+    @Expose
+    private boolean incognito;
+
+    public boolean isIncognito() {
+        return incognito;
+    }
+
+    public void setIncognito(boolean incognito) {
+        this.incognito = incognito;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
+    @SerializedName("confirmed")
+    @Expose
+    private boolean confirmed;
 
     public String getEmail() {
         return email;
@@ -115,6 +138,24 @@ public class User {
 
     public void setLng(Double lng) {
         this.lng = lng;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", realName='" + realName + '\'' +
+                ", city='" + city + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", incognito=" + incognito +
+                ", confirmed=" + confirmed +
+                '}';
     }
 
 }

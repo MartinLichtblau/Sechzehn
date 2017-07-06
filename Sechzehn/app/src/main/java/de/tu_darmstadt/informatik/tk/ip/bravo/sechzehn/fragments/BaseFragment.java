@@ -43,12 +43,6 @@ public abstract class BaseFragment extends LifecycleFragment {
     protected void initView(View view) {
     }
 
-    public String getToken(){
-        Log.d("username: ", "" + getActivity().getSharedPreferences("Sechzehn",0).getString("username",""));
-        Log.d("Token: ",getActivity().getSharedPreferences("Sechzehn",0).getString("JWT",""));
-      return getActivity().getSharedPreferences("Sechzehn",0).getString("JWT","");
-    }
-
     public FragNavController fragNavController() {
         if(mFragmentNavigation==null){
             throw new NullPointerException("The FragNavController is not available.");

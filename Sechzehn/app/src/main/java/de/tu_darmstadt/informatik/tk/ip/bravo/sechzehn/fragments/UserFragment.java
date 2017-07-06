@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 
 /**
  * Created by niccapdevila on 3/26/16.
@@ -38,9 +37,9 @@ public class UserFragment extends BaseFragment {
                 Log.i(getActivity().toString(),"Token: " );
                 //((BottomTabsActivity)getActivity()).getToken(); //Through activity
                 getToken(); //Through BaseFragment
-                //mFragmentNavigation.pushFragment(OwnerProfileFragment.newInstance("1"));
+                //mFragmentNavigation.pushFragment(OwnerFragment.newInstance("1"));
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(OwnerProfileFragment.newInstance("socac"));
+                    mFragmentNavigation.pushFragment(OwnerFragment.newInstance("a"));
                 }
             }
         });
@@ -49,7 +48,7 @@ public class UserFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(UserProfileFragment.newInstance("socac"));
+                    mFragmentNavigation.pushFragment(UserProfileFragment.newInstance("a"));
                 }
             }
         });

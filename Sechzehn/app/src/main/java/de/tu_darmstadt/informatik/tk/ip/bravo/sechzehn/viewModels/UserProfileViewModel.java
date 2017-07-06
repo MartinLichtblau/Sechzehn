@@ -36,8 +36,11 @@ public class UserProfileViewModel extends ViewModel {
         userService.getUser(username).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                Log.i(this.toString(),"getUser.onResponse | "  + " REQ username: " + username +  " RET username: " + response.body().getUsername());
-                user.setValue(response.body());
+                if(response.isSuccessful()){
+                    user.setValue(response.body());
+                }else{
+                    Log.d(this.toString(),"code: "+String.valueOf(response.code())+" — msg: "+response.message()+" — body: "+response.body());
+                }
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {

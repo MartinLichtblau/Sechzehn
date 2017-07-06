@@ -1,36 +1,31 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-
 import com.ncapdevi.fragnav.FragNavController;
-
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.UserFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenuesFragment;
-
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
 public class BottomTabsActivity extends AppCompatActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
-
-
-
     //Better convention to properly name the indices what they are in your app
     private final int INDEX_VENUES = FragNavController.TAB1;
     private final int INDEX_FRIENDS = FragNavController.TAB2;
-    private final int INDEX_USER = FragNavController.TAB3;
+    private final int INDEX_OWNER = FragNavController.TAB3;
     private BottomBar mBottomBar;
     public FragNavController mNavController;
+    private OwnerViewModel ownerViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +47,8 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                     case R.id.bb_menu_friends:
                         mNavController.switchTab(INDEX_FRIENDS);
                         break;
-                    case R.id.bb_menu_favorites:
-                        mNavController.switchTab(INDEX_USER);
+                    case R.id.bb_menu_favorites: //@TODO change icon
+                        mNavController.switchTab(INDEX_OWNER);
                         break;
                 }
             }
@@ -69,21 +64,30 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(this.getLocalClassName(), "onStart");
-        if(getToken().isEmpty()){
+        //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull login
+        String token = getSharedPreferences("Sechzehn",0).getString("JWT","");
+        String ownername = getSharedPreferences("Sechzehn",0).getString("ownername","");
+        if(token.isEmpty() || ownername.isEmpty()){
             Intent intent=new Intent(this,LoginActivity.class);
             startActivity(intent);
+        }else{
+            Log.i(this.getLocalClassName(),"Logged in as | OWNERNAME: " + ownername + " — TOKEN: " + token);
+            ownerViewModel = ViewModelProviders.of(this).get(OwnerViewModel.class);
+            ownerViewModel.initOwner(ownername, token);
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(this.getLocalClassName(), "onResume");
-    }
-
-    private String getToken(){
+    private  String getToken(){
         return getSharedPreferences("Sechzehn",0).getString("JWT","");
+    }
+    private String getOwnername(){
+        return getSharedPreferences("Sechzehn",0).getString("ownername","");
+    }
+    //Use OwnerViewModel to access all data and functions concerning the owner
+    //It in here and not in BaseFragment since this MainActivity is the one and only element that we can access always
+    //also from Fragments and so not related to BaseFragment
+    public OwnerViewModel getOwnerViewModel(){
+        return ownerViewModel;
     }
 
     public FragNavController getNavController(){
@@ -146,8 +150,8 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                 return VenuesFragment.newInstance(0);
             case INDEX_FRIENDS:
                 return FriendsFragment.newInstance(0);
-            case INDEX_USER:
-                return UserFragment.newInstance(0);
+            case INDEX_OWNER:
+                return OwnerFragment.newInstance("a");
         }
         throw new IllegalStateException("Need to send an index that we know");
     }

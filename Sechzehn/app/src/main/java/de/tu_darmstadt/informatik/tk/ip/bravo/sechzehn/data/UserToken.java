@@ -5,6 +5,14 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
  */
 
 public class UserToken {
+    public String token;
+    public User user;
+
+    public UserToken(String token, User user) {
+        this.token = token;
+        this.user = user;
+    }
+
     public User getUser() {
         return user;
     }
@@ -13,7 +21,6 @@ public class UserToken {
         this.user = user;
     }
 
-    public User user;
 
     public String getToken() {
         return token;
@@ -23,5 +30,5 @@ public class UserToken {
         this.token = token;
     }
 
-    public String token;
+
 }
