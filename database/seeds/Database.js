@@ -17,11 +17,19 @@ const User = use('App/Model/User')
 
 class DatabaseSeeder {
   * run () {
-    const user = new User()
-    user.email = 'a@a.de'
-    user.username = 'a'
-    user.password = 'a'
-    yield user.save()
+    const userA = new User()
+    userA.email = 'a@a.de'
+    userA.username = 'a'
+    userA.password = 'a'
+    userA.confirmed = true
+    yield userA.save()
+
+    const userB = new User()
+    userB.email = 'b@a.de'
+    userB.username = 'b'
+    userB.password = 'a'
+    userB.confirmed = true
+    yield userB.save()
 
     yield Factory.model('App/Model/User').create(20)
   }
