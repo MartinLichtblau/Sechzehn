@@ -157,7 +157,7 @@ class UserController {
     if (profilePicture === null || profilePicture === '') {
       user.profile_picture = null
       yield user.save()
-      response.ok(user)
+      response.ok(user.complete())
       return
     }
 
