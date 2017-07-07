@@ -132,6 +132,11 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         });
     }
 
+    public void onResetPassword(View view){
+        DialogFragment cancelConfirmDiaFrag = CancelConfirmDiaFrag.newInstance("onResetPassword");
+        mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
+    }
+
     public void onLogout(View view){
         getActivity().getSharedPreferences("Sechzehn", 0).edit().clear().apply();
         Intent intent = new Intent(getActivity(), LoginActivity.class);

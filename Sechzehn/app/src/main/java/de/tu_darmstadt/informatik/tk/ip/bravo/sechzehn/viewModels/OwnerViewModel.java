@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONObject;
 
 import java.util.Map;
+import java.util.Objects;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
@@ -102,16 +103,44 @@ public class OwnerViewModel extends ViewModel {
         return msg;
     }
 
+    public LiveData<String> resetPassword(){
+        Log.d(this.getClass().toString(), "changePassword");
+        final MutableLiveData<String> msg = new MutableLiveData<String>();
+        //Ref.:
+        // > https://stackoverflow.com/questions/21398598/how-to-post-raw-whole-json-in-the-body-of-a-retrofit-request
+        // > https://stackoverflow.com/questions/12155800/how-to-convert-hashmap-to-json-object-in-java
+        Map<String, Object> email = new ArrayMap<>();
+        email.put("email", owner.getValue().getEmail());
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(email)).toString());
+        userService.resetPassword(body).enqueue(new Callback<Object>() {
+            @Override
+            public void onResponse(Call<Object> call, Response<Object> response) {
+                if(response.isSuccessful()) {
+                    msg.setValue(response.message());
+                }else{
+                    Log.d(this.toString(),"code: "+String.valueOf(response.code())+" — msg: "+response.message()+" — body: "+response.body());
+                    msg.setValue("Upps: "+response.message());
+                }
+            }
+            @Override
+            public void onFailure(Call<Object> call, Throwable t) {
+                // the network call was a failure
+                msg.setValue("Error: "+t.getCause());
+            }
+        });
+        return msg;
+    }
+
     public LiveData<String> changeEmail(String password, String email){
         Log.d(this.getClass().toString(), "changeEmail");
         final MutableLiveData<String> msg = new MutableLiveData<String>();
         //Ref.:
         // > https://stackoverflow.com/questions/21398598/how-to-post-raw-whole-json-in-the-body-of-a-retrofit-request
         // > https://stackoverflow.com/questions/12155800/how-to-convert-hashmap-to-json-object-in-java
-        Map<String, Object> pwEm = new ArrayMap<>();
-        pwEm.put("password", password);
-        pwEm.put("email", email);
-        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(pwEm)).toString());
+        Map<String, Object> pwpw = new ArrayMap<>();
+        pwpw.put("password", password);
+        pwpw.put("email", email);
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(pwpw)).toString());
         userService.changeEmail(ownername, body).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {

@@ -34,6 +34,11 @@ public interface UserService {
             @Body RequestBody body
     );
 
+    @POST("/reset")
+    Call<Object> resetPassword(
+            @Body RequestBody body
+    );
+
     @PATCH("users/{username}/email")
     Call<User> changeEmail(
             @Path("username") String username,

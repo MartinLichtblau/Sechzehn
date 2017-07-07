@@ -235,7 +235,8 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Reset Password"
-                            android:theme="@style/PrimaryFlatButton"/>
+                            android:theme="@style/PrimaryFlatButton"
+                            android:onClick="@{frag::onResetPassword}"/>
 
                         <Button
                             android:id="@+id/owner_changeemail"
