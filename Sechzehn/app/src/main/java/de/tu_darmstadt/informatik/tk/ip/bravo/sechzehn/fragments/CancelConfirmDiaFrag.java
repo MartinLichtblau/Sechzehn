@@ -5,6 +5,7 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.LoginActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.DiafragCancelConfirmBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 
@@ -62,6 +64,12 @@ public class CancelConfirmDiaFrag extends DialogFragment implements LifecycleReg
                     dismiss();
                 }
             });
+        }else if(function == "onLogout"){
+            getActivity().getSharedPreferences("Sechzehn", 0).edit().clear().apply();
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+            getActivity().finish(); //Finish BottomTabs
+            Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
         }
 
 

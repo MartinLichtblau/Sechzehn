@@ -132,17 +132,14 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         });
     }
 
+    public void onLogout(View view){
+        DialogFragment changePasswordDiaFrag = CancelConfirmDiaFrag.newInstance("onLogout");
+        mFragmentNavigation.showDialogFragment(changePasswordDiaFrag);
+    }
+
     public void onResetPassword(View view){
         DialogFragment cancelConfirmDiaFrag = CancelConfirmDiaFrag.newInstance("onResetPassword");
         mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
-    }
-
-    public void onLogout(View view){
-        getActivity().getSharedPreferences("Sechzehn", 0).edit().clear().apply();
-        Intent intent = new Intent(getActivity(), LoginActivity.class);
-        startActivity(intent);
-        getActivity().finish(); //Finish BottomTabs
-        Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
     }
 
     public void onChangePassword(View view){
