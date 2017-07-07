@@ -27,7 +27,7 @@ public class ServiceGenerator {
                     .setLevel(HttpLoggingInterceptor.Level.BODY);
 
     private static OkHttpClient.Builder httpClient =
-            new OkHttpClient.Builder();
+            new OkHttpClient.Builder().addInterceptor(logging);
 
     public static <S> S createService(
             Class<S> serviceClass) {
@@ -36,6 +36,13 @@ public class ServiceGenerator {
 
     public static <S> S createService(
             Class<S> serviceClass, final String authToken) {
+
+/*        if (!httpClient.interceptors().contains(logging)) {
+            httpClient.addInterceptor(logging);
+            builder.client(httpClient.build());
+            retrofit = builder.build();
+        }*/
+
         if (!TextUtils.isEmpty(authToken)) {
             AuthenticationInterceptor interceptor =
                     new AuthenticationInterceptor(authToken);
