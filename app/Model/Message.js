@@ -1,7 +1,6 @@
 'use strict'
 
 const Lucid = use('Lucid')
-const Database = use('Database')
 
 class Message extends Lucid {
   /**

@@ -4,6 +4,7 @@ const Message = use('App/Model/Message')
 const User = use('App/Model/User')
 const Validator = use('Validator')
 const Database = use('Database')
+const Exceptions = require('adonis-lucid/src/Exceptions')
 
 class MessageController {
   * index (request, response) {
@@ -97,11 +98,20 @@ class MessageController {
   }
 
   * update (request, response) {
-    //
-  }
+    const me = request.authUser.username
+    const other = request.param('id', null)
 
-  * destroy (request, response) {
-    //
+    const message = Message.findOrFail(request.param('message', null))
+
+    if (!([me, other].includes(message.receiver) && [me, other].includes(message.sender))) {
+      throw new Exceptions.ModelNotFoundException()
+    }
+
+    message.is_read = true
+
+    yield message.save()
+
+    response.ok(message)
   }
 }
 
