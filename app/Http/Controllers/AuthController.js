@@ -28,7 +28,7 @@ class AuthController {
       }
 
       response.ok({
-        user: user.complete(),
+        user: user.completeView(),
         token: token
       })
     } catch (e) {
