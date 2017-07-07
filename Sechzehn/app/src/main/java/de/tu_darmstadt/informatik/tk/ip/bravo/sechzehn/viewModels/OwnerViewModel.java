@@ -75,7 +75,6 @@ public class OwnerViewModel extends ViewModel {
     public LiveData<String> changeEmail(String password, String email){
         Log.d(this.getClass().toString(), "changeEmail");
         final MutableLiveData<String> msg = new MutableLiveData<String>();
-
         //Ref.:
         // > https://stackoverflow.com/questions/21398598/how-to-post-raw-whole-json-in-the-body-of-a-retrofit-request
         // > https://stackoverflow.com/questions/12155800/how-to-convert-hashmap-to-json-object-in-java
@@ -83,7 +82,6 @@ public class OwnerViewModel extends ViewModel {
         pwEm.put("password", password);
         pwEm.put("email", email);
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(pwEm)).toString());
-
         userService.changeEmail(ownername, body).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -103,10 +101,4 @@ public class OwnerViewModel extends ViewModel {
         });
         return msg;
     }
-
-    public User changeRealName(){
-        owner.getValue().setRealName("test name");
-        return
-    }
-
 }

@@ -7,6 +7,7 @@ import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,7 +121,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
-                viewModel.changeRealName();
+                //viewModel.changeRealName();
 
             }
         });
@@ -130,6 +131,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
+                Toast.makeText(getActivity(), "onChanged owner", Toast.LENGTH_SHORT).show();
                 binding.setUser(user);
 
                 if(user.getProfilePicture() != null && user.getProfilePicture() != "")
@@ -146,14 +148,16 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     }
 
     public void onChangeEmail(View view){
-        viewModel.changeEmail("112312","martin.lichtblau@gmail.com").observe(this, new Observer<String>() {
+        DialogFragment changeEmailDiaFrag = new changeEmailDiaFrag();
+        mFragmentNavigation.showDialogFragment(changeEmailDiaFrag);
+
+       /* viewModel.changeEmail("123","martin.lichtblau@gmail.com").observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String msg) {
                 binding.setUser(viewModel.getOwner().getValue());
                 Toast.makeText(getActivity(),msg, Toast.LENGTH_SHORT).show();
             }
-        });
-
+        });*/
     }
 }
 
