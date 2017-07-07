@@ -8,6 +8,9 @@
         <variable
             name="user"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
+        <variable
+            name="frag"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment" />
     </data>
 
     <ScrollView
@@ -225,12 +228,21 @@
                             android:theme="@style/PrimaryFlatButton"/>
 
                         <Button
+                            android:id="@+id/owner_resetpassword"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Reset Password"
+                            android:theme="@style/PrimaryFlatButton"/>
+
+                        <Button
                             android:id="@+id/owner_changeemail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Change Email"
-                            android:theme="@style/PrimaryFlatButton"/>
+                            android:theme="@style/PrimaryFlatButton"
+                            android:onClick="@{frag::onChangeEmail}"/>
 
                         <Button
                             android:id="@+id/owner_deleteaccount"

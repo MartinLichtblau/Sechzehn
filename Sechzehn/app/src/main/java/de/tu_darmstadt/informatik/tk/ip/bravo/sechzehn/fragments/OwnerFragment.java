@@ -3,9 +3,11 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +27,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActi
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.LoginActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentOwnerBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfileUserBinding;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
@@ -33,7 +35,7 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     private Button logoutButton;
     private Button changePasswordButton;
-    private Button changeEmailButton;
+    private Button resetPasswordButton;
     private Button deleteAccountButton;
     private FragmentOwnerBinding binding;
     private OwnerViewModel viewModel;
@@ -53,9 +55,10 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_owner, container, false);
+        binding.setFrag(this); //Most important to actually bind the variables specified in layout.xml | The owner binding goes in ownerSetup() triggered by async map
         logoutButton = binding.ownerLogout;
         changePasswordButton = binding.ownerChangepassword;
-        changeEmailButton = binding.ownerChangeemail;
+        resetPasswordButton = binding.ownerResetpassword;
         deleteAccountButton = binding.ownerDeleteaccount;
 
         //Get OwnerViewModel from everywhere like
@@ -80,7 +83,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        setup();
+        setupOwner();
     }
 
     @Override
@@ -99,24 +102,31 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
             }
         });
-        changeEmailButton.setOnClickListener(new View.OnClickListener() {
+        resetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
             }
         });
+        /*changeEmailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeEmail();
+            }
+        });*/
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
+                viewModel.changeRealName();
+
             }
         });
     }
 
-    private void setup(){
+    private void setupOwner(){
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -133,6 +143,17 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                 }
             }
         });
+    }
+
+    public void onChangeEmail(View view){
+        viewModel.changeEmail("112312","martin.lichtblau@gmail.com").observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String msg) {
+                binding.setUser(viewModel.getOwner().getValue());
+                Toast.makeText(getActivity(),msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 }
 

@@ -2,9 +2,11 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -25,4 +27,10 @@ public interface UserService {
 
     @POST("users")
     Call<UserToken> createUser(@Body User user);
+
+    @PATCH("users/{username}/email")
+    Call<User> changeEmail(
+            @Path("username") String username,
+            @Body RequestBody body
+    );
 }
