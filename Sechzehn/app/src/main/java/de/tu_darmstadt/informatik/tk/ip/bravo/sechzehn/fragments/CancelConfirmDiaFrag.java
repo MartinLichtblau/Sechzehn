@@ -29,7 +29,7 @@ public class CancelConfirmDiaFrag extends DialogFragment implements LifecycleReg
     LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
     DiafragCancelConfirmBinding binding;
     private OwnerViewModel ownerVM;
-    private String function;
+    private String type;
 
     public static CancelConfirmDiaFrag newInstance(String function) {
         CancelConfirmDiaFrag cancelConfirmDiaFrag = new CancelConfirmDiaFrag();
@@ -41,10 +41,12 @@ public class CancelConfirmDiaFrag extends DialogFragment implements LifecycleReg
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        function = getArguments().getString("function");
+        type = getArguments().getString("function");
         ownerVM = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
         binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()), R.layout.diafrag_cancel_confirm, null, false);
         binding.setFrag(this);
+        customizeFragment();
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
         builder.setMessage("Are you really sure?");
@@ -56,7 +58,7 @@ public class CancelConfirmDiaFrag extends DialogFragment implements LifecycleReg
     }
 
     public void onSubmit(View view){
-        if(function == "onResetPassword"){
+        if(type == "onResetPassword"){
             ownerVM.resetPassword().observe(this, new Observer<String>() {
                 @Override
                 public void onChanged(@Nullable String msg) {
@@ -64,16 +66,25 @@ public class CancelConfirmDiaFrag extends DialogFragment implements LifecycleReg
                     dismiss();
                 }
             });
-        }else if(function == "onLogout"){
+        }else if(type == "onLogout"){
             getActivity().getSharedPreferences("Sechzehn", 0).edit().clear().apply();
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             startActivity(intent);
             getActivity().finish(); //Finish BottomTabs
             Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
+        }else if(type == "onDeleteAccount"){
+            ownerVM.deleteAccount(binding.currentPasswordEdit.getText().toString());
         }
+    }
 
+    private void customizeFragment(){
+        if(type == "onResetPassword"){
 
+        }else if(type == "onLogout"){
 
+        }else if(type == "onDeleteAccount"){
+            binding.currentPassword.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

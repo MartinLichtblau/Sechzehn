@@ -151,5 +151,10 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         DialogFragment changeEmailDiaFrag = new changeEmailDiaFrag();
         mFragmentNavigation.showDialogFragment(changeEmailDiaFrag);
     }
+
+    public void onDeleteAccount(View view){
+        DialogFragment cancelConfirmDiaFrag = CancelConfirmDiaFrag.newInstance("onDeleteAccount");
+        mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
+    }
 }
 

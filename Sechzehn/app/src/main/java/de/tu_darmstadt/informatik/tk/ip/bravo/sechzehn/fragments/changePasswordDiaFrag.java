@@ -44,7 +44,7 @@ public class changePasswordDiaFrag extends DialogFragment implements LifecycleRe
     }
 
     public void onSubmit(View view){
-        ownerVM.changePassword(binding.oldPassword.getText().toString(), binding.newPassword.getText().toString()).observe(this, new Observer<String>() {
+        ownerVM.changePassword(binding.currentPassword.getText().toString(), binding.newPassword.getText().toString()).observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String msg) {
                 Log.d(getActivity().toString(),msg);

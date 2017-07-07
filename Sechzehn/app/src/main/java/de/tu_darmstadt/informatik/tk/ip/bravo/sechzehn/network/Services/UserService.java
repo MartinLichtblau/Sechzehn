@@ -5,7 +5,9 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -34,7 +36,7 @@ public interface UserService {
             @Body RequestBody body
     );
 
-    @POST("/reset")
+    @POST("reset")
     Call<Object> resetPassword(
             @Body RequestBody body
     );
@@ -45,5 +47,10 @@ public interface UserService {
             @Body RequestBody body
     );
 
-
+    /* See why > https://github.com/square/retrofit/issues/1451*/
+    @HTTP(method = "DELETE", path = "users/{username}", hasBody = true)
+    Call<Object> deleteAccount(
+            @Path("username") String username,
+            @Body RequestBody body
+    );
 }
