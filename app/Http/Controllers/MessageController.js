@@ -3,11 +3,46 @@
 const Message = use('App/Model/Message')
 const User = use('App/Model/User')
 const Validator = use('Validator')
+const Database = use('Database')
 
 class MessageController {
   * index (request, response) {
     const username = request.authUser.username
-    const chats = yield Message.query().where('sender', username).orWhere('receiver', username)
+
+    const receiverQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'receiver as username')
+      .from('messages').where('sender', username)
+
+    const senderQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'sender as username')
+      .from('messages').where('receiver', username)
+
+    const chatData = yield Database
+      .distinct(
+        Database.raw(
+          `chats.username, users.real_name, users.profile_picture,
+          first_value(sender) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_sender,
+          first_value(receiver) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) last_receiver,
+          first_value(chats.created_at) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_created_at,
+          first_value(body) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_body`
+        ))
+      .select()
+      .from(receiverQuery.union(senderQuery).as('chats')).innerJoin('users', 'chats.username', 'users.username')
+      .orderBy('last_created_at', 'desc')
+
+    const chats = chatData.map(function (row) {
+      return {
+        user: {
+          username: row.username,
+          real_name: row.real_name,
+          profile_picture: row.profile_picture
+        },
+        last_message: {
+          sender: row.last_sender,
+          receiver: row.last_receiver,
+          body: row.last_body,
+          created_at: row.last_created_at
+        }
+      }
+    })
 
     response.ok(chats)
   }
