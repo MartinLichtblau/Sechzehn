@@ -102,11 +102,11 @@ class UserController {
     }
 
     if (user.username === authUsername) {
-      response.ok(user.complete())
+      response.ok(user.completeView())
     } else if (user.status === 'CONFIRMED') {
-      response.ok(user.friend())
+      response.ok(user.friendView())
     } else {
-      response.ok(user.stranger())
+      response.ok(user.strangerView())
     }
   }
 
@@ -129,7 +129,7 @@ class UserController {
     user.fill(userData)
     yield user.save()
 
-    response.ok(user.complete())
+    response.ok(user.completeView())
   }
 
   * updateProfilePicture (request, response) {
@@ -157,7 +157,7 @@ class UserController {
     if (profilePicture === null || profilePicture === '') {
       user.profile_picture = null
       yield user.save()
-      response.ok(user.complete())
+      response.ok(user.completeView())
       return
     }
 
@@ -171,7 +171,7 @@ class UserController {
 
     user.profile_picture = Url.resolve(Config.get('app.absoluteUrl'), Route.url('media', {filename: fileName}))
     yield user.save()
-    response.ok(user.complete())
+    response.ok(user.completeView())
   }
 
   * updatePassword (request, response) {
@@ -205,7 +205,7 @@ class UserController {
 
     user.password = yield Hash.make(userData.password)
     yield user.save()
-    response.ok(user.complete())
+    response.ok(user.completeView())
   }
 
   * updateEmail (request, response) {
@@ -246,7 +246,7 @@ class UserController {
     user.confirmed = false
 
     yield user.save()
-    response.ok(user.complete())
+    response.ok(user.completeView())
   }
 
   * updateLocation (request, response) {
@@ -273,7 +273,7 @@ class UserController {
     user.lng = location.lng
 
     yield user.save()
-    response.ok(user.complete())
+    response.ok(user.completeView())
   }
 
   * destroy (request, response) {
