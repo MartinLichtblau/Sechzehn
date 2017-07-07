@@ -90,21 +90,6 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onStart() {
         super.onStart();
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSharedPreferences("Sechzehn", 0).edit().clear().apply();
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
-                getActivity().finish(); //Finish BottomTabs
-                Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
-            }
-        });
-        changePasswordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
         resetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,7 +116,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
-                Toast.makeText(getActivity(), "onChanged owner", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "onChanged owner", Toast.LENGTH_SHORT).show(); //@TODO bind a user object of fragment to layout, not the viewmodels
                 binding.setUser(user);
 
                 if(user.getProfilePicture() != null && user.getProfilePicture() != "")
@@ -147,17 +132,22 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         });
     }
 
+    public void onLogout(View view){
+        getActivity().getSharedPreferences("Sechzehn", 0).edit().clear().apply();
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        startActivity(intent);
+        getActivity().finish(); //Finish BottomTabs
+        Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onChangePassword(View view){
+        DialogFragment changePasswordDiaFrag = new changePasswordDiaFrag();
+        mFragmentNavigation.showDialogFragment(changePasswordDiaFrag);
+    }
+
     public void onChangeEmail(View view){
         DialogFragment changeEmailDiaFrag = new changeEmailDiaFrag();
         mFragmentNavigation.showDialogFragment(changeEmailDiaFrag);
-
-       /* viewModel.changeEmail("123","martin.lichtblau@gmail.com").observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String msg) {
-                binding.setUser(viewModel.getOwner().getValue());
-                Toast.makeText(getActivity(),msg, Toast.LENGTH_SHORT).show();
-            }
-        });*/
     }
 }
 

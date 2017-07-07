@@ -28,9 +28,17 @@ public interface UserService {
     @POST("users")
     Call<UserToken> createUser(@Body User user);
 
+    @PATCH("users/{username}/password")
+    Call<User> changePassword(
+            @Path("username") String username,
+            @Body RequestBody body
+    );
+
     @PATCH("users/{username}/email")
     Call<User> changeEmail(
             @Path("username") String username,
             @Body RequestBody body
     );
+
+
 }

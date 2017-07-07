@@ -72,6 +72,36 @@ public class OwnerViewModel extends ViewModel {
         return null;
     }
 
+    public LiveData<String> changePassword(String oldPassword, String newPassword){
+        Log.d(this.getClass().toString(), "changePassword");
+        final MutableLiveData<String> msg = new MutableLiveData<String>();
+        //Ref.:
+        // > https://stackoverflow.com/questions/21398598/how-to-post-raw-whole-json-in-the-body-of-a-retrofit-request
+        // > https://stackoverflow.com/questions/12155800/how-to-convert-hashmap-to-json-object-in-java
+        Map<String, Object> pwEm = new ArrayMap<>();
+        pwEm.put("old_password", oldPassword);
+        pwEm.put("password", newPassword);
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(pwEm)).toString());
+        userService.changePassword(ownername, body).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.isSuccessful()) {
+                    owner.setValue(response.body());
+                    msg.setValue("Password successfully changed");
+                }else{
+                    Log.d(this.toString(),"code: "+String.valueOf(response.code())+" — msg: "+response.message()+" — body: "+response.body());
+                    msg.setValue("Upps: "+response.message());
+                }
+            }
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                // the network call was a failure
+                msg.setValue("Error: "+t.getCause());
+            }
+        });
+        return msg;
+    }
+
     public LiveData<String> changeEmail(String password, String email){
         Log.d(this.getClass().toString(), "changeEmail");
         final MutableLiveData<String> msg = new MutableLiveData<String>();
