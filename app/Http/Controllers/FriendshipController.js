@@ -55,7 +55,7 @@ class FriendshipController {
     const other = yield User.findOrFail(request.param('id', null))
 
     if (me.username === other.username) {
-      response.unprocessableEntity({
+      response.forbidden({
         'message': 'You can not be friends with yourself'
       })
       return
