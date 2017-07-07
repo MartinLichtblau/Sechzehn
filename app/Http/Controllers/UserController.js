@@ -92,7 +92,7 @@ class UserController {
 
   * show (request, response) {
     const authUsername = request.authUser.username
-    // const user = yield User.findOrFail(request.param('id', null))
+
     const user = yield User.query().where('username', request.param('id', null))
       .leftJoin(Database.raw('friendships on users.username = friendships.relating_user and ? = friendships.related_user', [authUsername]))
       .first()
