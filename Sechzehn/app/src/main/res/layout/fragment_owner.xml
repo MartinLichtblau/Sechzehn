@@ -218,7 +218,7 @@
                             android:layout_weight="1"
                             android:text="Logout"
                             android:theme="@style/PrimaryFlatButton"
-                            android:onClick="@{frag::onLogout}"/>
+                            android:onClick="@{frag::logout}"/>
 
                         <Button
                             android:id="@+id/owner_changepassword"
@@ -227,7 +227,7 @@
                             android:layout_weight="1"
                             android:text="Change Password"
                             android:theme="@style/PrimaryFlatButton"
-                            android:onClick="@{frag::onChangePassword}"/>
+                            android:onClick="@{frag::changePassword}"/>
 
                         <Button
                             android:id="@+id/owner_resetpassword"
@@ -236,7 +236,7 @@
                             android:layout_weight="1"
                             android:text="Reset Password"
                             android:theme="@style/PrimaryFlatButton"
-                            android:onClick="@{frag::onResetPassword}"/>
+                            android:onClick="@{frag::resetPassword}"/>
 
                         <Button
                             android:id="@+id/owner_changeemail"
@@ -245,7 +245,7 @@
                             android:layout_weight="1"
                             android:text="Change Email"
                             android:theme="@style/PrimaryFlatButton"
-                            android:onClick="@{frag::onChangeEmail}"/>
+                            android:onClick="@{frag::changeEmail}"/>
 
                         <Button
                             android:id="@+id/owner_deleteaccount"
@@ -254,7 +254,7 @@
                             android:layout_weight="1"
                             android:text="Delete Account"
                             android:theme="@style/PrimaryFlatButton"
-                            android:onClick="@{frag::onDeleteAccount}"/>
+                            android:onClick="@{frag::deleteAccount}"/>
 
                         <Space
                             android:layout_width="match_parent"

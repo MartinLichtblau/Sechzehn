@@ -11,10 +11,11 @@ import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONObject;
 
 import java.util.Map;
-import java.util.Objects;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.GenericBody;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
 import okhttp3.RequestBody;
@@ -31,6 +32,7 @@ public class OwnerViewModel extends ViewModel {
     private String token;
     private MutableLiveData<User> owner = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
     private UserService userService;
+    private MutableLiveData<String> toastMessage = new MutableLiveData<String>();
 
 
     public LiveData<User> getOwner(){
@@ -73,110 +75,102 @@ public class OwnerViewModel extends ViewModel {
         return null;
     }
 
-    public LiveData<String> changePassword(String oldPassword, String newPassword){
+    public LiveData<String> getToast(){
+        return toastMessage;
+    }
+
+    public LiveData<String> setToast(String message){
+        toastMessage.setValue(message);
+        return toastMessage;
+    }
+
+    public LiveData<Boolean> changePassword(String oldPassword, String newPassword){
         Log.d(this.getClass().toString(), "changePassword");
-        final MutableLiveData<String> msg = new MutableLiveData<String>();
-        //Ref.:
-        // > https://stackoverflow.com/questions/21398598/how-to-post-raw-whole-json-in-the-body-of-a-retrofit-request
-        // > https://stackoverflow.com/questions/12155800/how-to-convert-hashmap-to-json-object-in-java
-        Map<String, Object> map = new ArrayMap<>();
-        map.put("old_password", oldPassword);
-        map.put("password", newPassword);
-        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(map)).toString());
+        final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
+        RequestBody body = new GenericBody().put("old_password", oldPassword).put("password", newPassword).generate();
         userService.changePassword(ownername, body).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()) {
                     owner.setValue(response.body());
-                    msg.setValue("Password successfully changed");
+                    setToast("Password successfully changed");
+                    close.setValue(true);
                 }else{
-                    Log.d(this.toString(),"code: "+String.valueOf(response.code())+" — msg: "+response.message()+" — body: "+response.body());
-                    msg.setValue("Upps: "+response.message());
+                   setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                // the network call was a failure
-                msg.setValue("Error: "+t.getCause());
+               setToast("Error: "+t.getCause());
             }
         });
-        return msg;
+        return close;
     }
 
-    public LiveData<String> resetPassword(){
+    public LiveData<Boolean> resetPassword(){
         Log.d(this.getClass().toString(), "changePassword");
-        final MutableLiveData<String> msg = new MutableLiveData<String>();
-        Map<String, Object> map = new ArrayMap<>();
-        map.put("email", owner.getValue().getEmail());
-        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(map)).toString());
+        final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
+        RequestBody body = new GenericBody().put("email", owner.getValue().getEmail()).generate();
         userService.resetPassword(body).enqueue(new Callback<Object>() {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if(response.isSuccessful()) {
-                    msg.setValue(response.message());
+                    setToast(response.message());
+                    close.setValue(true);
                 }else{
-                    Log.d(this.toString(),"code: "+String.valueOf(response.code())+" — msg: "+response.message()+" — body: "+response.body());
-                    msg.setValue("Upps: "+response.message());
+                    setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<Object> call, Throwable t) {
-                // the network call was a failure
-                msg.setValue("Error: "+t.getCause());
+                setToast("Error: "+t.getCause());
             }
         });
-        return msg;
+        return close;
     }
 
-    public LiveData<String> changeEmail(String password, String email){
+    public LiveData<Boolean> changeEmail(String password, String email){
         Log.d(this.getClass().toString(), "changeEmail");
-        final MutableLiveData<String> msg = new MutableLiveData<String>();
-        Map<String, Object> map = new ArrayMap<>();
-        map.put("password", password);
-        map.put("email", email);
-        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(map)).toString());
+        final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
+        RequestBody body = new GenericBody().put("password", password).put("email", email).generate();
         userService.changeEmail(ownername, body).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful()) {
+                if(response.body() != null) { //The body is a User object & ErrorBody is empty
                     owner.setValue(response.body());
-                    msg.setValue("New Email is "+owner.getValue().getEmail());
+                    setToast("New Email is: "+owner.getValue().getEmail());
+                    close.setValue(true);
                 }else{
-                    Log.d(this.toString(),"code: "+String.valueOf(response.code())+" — msg: "+response.message()+" — body: "+response.body());
-                    msg.setValue("Upps: "+response.message());
+                    setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                // the network call was a failure
-                msg.setValue("Error: "+t.getCause());
+                setToast("Error: "+t.getCause());
             }
         });
-        return msg;
+        return close;
     }
 
-    public LiveData<String> deleteAccount(String password){
+    public LiveData<Boolean> deleteAccount(String password){
         Log.d(this.getClass().toString(), "deleteAccount");
-        final MutableLiveData<String> msg = new MutableLiveData<String>();
-        Map<String, Object> map = new ArrayMap<>();
-        map.put("password", password);
-        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(map)).toString());
+        final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
+        RequestBody body = new GenericBody().put("password", password).generate();
         userService.deleteAccount(ownername,body).enqueue(new Callback<Object>() {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if(response.isSuccessful()) {
-                    msg.setValue(response.message()); //@TODO useful response is in "[{"field":"password","validation":"password_match","message":"Password does not match"}]"
+                    setToast("We will miss you!");
+                    close.setValue(true);
                 }else{
-                    Log.d(this.toString(),"code: "+String.valueOf(response.code())+" — msg: "+response.message()+" — body: "+response.body());
-                    msg.setValue("Upps: "+response.message());
+                    setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<Object> call, Throwable t) {
-                // the network call was a failure
-                msg.setValue("Error: "+t.getCause());
+                setToast("Error: "+t.getCause());
             }
         });
-        return msg;
+        return close;
     }
 }

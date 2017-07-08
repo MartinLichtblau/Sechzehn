@@ -1,12 +1,16 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.ncapdevi.fragnav.FragNavController;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
@@ -74,6 +78,12 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             Log.i(this.getLocalClassName(),"Logged in as | OWNERNAME: " + ownername + " — TOKEN: " + token);
             ownerViewModel = ViewModelProviders.of(this).get(OwnerViewModel.class);
             ownerViewModel.initOwner(ownername, token);
+            ownerViewModel.getToast().observeForever(new Observer<String>() {
+                @Override
+                public void onChanged(@Nullable String toastMessage) {
+                    Toast.makeText(BottomTabsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -88,6 +98,14 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     //also from Fragments and so not related to BaseFragment
     public OwnerViewModel getOwnerViewModel(){
         return ownerViewModel;
+    }
+
+    public void factoryReset(){
+        getSharedPreferences("Sechzehn", 0).edit().clear().apply();
+        Intent intent = new Intent(this, LoginActivity.class);
+        ownerViewModel = null;
+        startActivity(intent);
+        finish(); //Finish BottomTabs
     }
 
     public FragNavController getNavController(){

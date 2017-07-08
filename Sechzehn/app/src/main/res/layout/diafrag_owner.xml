@@ -1,6 +1,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
-    <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.CancelConfirmDiaFrag" />
+    <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerDiaFrag" />
     </data>
 
 <LinearLayout
@@ -16,21 +16,51 @@
         android:src="@mipmap/ic_launcher" />
 
     <android.support.design.widget.TextInputLayout
+        android:id="@+id/new_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/new_email_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="New Email"
+            android:inputType="textEmailAddress"
+            android:text="@={frag.newEmail}" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/current_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone">
-
-
         <android.support.design.widget.TextInputEditText
             android:id="@+id/current_password_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Current Password"
+            android:hint="Password"
             android:inputType="textPassword"
-            android:text="" />
+            android:text="@={frag.currentPassword}" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/new_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/new_password_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="New Password"
+            android:inputType="textPassword"
+            android:text="@={frag.newPassword}" />
     </android.support.design.widget.TextInputLayout>
 
     <LinearLayout

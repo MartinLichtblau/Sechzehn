@@ -2,18 +2,14 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
-import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,8 +20,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.LoginActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentOwnerBinding;
 
@@ -132,28 +126,28 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         });
     }
 
-    public void onLogout(View view){
-        DialogFragment changePasswordDiaFrag = CancelConfirmDiaFrag.newInstance("onLogout");
+    public void logout(View view){
+        DialogFragment changePasswordDiaFrag = OwnerDiaFrag.newInstance("logout");
         mFragmentNavigation.showDialogFragment(changePasswordDiaFrag);
     }
 
-    public void onResetPassword(View view){
-        DialogFragment cancelConfirmDiaFrag = CancelConfirmDiaFrag.newInstance("onResetPassword");
+    public void resetPassword(View view){
+        DialogFragment cancelConfirmDiaFrag = OwnerDiaFrag.newInstance("resetPassword");
         mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
     }
 
-    public void onChangePassword(View view){
-        DialogFragment changePasswordDiaFrag = new changePasswordDiaFrag();
-        mFragmentNavigation.showDialogFragment(changePasswordDiaFrag);
+    public void changePassword(View view){
+        DialogFragment cancelConfirmDiaFrag = OwnerDiaFrag.newInstance("changePassword");
+        mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
     }
 
-    public void onChangeEmail(View view){
-        DialogFragment changeEmailDiaFrag = new changeEmailDiaFrag();
-        mFragmentNavigation.showDialogFragment(changeEmailDiaFrag);
+    public void changeEmail(View view){
+        DialogFragment cancelConfirmDiaFrag = OwnerDiaFrag.newInstance("changeEmail");
+        mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
     }
 
-    public void onDeleteAccount(View view){
-        DialogFragment cancelConfirmDiaFrag = CancelConfirmDiaFrag.newInstance("onDeleteAccount");
+    public void deleteAccount(View view){
+        DialogFragment cancelConfirmDiaFrag = OwnerDiaFrag.newInstance("deleteAccount");
         mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
     }
 }
