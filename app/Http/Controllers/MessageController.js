@@ -100,16 +100,21 @@ class MessageController {
   * update (request, response) {
     const me = request.authUser.username
     const other = request.param('id', null)
+    const data = request.all()
 
-    const message = Message.findOrFail(request.param('message', null))
+    const message = yield Message.findOrFail(request.param('message', null))
 
-    if (!([me, other].includes(message.receiver) && [me, other].includes(message.sender))) {
+    if (message.receiver === me && message.sender === other) {
+      message.is_read = message.is_read || Validator.sanitizor.toBoolean(data.is_read)
+
+      yield message.save()
+    } else if (message.sender === me && message.receiver === other) {
+      response.forbidden({
+        message: 'You are not allowed to modify the read status for others.'
+      })
+    } else {
       throw new Exceptions.ModelNotFoundException()
     }
-
-    message.is_read = true
-
-    yield message.save()
 
     response.ok(message)
   }
