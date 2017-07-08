@@ -22,6 +22,8 @@ public class ServiceGenerator {
 
     private static Retrofit retrofit = builder.build();
 
+    public static Retrofit getRetrofit(){ return retrofit;}
+
     private static HttpLoggingInterceptor logging =
             new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BODY);
