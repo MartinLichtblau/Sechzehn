@@ -28,10 +28,6 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 
 public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
-    private Button logoutButton;
-    private Button changePasswordButton;
-    private Button resetPasswordButton;
-    private Button deleteAccountButton;
     private FragmentOwnerBinding binding;
     private OwnerViewModel viewModel;
     SupportMapFragment mapFragment;
@@ -43,32 +39,21 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_owner, container, false);
         binding.setFrag(this); //Most important to actually bind the variables specified in layout.xml | The owner binding goes in ownerSetup() triggered by async map
-        logoutButton = binding.ownerLogout;
-        changePasswordButton = binding.ownerChangepassword;
-        resetPasswordButton = binding.ownerResetpassword;
-        deleteAccountButton = binding.ownerDeleteaccount;
-
         //Get OwnerViewModel from everywhere like
         viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
         // or: viewModel = ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
-
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         return binding.getRoot();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        //Important or map may crash app
         getChildFragmentManager().beginTransaction()
                 .remove(mapFragment)
                 .commit();
@@ -79,31 +64,6 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         setupOwner();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        resetPasswordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
-            }
-        });
-        /*changeEmailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeEmail();
-            }
-        });*/
-        deleteAccountButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "@TODO", Toast.LENGTH_SHORT).show();
-                //viewModel.changeRealName();
-
-            }
-        });
     }
 
     private void setupOwner(){
@@ -126,29 +86,34 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         });
     }
 
+    public void editProfile(View view){
+        DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("editProfile");
+        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
+    }
+
     public void logout(View view){
-        DialogFragment changePasswordDiaFrag = OwnerDiaFrag.newInstance("logout");
-        mFragmentNavigation.showDialogFragment(changePasswordDiaFrag);
+        DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("logout");
+        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
     public void resetPassword(View view){
-        DialogFragment cancelConfirmDiaFrag = OwnerDiaFrag.newInstance("resetPassword");
-        mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
+        DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("resetPassword");
+        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
     public void changePassword(View view){
-        DialogFragment cancelConfirmDiaFrag = OwnerDiaFrag.newInstance("changePassword");
-        mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
+        DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changePassword");
+        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
     public void changeEmail(View view){
-        DialogFragment cancelConfirmDiaFrag = OwnerDiaFrag.newInstance("changeEmail");
-        mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
+        DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changeEmail");
+        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
     public void deleteAccount(View view){
-        DialogFragment cancelConfirmDiaFrag = OwnerDiaFrag.newInstance("deleteAccount");
-        mFragmentNavigation.showDialogFragment(cancelConfirmDiaFrag);
+        DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("deleteAccount");
+        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 }
 

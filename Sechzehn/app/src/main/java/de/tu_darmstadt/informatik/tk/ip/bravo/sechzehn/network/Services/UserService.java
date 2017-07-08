@@ -30,6 +30,12 @@ public interface UserService {
     @POST("users")
     Call<UserToken> createUser(@Body User user);
 
+    @PATCH("users/{username}")
+    Call<User> updateUser(
+            @Path("username") String username,
+            @Body User user
+    );
+
     @PATCH("users/{username}/password")
     Call<User> changePassword(
             @Path("username") String username,

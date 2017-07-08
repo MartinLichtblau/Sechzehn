@@ -86,14 +86,30 @@
                         android:layout_margin="@dimen/dim_normal"
                         android:orientation="vertical">
 
-                        <TextView
+                        <RelativeLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/dim_small"
-                            android:text="Profile"
-                            android:textColor="#000"
-                            android:textSize="@dimen/txt_normal"
-                            android:textStyle="bold" />
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/edit_profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="top|end"
+                                app:srcCompat="@drawable/ic_edit_black_24dp"
+                                android:onClick="@{frag::editProfile}"/>
+
+                            <TextView
+                                android:id="@+id/Profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/dim_small"
+                                android:text="Profile"
+                                android:textColor="#000"
+                                android:textSize="@dimen/txt_normal"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+
 
                         <android.support.design.widget.TextInputLayout
                             android:id="@+id/owner_realname"

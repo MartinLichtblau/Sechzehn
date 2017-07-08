@@ -12,9 +12,11 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.DiafragOwnerBinding;
 
@@ -26,6 +28,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
     LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
     DiafragOwnerBinding binding;
     private OwnerViewModel ownerVM;
+    private User owner;
     private String type;
     public String newEmail;
     public String currentPassword;
@@ -46,13 +49,21 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
         ownerVM = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
         binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()), R.layout.diafrag_owner, null, false);
         binding.setFrag(this);
+        binding.setUser(owner);
 
         customizeFragment();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
-        builder.setMessage("Are you really sure?");
+        builder.setMessage("Are you sure?");
         return builder.create();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding.setUser(ownerVM.getOwner().getValue());
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     public void onCancel(View view){
@@ -60,7 +71,15 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
     }
 
     public void onSubmit(View view){
-        if(type == "logout"){
+        if(type == "editProfile"){
+            ownerVM.editProfile(owner).observe(this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(@Nullable Boolean close) {
+                    dismiss();
+                }
+            });
+
+        }else if(type == "logout"){
             Toast.makeText(getActivity(), "Logging Out", Toast.LENGTH_SHORT).show();
             ((BottomTabsActivity)getActivity()).factoryReset();
 
@@ -99,7 +118,15 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
     }
 
     private void customizeFragment(){
-        if(type == "logout"){
+        if(type == "editProfile"){
+/*            owner = ownerVM.getOwner().getValue();
+            ownerVM.setToast(owner.toString());
+            binding.setUser(owner);*/
+            binding.realname.setVisibility(View.VISIBLE);
+            binding.age.setVisibility(View.VISIBLE);
+            binding.address.setVisibility(View.VISIBLE);
+            binding.incognitoSwitch.setVisibility(View.VISIBLE);
+        }else if(type == "logout"){
         }else if(type == "changePassword") {
             binding.currentPassword.setVisibility(View.VISIBLE);
             binding.newPassword.setVisibility(View.VISIBLE);

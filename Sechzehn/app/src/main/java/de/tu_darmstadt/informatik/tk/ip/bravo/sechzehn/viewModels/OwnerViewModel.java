@@ -39,6 +39,13 @@ public class OwnerViewModel extends ViewModel {
         return owner;
     }
 
+/*    public void setOwner(User o){
+        if(o.getUsername().equals(ownername))
+            owner.setValue(o);
+        else
+            throw new IllegalArgumentException("Current ownername differnt from new one. Something strange is happening!");
+    }*/
+
     public void initOwner(String ownername, String token){
         if(ownername != null || ownername != "" || owner.getValue() != null){
             Log.d(this.getClass().toString(), "initOwner | owner can only be set once");
@@ -82,6 +89,28 @@ public class OwnerViewModel extends ViewModel {
     public LiveData<String> setToast(String message){
         toastMessage.setValue(message);
         return toastMessage;
+    }
+
+    public LiveData<Boolean> editProfile(User o){
+        Log.d(this.getClass().toString(), "editProfile");
+        final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
+        userService.updateUser(ownername, o).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.isSuccessful()) {
+                    owner.postValue(response.body());
+                    setToast("Profile updated");
+                    close.setValue(true);
+                }else{
+                    setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
+                }
+            }
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                setToast("Error: "+t.getCause());
+            }
+        });
+        return close;
     }
 
     public LiveData<Boolean> changePassword(String oldPassword, String newPassword){

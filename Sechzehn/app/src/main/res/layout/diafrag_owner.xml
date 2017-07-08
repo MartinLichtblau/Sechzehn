@@ -1,6 +1,8 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
-    <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerDiaFrag" />
+        <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerDiaFrag" />
+        <variable name="user" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
+
     </data>
 
 <LinearLayout
@@ -16,6 +18,53 @@
         android:src="@mipmap/ic_launcher" />
 
     <android.support.design.widget.TextInputLayout
+        android:id="@+id/realname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/realname_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Real Name"
+            android:text="@={user.realName}" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/age"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/age_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Age"
+            android:text="@={user.dateOfBirth}" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/address_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Address"
+            android:text="@={user.city}" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Switch
+        android:id="@+id/incognito_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Incognito"
+        android:visibility="gone"
+    android:checked="@={user.incognito}"/>
+
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/new_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,8 +73,6 @@
             android:id="@+id/new_email_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
             android:hint="New Email"
             android:inputType="textEmailAddress"
             android:text="@={frag.newEmail}" />
@@ -40,9 +87,7 @@
             android:id="@+id/current_password_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="Password"
+            android:hint="Current Password"
             android:inputType="textPassword"
             android:text="@={frag.currentPassword}" />
     </android.support.design.widget.TextInputLayout>
@@ -56,8 +101,6 @@
             android:id="@+id/new_password_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
             android:hint="New Password"
             android:inputType="textPassword"
             android:text="@={frag.newPassword}" />
@@ -81,11 +124,11 @@
 
         <Button
             android:id="@+id/Submit"
-            android:layout_toRightOf="@+id/Cancel"
+            android:layout_toRightOf="@+id/Profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Yes"
+            android:text="Submit"
             android:theme="@style/PrimaryFlatButton"
             android:onClick="@{frag::onSubmit}"/>
     </LinearLayout>
