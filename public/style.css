@@ -62,7 +62,7 @@ form label {
   margin-bottom: 6px;
 }
 
-form input {
+form input, form textarea {
   width: 100%;
   padding: 6px;
   font-family: 'Source Sans Pro', sans-serif;
@@ -128,6 +128,13 @@ form input[type=submit]:active {
   font-size: 24px;
   font-size: 3vh;
 
+}
+
+.messages div {
+  text-align: left;
+  background-color: #EFEFEF;
+  padding: 6px;
+  margin-bottom: 6px;
 }
 
 @media all and (orientation: portrait) {

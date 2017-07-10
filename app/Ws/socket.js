@@ -14,4 +14,8 @@
  | Ws.channel('/chat', 'ChatController')
  */
 
-// const Ws = use('Ws')
+const Ws = use('Ws')
+
+Ws
+  .channel('/messages', 'MessageController')
+  .middleware('auth:jwt')

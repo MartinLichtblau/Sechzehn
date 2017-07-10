@@ -21,6 +21,7 @@ const Route = use('Route')
  * Homepage
  */
 Route.on('/').render('welcome')
+Route.on('/chat').render('chat')
 
 /**
  * Media handling

@@ -1,0 +1,70 @@
+{% extends 'layouts.simple' %}
+
+{% block main %}
+  <h2>Chat</h2>
+  <form id="jwt-form">
+    <div class="field">
+      <label for="jwt">JWT</label>
+      <input type="text" name="jwt" id="jwt"
+             value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVpZCI6ImEifSwiaWF0IjoxNDk5NjgwMzg3fQ.O9GQ0SJMPEVDWFicZz31ZVpolgt34gZoEvInFeFIXG8">
+    </div>
+
+    <div class="button">
+      <input type="submit" value="Connect">
+    </div>
+  </form>
+  <form id="message-form" style="display: none;">
+    <div class="field">
+      <label for="message">Message</label>
+      <textarea name="message" id="message"></textarea>
+    </div>
+    <div class="field">
+      <label to="receiver">Receiver</label>
+      <input type="text" name="receiver" id="receiver">
+    </div>
+    <div class="button">
+      <input type="submit" value="Send">
+    </div>
+  </form>
+  <div class="messages" id="messages">
+    <h3>Messages</h3>
+  </div>
+  <script src="https://unpkg.com/adonis-websocket-client@1.0.2/dist/ws.min.js"></script>
+  <script>
+    const io = ws('')
+    const jwtForm = document.getElementById('jwt-form')
+    const messageForm = document.getElementById('message-form')
+    const messageList = document.getElementById('messages')
+    let client = null
+
+    jwtForm.addEventListener('submit', function (e) {
+      e.preventDefault()
+
+      client = io.channel('messages').withJwt(document.getElementById('jwt').value).connect(console.log)
+      messageForm.style.display = 'block'
+      jwtForm.style.display = 'none'
+
+      client.on('message', function (m) {
+        const newMessage = document.createElement('div')
+        const sender = document.createElement('em')
+        const body = document.createElement('p')
+        sender.innerHTML = `${m.sender} to ${m.receiver} at ${m.created_at}`
+        body.innerHTML = m.body
+        newMessage.appendChild(sender)
+        newMessage.appendChild(body)
+        messageList.appendChild(newMessage)
+      })
+
+    }, false)
+
+    messageForm.addEventListener('submit', function (e) {
+      e.preventDefault()
+      const msg = document.getElementById('message')
+      client.emit('message', {
+        body: msg.value,
+        receiver: document.getElementById('receiver').value
+      })
+    }, false)
+
+  </script>
+{% endblock %}
