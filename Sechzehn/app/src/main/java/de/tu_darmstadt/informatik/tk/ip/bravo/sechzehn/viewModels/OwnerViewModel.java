@@ -23,7 +23,6 @@ import retrofit2.Response;
  */
 
 public class OwnerViewModel extends ViewModel {
-    private String ownername;
     private String token;
     private MutableLiveData<User> owner = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
     private UserService userService;
@@ -35,16 +34,12 @@ public class OwnerViewModel extends ViewModel {
     }
 
     public void initOwner(String ownername, String token){
-        if(ownername != null || ownername != "" || owner.getValue() != null){
+        if(owner.getValue() != null){
             Log.d(this.getClass().toString(), "initOwner | owner can only be set once");
         }
         Log.d(this.getClass().toString(), "initOwner");
-        this.ownername = ownername;
         this.token = token;
         userService = ServiceGenerator.createService(UserService.class,token);
-       /* User user = new User();
-        user.setUsername(ownername);
-        this.owner.setValue(user);*/
         userService.getUser(ownername).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -85,7 +80,7 @@ public class OwnerViewModel extends ViewModel {
     public LiveData<Boolean> editProfile(User o){
         Log.d(this.getClass().toString(), "editProfile");
         final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
-        userService.updateUser(ownername, o).enqueue(new Callback<User>() {
+        userService.updateUser(getOwnername(), o).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()) {
@@ -108,7 +103,7 @@ public class OwnerViewModel extends ViewModel {
         Log.d(this.getClass().toString(), "changePassword");
         final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
         RequestBody body = new GenericBody().put("old_password", oldPassword).put("password", newPassword).generate();
-        userService.changePassword(ownername, body).enqueue(new Callback<User>() {
+        userService.changePassword(getOwnername(), body).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()) {
@@ -153,7 +148,7 @@ public class OwnerViewModel extends ViewModel {
         Log.d(this.getClass().toString(), "changeEmail");
         final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
         RequestBody body = new GenericBody().put("password", password).put("email", email).generate();
-        userService.changeEmail(ownername, body).enqueue(new Callback<User>() {
+        userService.changeEmail(getOwnername(), body).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.body() != null) { //The body is a User object & ErrorBody is empty
@@ -176,7 +171,7 @@ public class OwnerViewModel extends ViewModel {
         Log.d(this.getClass().toString(), "deleteAccount");
         final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
         RequestBody body = new GenericBody().put("password", password).generate();
-        userService.deleteAccount(ownername,body).enqueue(new Callback<Object>() {
+        userService.deleteAccount(getOwnername(),body).enqueue(new Callback<Object>() {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if(response.isSuccessful()) {

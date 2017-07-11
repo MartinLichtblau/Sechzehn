@@ -79,7 +79,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                 LatLng pos = viewModel.getLatLng();
                 if(pos != null){
                     mMap.addMarker(new MarkerOptions().position(pos)
-                            .title(getArguments().getString("username")));
+                            .title(viewModel.getOwnername()));
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                 }
             }
