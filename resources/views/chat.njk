@@ -2,11 +2,17 @@
 
 {% block main %}
   <h2>Chat</h2>
-  <form id="jwt-form">
+  <ul class="errors" id="errors">
+  </ul>
+  <form id="login-form">
     <div class="field">
-      <label for="jwt">JWT</label>
-      <input type="text" name="jwt" id="jwt"
-             value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVpZCI6ImEifSwiaWF0IjoxNDk5NjgwMzg3fQ.O9GQ0SJMPEVDWFicZz31ZVpolgt34gZoEvInFeFIXG8">
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email">
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password">
     </div>
 
     <div class="button">
@@ -29,30 +35,85 @@
   <div class="messages" id="messages">
     <h3>Messages</h3>
   </div>
-  <script src="https://unpkg.com/adonis-websocket-client@1.0.2/dist/ws.min.js"></script>
+  <script src="/assets/ws.min.js"></script>
   <script>
     const io = ws('')
-    const jwtForm = document.getElementById('jwt-form')
+    const loginForm = document.getElementById('login-form')
     const messageForm = document.getElementById('message-form')
     const messageList = document.getElementById('messages')
-    let client = null
+    var client = null
+    var jwt = null
 
-    jwtForm.addEventListener('submit', function (e) {
+    const loginFormData = new FormData(loginForm)
+
+    function handleResponse (response) {
+      return response.json()
+        .then(json => {
+          if (response.ok) {
+            return json
+          } else {
+            return Promise.reject(json)
+          }
+        })
+    }
+
+    loginForm.addEventListener('submit', function (e) {
       e.preventDefault()
 
-      client = io.channel('messages').withJwt(document.getElementById('jwt').value).connect(console.log)
+      fetch('/login', {
+        method: 'post',
+        body: new FormData(loginForm)
+      })
+        .then(handleResponse)
+        .then(data => {
+          jwt = data.token
+          console.log(data)
+        })
+        .catch(error => {
+
+          console.error(error)
+        })
+
+      if (jwt === null) {
+        return
+      }
+
+      client = io.channel('messages').withJwt(jwt).connect(console.log)
       messageForm.style.display = 'block'
-      jwtForm.style.display = 'none'
+      loginForm.style.display = 'none'
 
       client.on('message', function (m) {
         const newMessage = document.createElement('div')
+        newMessage.classList = ['message']
+        newMessage.id = 'message-' + m.id
+        newMessage.setAttribute('data-id', m.id)
+        newMessage.setAttribute('data-sender', m.sender)
+        newMessage.setAttribute('data-receiver', m.receiver)
         const sender = document.createElement('em')
         const body = document.createElement('p')
-        sender.innerHTML = `${m.sender} to ${m.receiver} at ${m.created_at}`
+        sender.innerHTML = `${m.sender} - ${m.created_at}`
         body.innerHTML = m.body
         newMessage.appendChild(sender)
         newMessage.appendChild(body)
         messageList.appendChild(newMessage)
+
+        newMessage.addEventListener('click', function (e) {
+          const id = e.getAttribute('data-id')
+          const sender = e.getAttribute('data-sender')
+
+          const message = {
+            id: id,
+            sender: sender,
+            is_read: true
+          }
+
+          client.emit('read', message)
+        })
+      })
+
+      client.on('read', function (m) {
+        const message = document.querySelector(`[data-id=${m.id}]`)
+        message.setAttribute('data-read', m.is_read)
       })
 
     }, false)

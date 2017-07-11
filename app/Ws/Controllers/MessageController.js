@@ -19,12 +19,8 @@ class MessageController {
     const sender = this.socket.currentUser
     const receiver = yield User.find(messageData.receiver)
 
-    console.log('Received message from %s to %s with body: %s', sender.username, messageData.receiver, messageData.body)
-
     if (receiver === null) {
-      this.socket.toMe().emit('error', {
-        message: 'Receiver Not Found'
-      })
+      this.emitError('Receiver Not Found')
       return
     }
 
@@ -47,6 +43,26 @@ class MessageController {
     this.socket.to(receiverSockets.concat(senderSockets)).emit('message', message)
   }
 
+  * onRead (messageData) {
+    const me = this.socket.currentUser.username
+    const other = messageData.sender
+
+    const message = yield Message.find(messageData.id)
+
+    if (message === null || message.receiver !== me || message.sender !== other) {
+      this.emitError('Message Not Found')
+      return
+    }
+
+    message.is_read = message.is_read || messageData.is_read
+    yield message.save()
+
+    const receiverSockets = this.getUserSockets(message.receiver)
+    const senderSockets = this.getUserSockets(message.sender)
+
+    this.socket.to(receiverSockets.concat(senderSockets)).emit('read', message)
+  }
+
   disconnected (socket) {
     console.log('Disconnected %s', socket.id)
   }
@@ -54,6 +70,12 @@ class MessageController {
   getUserSockets (username) {
     const sockets = this.presence.get(username)
     return sockets ? sockets.map((user) => user.socket.id) : []
+  }
+
+  emitError (message) {
+    this.socket.toMe().emit('error', {
+      message: message
+    })
   }
 }
 
