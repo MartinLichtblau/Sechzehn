@@ -120,7 +120,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
     private void customizeFragment(){
         if(type == "editProfile"){
 /*            owner = ownerVM.getOwner().getValue();
-            ownerVM.setToast(owner.toString());
+            ownerVM.makeToast(owner.toString());
             binding.setUser(owner);*/
             binding.realname.setVisibility(View.VISIBLE);
             binding.age.setVisibility(View.VISIBLE);

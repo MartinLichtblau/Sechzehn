@@ -78,7 +78,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             Log.i(this.getLocalClassName(),"Logged in as | OWNERNAME: " + ownername + " — TOKEN: " + token);
             ownerViewModel = ViewModelProviders.of(this).get(OwnerViewModel.class);
             ownerViewModel.initOwner(ownername, token);
-            ownerViewModel.getToast().observeForever(new Observer<String>() {
+            ownerViewModel.receiveToast().observeForever(new Observer<String>() {
                 @Override
                 public void onChanged(@Nullable String toastMessage) {
                     Toast.makeText(BottomTabsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
@@ -87,7 +87,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         }
     }
 
-    public OwnerViewModel getOwnerViewModel(){
+    public static OwnerViewModel getOwnerViewModel(){
         //Use OwnerViewModel to access all data and functions concerning the owner
         //It in here and not in BaseFragment since this MainActivity is the one and only element that we can access always
         //also from Fragments and so not related to BaseFragment
