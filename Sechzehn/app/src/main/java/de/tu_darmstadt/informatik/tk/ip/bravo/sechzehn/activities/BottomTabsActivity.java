@@ -29,7 +29,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     private final int INDEX_OWNER = FragNavController.TAB3;
     private BottomBar mBottomBar;
     public FragNavController mNavController;
-    private OwnerViewModel ownerViewModel;
+    private static OwnerViewModel ownerViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,16 +87,10 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         }
     }
 
-    private  String getToken(){
-        return getSharedPreferences("Sechzehn",0).getString("JWT","");
-    }
-    private String getOwnername(){
-        return getSharedPreferences("Sechzehn",0).getString("ownername","");
-    }
-    //Use OwnerViewModel to access all data and functions concerning the owner
-    //It in here and not in BaseFragment since this MainActivity is the one and only element that we can access always
-    //also from Fragments and so not related to BaseFragment
     public OwnerViewModel getOwnerViewModel(){
+        //Use OwnerViewModel to access all data and functions concerning the owner
+        //It in here and not in BaseFragment since this MainActivity is the one and only element that we can access always
+        //also from Fragments and so not related to BaseFragment
         return ownerViewModel;
     }
 
@@ -107,6 +101,9 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         startActivity(intent);
         finish(); //Finish BottomTabs
     }
+
+
+    //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     public FragNavController getNavController(){
         return mNavController;

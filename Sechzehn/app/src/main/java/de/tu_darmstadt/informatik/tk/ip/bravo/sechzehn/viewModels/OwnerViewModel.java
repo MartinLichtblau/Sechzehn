@@ -76,6 +76,10 @@ public class OwnerViewModel extends ViewModel {
         return new UserToken(token, owner.getValue());
     }
 
+    public String getOwnername(){
+        return ownername;
+    }
+
     public LatLng getLatLng(){
         if(owner.getValue().getLat() != null && owner.getValue().getLng() != null)
             return new LatLng(owner.getValue().getLat(),owner.getValue().getLng());
@@ -83,6 +87,7 @@ public class OwnerViewModel extends ViewModel {
     }
 
     public LiveData<String> getToast(){
+        //BottomTabsMain observes this method and makes a toast whenever it changes
         return toastMessage;
     }
 
@@ -90,6 +95,8 @@ public class OwnerViewModel extends ViewModel {
         toastMessage.setValue(message);
         return toastMessage;
     }
+
+    //-------------------------------------REST Functions------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     public LiveData<Boolean> editProfile(User o){
         Log.d(this.getClass().toString(), "editProfile");
