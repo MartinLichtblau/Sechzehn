@@ -50,6 +50,13 @@ form {
   margin: 0 auto;
 }
 
+form.fullwidth {
+  max-width: none;
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 form .field {
   margin-bottom: 24px;
 }
@@ -130,11 +137,26 @@ form input[type=submit]:active {
 
 }
 
-.messages div {
+.list-box {
+  height: 15rem;
+  overflow-y: scroll;
+  border: 1px solid #EFEFEF;
+}
+
+.list-box.errors {
+  font-size: 12px;
+  height: 5rem;
+}
+
+.list-box div {
   text-align: left;
   background-color: #EFEFEF;
   padding: 6px;
   margin-bottom: 6px;
+}
+
+.list-box div[data-read] em::after {
+  content: ' ✓';
 }
 
 @media all and (orientation: portrait) {
