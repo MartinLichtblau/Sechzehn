@@ -20,14 +20,21 @@ class MessageController {
     const receiver = yield User.find(messageData.receiver)
 
     if (receiver === null) {
-      this.emitError('Receiver Not Found')
+      this.warn('Receiver Not Found', sender.username)
+      return
+    }
+
+    if (sender.username === receiver.username) {
+      this.warn('You can not write messages to yourself.', sender.username)
       return
     }
 
     const validation = yield Validator.validate(messageData, Message.rules)
 
+    const senderSockets = this.getUserSockets(sender.username)
+
     if (validation.fails()) {
-      this.socket.toMe().emit('error', validation.messages())
+      yield this.socket.to(senderSockets).emit('warning', validation.messages())
       return
     }
 
@@ -38,7 +45,6 @@ class MessageController {
     })
 
     const receiverSockets = this.getUserSockets(receiver.username)
-    const senderSockets = this.getUserSockets(sender.username)
 
     this.socket.to(receiverSockets.concat(senderSockets)).emit('message', message)
   }
@@ -49,8 +55,18 @@ class MessageController {
 
     const message = yield Message.find(messageData.id)
 
-    if (message === null || message.receiver !== me || message.sender !== other) {
-      this.emitError('Message Not Found')
+    if (message === null) {
+      this.warn('Message Not Found', me)
+      return
+    }
+
+    if (message.sender === me) {
+      this.warn('You can not set the read status of your own messages', me)
+      return
+    }
+
+    if (message.receiver !== me || message.sender !== other) {
+      this.warn('Message Not Found', me)
       return
     }
 
@@ -72,8 +88,9 @@ class MessageController {
     return sockets ? sockets.map((user) => user.socket.id) : []
   }
 
-  emitError (message) {
-    this.socket.toMe().emit('error', {
+  warn (message, toUsername) {
+    const sockets = this.getUserSockets(toUsername)
+    this.socket.to(sockets).emit('warning', {
       message: message
     })
   }
