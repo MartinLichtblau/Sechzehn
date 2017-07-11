@@ -84,7 +84,7 @@ public class OwnerViewModel extends ViewModel {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()) {
-                    owner.postValue(response.body());
+                    owner.setValue(response.body());
                     makeToast("Profile updated");
                     close.setValue(true);
                 }else{
