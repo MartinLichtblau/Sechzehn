@@ -1,17 +1,13 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
 
-import android.support.v4.util.ArrayMap;
-import android.util.Log;
-
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.APIError;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Response;

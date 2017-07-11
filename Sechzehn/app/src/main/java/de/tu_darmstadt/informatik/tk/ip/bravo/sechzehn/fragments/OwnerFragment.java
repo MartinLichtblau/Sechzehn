@@ -70,7 +70,6 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
-                Toast.makeText(getActivity(), "onChanged owner", Toast.LENGTH_SHORT).show(); //@TODO bind a user object of fragment to layout, not the viewmodels
                 binding.setUser(user);
 
                 if(user.getProfilePicture() != null && user.getProfilePicture() != "")

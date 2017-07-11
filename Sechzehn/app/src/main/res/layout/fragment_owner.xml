@@ -154,10 +154,10 @@
                         </android.support.design.widget.TextInputLayout>
 
                         <Switch
-                            android:id="@+id/owner_incognito_switch"
+                            android:id="@+id/incognito_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:enabled="false"
+                            android:layout_marginTop="@dimen/dim_normal"
                             android:text="Incognito"
                             android:checked="@={user.incognito}"/>
 

@@ -1,4 +1,4 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
 
 /**
  * Created by marti on 08.07.2017.

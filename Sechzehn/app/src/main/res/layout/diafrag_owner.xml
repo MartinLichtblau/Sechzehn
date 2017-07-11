@@ -60,6 +60,7 @@
         android:id="@+id/incognito_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dim_normal"
         android:text="Incognito"
         android:visibility="gone"
     android:checked="@={user.incognito}"/>
@@ -128,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Submit"
+            android:text="Yes"
             android:theme="@style/PrimaryFlatButton"
             android:onClick="@{frag::onSubmit}"/>
     </LinearLayout>

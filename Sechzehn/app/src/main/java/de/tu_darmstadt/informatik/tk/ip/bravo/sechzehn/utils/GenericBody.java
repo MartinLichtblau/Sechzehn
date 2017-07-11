@@ -1,4 +1,4 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
 
 import android.support.v4.util.ArrayMap;
 

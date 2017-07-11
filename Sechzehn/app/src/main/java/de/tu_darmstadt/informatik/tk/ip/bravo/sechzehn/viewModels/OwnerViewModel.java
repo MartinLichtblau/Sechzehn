@@ -7,10 +7,9 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.GenericBody;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.NetworkUtils;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.GenericBody;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
 import okhttp3.RequestBody;
@@ -36,6 +35,7 @@ public class OwnerViewModel extends ViewModel {
     public void initOwner(String ownername, String token){
         if(owner.getValue() != null){
             Log.d(this.getClass().toString(), "initOwner | owner can only be set once");
+            return;
         }
         Log.d(this.getClass().toString(), "initOwner");
         this.token = token;
