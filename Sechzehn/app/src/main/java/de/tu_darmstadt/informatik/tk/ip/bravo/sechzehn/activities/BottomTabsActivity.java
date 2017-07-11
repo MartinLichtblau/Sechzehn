@@ -78,7 +78,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             Log.i(this.getLocalClassName(),"Logged in as | OWNERNAME: " + ownername + " — TOKEN: " + token);
             ownerViewModel = ViewModelProviders.of(this).get(OwnerViewModel.class);
             ownerViewModel.initOwner(ownername, token);
-            ownerViewModel.getToast().observeForever(new Observer<String>() {
+            ownerViewModel.receiveToast().observeForever(new Observer<String>() {
                 @Override
                 public void onChanged(@Nullable String toastMessage) {
                     Toast.makeText(BottomTabsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();

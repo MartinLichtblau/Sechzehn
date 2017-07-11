@@ -3,17 +3,12 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONObject;
-
-import java.util.Map;
-
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.GenericBody;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
@@ -38,13 +33,6 @@ public class OwnerViewModel extends ViewModel {
     public LiveData<User> getOwner(){
         return owner;
     }
-
-/*    public void setOwner(User o){
-        if(o.getUsername().equals(ownername))
-            owner.setValue(o);
-        else
-            throw new IllegalArgumentException("Current ownername differnt from new one. Something strange is happening!");
-    }*/
 
     public void initOwner(String ownername, String token){
         if(ownername != null || ownername != "" || owner.getValue() != null){
@@ -72,8 +60,8 @@ public class OwnerViewModel extends ViewModel {
         });
     }
 
-    public UserToken generateUserToken(){
-        return new UserToken(token, owner.getValue());
+    public String getOwnername(){
+        return owner.getValue().getUsername();
     }
 
     public LatLng getLatLng(){
@@ -82,14 +70,17 @@ public class OwnerViewModel extends ViewModel {
         return null;
     }
 
-    public LiveData<String> getToast(){
+    public LiveData<String> receiveToast(){
+        //BottomTabsMain observes this method and makes a toast whenever it changes
         return toastMessage;
     }
 
-    public LiveData<String> setToast(String message){
+    public LiveData<String> makeToast(String message){
         toastMessage.setValue(message);
         return toastMessage;
     }
+
+    //-------------------------------------REST Functions------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     public LiveData<Boolean> editProfile(User o){
         Log.d(this.getClass().toString(), "editProfile");
@@ -99,15 +90,15 @@ public class OwnerViewModel extends ViewModel {
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()) {
                     owner.postValue(response.body());
-                    setToast("Profile updated");
+                    makeToast("Profile updated");
                     close.setValue(true);
                 }else{
-                    setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
+                    makeToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                setToast("Error: "+t.getCause());
+                makeToast("Error: "+t.getCause());
             }
         });
         return close;
@@ -122,15 +113,15 @@ public class OwnerViewModel extends ViewModel {
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()) {
                     owner.setValue(response.body());
-                    setToast("Password successfully changed");
+                    makeToast("Password successfully changed");
                     close.setValue(true);
                 }else{
-                   setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
+                   makeToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-               setToast("Error: "+t.getCause());
+               makeToast("Error: "+t.getCause());
             }
         });
         return close;
@@ -144,15 +135,15 @@ public class OwnerViewModel extends ViewModel {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if(response.isSuccessful()) {
-                    setToast(response.message());
+                    makeToast(response.message());
                     close.setValue(true);
                 }else{
-                    setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
+                    makeToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<Object> call, Throwable t) {
-                setToast("Error: "+t.getCause());
+                makeToast("Error: "+t.getCause());
             }
         });
         return close;
@@ -167,15 +158,15 @@ public class OwnerViewModel extends ViewModel {
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.body() != null) { //The body is a User object & ErrorBody is empty
                     owner.setValue(response.body());
-                    setToast("New Email is: "+owner.getValue().getEmail());
+                    makeToast("New Email is: "+owner.getValue().getEmail());
                     close.setValue(true);
                 }else{
-                    setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
+                    makeToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                setToast("Error: "+t.getCause());
+                makeToast("Error: "+t.getCause());
             }
         });
         return close;
@@ -189,15 +180,15 @@ public class OwnerViewModel extends ViewModel {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if(response.isSuccessful()) {
-                    setToast("We will miss you!");
+                    makeToast("We will miss you!");
                     close.setValue(true);
                 }else{
-                    setToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
+                    makeToast("Upps: "+ NetworkUtils.parseError(response).getMessage());
                 }
             }
             @Override
             public void onFailure(Call<Object> call, Throwable t) {
-                setToast("Error: "+t.getCause());
+                makeToast("Error: "+t.getCause());
             }
         });
         return close;
