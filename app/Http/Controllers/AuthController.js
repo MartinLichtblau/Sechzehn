@@ -13,7 +13,7 @@ class AuthController {
     })
 
     if (validation.fails()) {
-      response.unauthorized({error: 'Email or password wrong'})
+      response.unauthorized({message: 'Email or password wrong'})
       return
     }
 
@@ -32,7 +32,7 @@ class AuthController {
         token: token
       })
     } catch (e) {
-      response.unauthorized({error: 'Email or password wrong'})
+      response.unauthorized({message: 'Email or password wrong'})
     }
   }
 

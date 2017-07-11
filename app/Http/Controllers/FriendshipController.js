@@ -31,7 +31,7 @@ class FriendshipController {
     const perPage = Number(request.input('per_page', 10))
 
     if (request.authUser.username !== user.username) {
-      response.unauthorized({error: 'Not allowed to show friend requests for other users'})
+      response.unauthorized({message: 'Not allowed to show friend requests for other users'})
       return
     }
 
