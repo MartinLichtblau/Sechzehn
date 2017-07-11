@@ -115,7 +115,7 @@ class UserController {
     const userData = request.only('real_name', 'city', 'date_of_birth', 'incognito')
 
     if (request.authUser.username !== user.username) {
-      response.unauthorized({error: 'Not allowed to edit other users'})
+      response.unauthorized({message: 'Not allowed to edit other users'})
       return
     }
 
@@ -136,7 +136,7 @@ class UserController {
     const user = yield User.findOrFail(request.param('id', null))
 
     if (request.authUser.username !== user.username) {
-      response.unauthorized({error: 'Not allowed to edit other users'})
+      response.unauthorized({message: 'Not allowed to edit other users'})
       return
     }
 
@@ -178,7 +178,7 @@ class UserController {
     const user = yield User.findOrFail(request.param('id', null))
 
     if (request.authUser.username !== user.username) {
-      response.unauthorized({error: 'Not allowed to edit other users'})
+      response.unauthorized({message: 'Not allowed to edit other users'})
       return
     }
 
@@ -212,7 +212,7 @@ class UserController {
     const user = yield User.findOrFail(request.param('id', null))
 
     if (request.authUser.username !== user.username) {
-      response.unauthorized({error: 'Not allowed to edit other users'})
+      response.unauthorized({message: 'Not allowed to edit other users'})
       return
     }
 
@@ -253,7 +253,7 @@ class UserController {
     const user = yield User.findOrFail(request.param('id', null))
 
     if (request.authUser.username !== user.username) {
-      response.unauthorized({error: 'Not allowed to edit other users'})
+      response.unauthorized({message: 'Not allowed to edit other users'})
       return
     }
 
@@ -280,7 +280,7 @@ class UserController {
     const user = yield User.findOrFail(request.param('id', null))
 
     if (request.authUser.username !== user.username) {
-      response.unauthorized({error: 'Not allowed to delete other users'})
+      response.unauthorized({message: 'Not allowed to delete other users'})
       return
     }
 
