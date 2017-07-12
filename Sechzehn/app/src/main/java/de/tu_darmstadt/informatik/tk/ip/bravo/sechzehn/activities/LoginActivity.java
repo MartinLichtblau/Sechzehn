@@ -46,6 +46,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.ForgotPwFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.ResetPasswordFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.LoginService;
 import retrofit2.Call;
@@ -59,15 +60,16 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    private LoginActivity getActivity(){
+    private LoginActivity getActivity() {
         return this;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.loginContainer, LoginFragment.newInstance());
         transaction.commit();
 
@@ -76,21 +78,23 @@ public class LoginActivity extends AppCompatActivity {
             List<String> pathSegments = getIntent().getData().getPathSegments();
             if (pathSegments.size() > 1) {
                 if (pathSegments.get(0).equals("reset")) {
-
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.loginContainer, ResetPasswordFragment.newInstance(pathSegments.get(1)))
+                            .commit();
                 } else if (pathSegments.get(0).equals("confirm")) {
-                    ServiceGenerator.createService(LoginService.class).confirmEmail(pathSegments.get(1)).enqueue(new Callback<Object>(){
+                    ServiceGenerator.createService(LoginService.class).confirmEmail(pathSegments.get(1)).enqueue(new Callback<Object>() {
                         @Override
                         public void onResponse(Call<Object> call, Response<Object> response) {
-                            if(response.isSuccessful()){
-                                Toast.makeText(getActivity(),"Email confirmed.",Toast.LENGTH_LONG).show();
-                            }else {
-                                Toast.makeText(getActivity(),"Email already confirmed.",Toast.LENGTH_SHORT).show();
+                            if (response.isSuccessful()) {
+                                Toast.makeText(getActivity(), "Email confirmed.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Email already confirmed.", Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Object> call, Throwable t) {
-                            Toast.makeText(getActivity(),"Connectivity error.",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Connectivity error.", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
