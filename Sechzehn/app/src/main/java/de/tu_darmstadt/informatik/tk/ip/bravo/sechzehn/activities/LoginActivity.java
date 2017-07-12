@@ -64,18 +64,14 @@ public class LoginActivity extends AppCompatActivity {
         return this;
     }
 
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.loginContainer, LoginFragment.newInstance());
-        transaction.commit();
+    protected void onNewIntent(Intent intent) {
 
 
-        if (getIntent().hasCategory("android.intent.category.BROWSABLE")) {
-            List<String> pathSegments = getIntent().getData().getPathSegments();
+        if (intent.hasCategory("android.intent.category.BROWSABLE")) {
+            List<String> pathSegments =intent.getData().getPathSegments();
             if (pathSegments.size() > 1) {
                 if (pathSegments.get(0).equals("reset")) {
                     getActivity().getSupportFragmentManager().beginTransaction()
@@ -101,6 +97,19 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.loginContainer, LoginFragment.newInstance());
+        transaction.commit();
+
+
+
 
     }
 

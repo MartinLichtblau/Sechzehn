@@ -58,5 +58,6 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
         return FragmentResetPasswordBinding.inflate(inflater, container, false);
     }
 
+public void confirm(View view){}
 
 }
