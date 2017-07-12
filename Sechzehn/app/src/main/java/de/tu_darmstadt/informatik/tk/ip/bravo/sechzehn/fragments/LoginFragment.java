@@ -62,10 +62,15 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
         binding.setUser(user);
     }
     public void toRegister(View view){
-        fragNavController().pushFragment(RegisterFragment.newInstance());
+
+       FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.loginContainer, RegisterFragment.newInstance());
+        transaction.commit();
     }
     public void toForgotpassword(View view){
-        fragNavController().pushFragment(ForgotPwFragment.newInstance());
+        FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.loginContainer,ForgotPwFragment.newInstance());
+        transaction.commit();
     }
 
     public void login(View view) {

@@ -103,7 +103,7 @@
             android:padding="16dp"
             android:text="Already have an account? Login here"
             android:textAlignment="center"
-            android:onClick="@{()->self.fragNavController().popFragment()}"/>
+            android:onClick="@{self::backToLogin}"/>
 
     </LinearLayout>
 </FrameLayout>

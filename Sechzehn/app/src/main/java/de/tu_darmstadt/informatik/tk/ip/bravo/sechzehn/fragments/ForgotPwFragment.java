@@ -3,6 +3,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.app.Fragment;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,12 @@ public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBindin
     @Override
     protected FragmentForgotPwBinding initDataBinding(LayoutInflater inflater, @Nullable ViewGroup container) {
         return FragmentForgotPwBinding.inflate(inflater, container, false);
+    }
+
+    public void backToLogin(View view){
+        FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.loginContainer, LoginFragment.newInstance());
+        transaction.commit();
     }
 
     @Override

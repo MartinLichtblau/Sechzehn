@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentLoginBinding;
@@ -57,6 +59,12 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
         return FragmentRegisterBinding.inflate(inflater, container, false);
     }
 
+    public void backToLogin(View view){
+        FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.loginContainer, LoginFragment.newInstance());
+        transaction.commit();
+    }
+
     @Override
     protected void useDataBinding(FragmentRegisterBinding binding) {
         binding.setUser(user);
@@ -73,8 +81,10 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
             @Override
             public void onResponse(Call<UserToken> call, Response<UserToken> response) {
                 if (response.isSuccessful()) {
-                    getActivity().getPreferences(0).edit().putString("JWT", response.body().token).apply();
-                    fragNavController().popFragments(2);
+                    binding.registerEmail.setError(null);
+                    binding.registerUsername.setError(null);
+                    Toast.makeText(getActivity(), "Registration successful.", Toast.LENGTH_SHORT).show();
+                    fragNavController().popFragment();
                 } else {
                     try {
                         String error = response.errorBody().string();

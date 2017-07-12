@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:clickable="true"
-                android:onClick="@{()->self.fragNavController().popFragment()}"
+                android:onClick="@{self::backToLogin}"
                 android:padding="16dp"
                 android:text="To Login"
                 android:textAlignment="center" />

@@ -4,11 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -42,6 +45,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.ForgotPwFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.LoginService;
 import retrofit2.Call;
@@ -53,27 +57,21 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
-    FragNavController mNavController;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        Intent intent = getIntent();
-        mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
-                .transactionListener(this)
-                .rootFragmentListener(this, 3)
-                .build();
-
-    }
+public class LoginActivity extends AppCompatActivity {
 
     private LoginActivity getActivity(){
         return this;
     }
-
     @Override
-    public Fragment getRootFragment(int i) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.loginContainer, LoginFragment.newInstance());
+        transaction.commit();
+
+
         if (getIntent().hasCategory("android.intent.category.BROWSABLE")) {
             List<String> pathSegments = getIntent().getData().getPathSegments();
             if (pathSegments.size() > 1) {
@@ -99,22 +97,8 @@ public class LoginActivity extends AppCompatActivity implements BaseFragment.Nav
 
             }
         }
-        return LoginFragment.newInstance();
-    }
-
-    @Override
-    public void onTabTransaction(Fragment fragment, int i) {
 
     }
 
-    @Override
-    public void onFragmentTransaction(Fragment fragment, FragNavController.TransactionType transactionType) {
-
-    }
-
-    @Override
-    public FragNavController getNavController() {
-        return mNavController;
-    }
 }
 
