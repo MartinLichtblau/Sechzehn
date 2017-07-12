@@ -17,13 +17,49 @@ const Pagination = require('./Helper/Pagination')
 
 class UserController {
   * index (request, response) {
+    // const authUsername = request.authUser.username
     const lat = request.input('lat')
     const lng = request.input('lng')
     const radius = request.input('radius', 10)
+    const searchQuery = request.input('query')
+    // const isFriend = false
 
     const pagination = new Pagination(request)
 
-    if (lat !== null && lng !== null) {
+    if (searchQuery === null && (lat === null || lng === null)) {
+      const users = yield User.query().unhidden().paginate(pagination.page, pagination.perPage)
+      response.ok(users)
+      return
+    }
+
+    const query = User.query().unhidden().column(User.visible)
+    let totalQuery, users
+
+    if (searchQuery !== null) {
+      const validation = yield Validator.validate({searchQuery}, {
+        searchQuery: 'string'
+      })
+
+      if (validation.fails()) {
+        response.unprocessableEntity(validation.messages())
+        return
+      }
+
+      // The part of the query that is responsible for defining the similarity
+      const similarityQuery = 'GREATEST(similarity(username, :searchQuery), similarity(real_name, :searchQuery))'
+      const queryParams = {
+        searchQuery: searchQuery,
+        threshold: 0.1
+      }
+
+      users = yield query.select(Database.raw(similarityQuery + ' as similarity', {searchQuery: searchQuery}))
+        .whereRaw(similarityQuery + ' > :threshold', queryParams)
+        .orderBy('similarity', 'DESC')
+        .forPage(pagination.page, pagination.perPage)
+
+      // Total count needed for manually creating the pagination
+      totalQuery = yield User.query().unhidden().whereRaw(similarityQuery + ' > :threshold', queryParams).count().first()
+    } else if (lat !== null && lng !== null) {
       const validation = yield Validator.validate({lat, lng, radius}, {
         lat: 'required|range:-180,180',
         lng: 'required|range:-180,180',
@@ -35,29 +71,23 @@ class UserController {
         return
       }
 
-      const query = User.query().unhidden().column(User.visible)
       // Calculate the distance between the search point and the user's position
-        .select(Database.raw('(earth_distance(ll_to_earth(lat, lng), ll_to_earth(?, ?)) / 1000) as distance', [lat, lng]))
+      query.select(Database.raw('(earth_distance(ll_to_earth(lat, lng), ll_to_earth(?, ?)) / 1000) as distance', [lat, lng]))
 
       // Check if location of the user is in the circle around the search point
       // See https://www.postgresql.org/docs/8.3/static/earthdistance.html
       const inRadiusQuery = 'earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
       query.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
       // query.orderByRaw('distance ASC')
-      const users = yield query.forPage(pagination.page, pagination.perPage)
+
+      users = yield query.forPage(pagination.page, pagination.perPage)
 
       // Total count needed for manually creating the pagination
-      const totalQuery = yield User.query().unhidden().whereRaw(inRadiusQuery, [lat, lng, radius * 1000]).count().first()
-
-      pagination.total = Number(totalQuery.count)
-      pagination.data = users
-
-      response.ok(pagination)
-      return
+      totalQuery = yield User.query().unhidden().whereRaw(inRadiusQuery, [lat, lng, radius * 1000]).count().first()
     }
-
-    const users = yield User.query().unhidden().paginate(pagination.page, pagination.perPage)
-    response.ok(users)
+    pagination.data = users
+    pagination.total = Number(totalQuery.count)
+    response.ok(pagination)
   }
 
   * store (request, response) {
