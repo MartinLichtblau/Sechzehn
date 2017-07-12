@@ -145,32 +145,37 @@ class UserController {
       allowedExtensions: ['jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG']
     })
 
-    // Delete the old picture
-    if (user.profile_picture !== null && user.profile_picture.startsWith(Config.get('app.absoluteUrl'))) {
-      const oldPath = Helpers.storagePath(user.profile_picture.split('/').pop())
+    let oldPath = null
 
-      Fs.unlink(oldPath, (err) => {
-        if (err) console.warn(err)
-      })
+    // Save path of the old picture to delete it later
+    if (user.profile_picture !== null && user.profile_picture.startsWith(Config.get('app.absoluteUrl'))) {
+      oldPath = Helpers.storagePath(user.profile_picture.split('/').pop())
     }
 
     if (profilePicture === null || profilePicture === '') {
       user.profile_picture = null
       yield user.save()
-      response.ok(user.completeView())
-      return
+    } else {
+      const fileName = `${new Date().getTime()}.${profilePicture.extension()}`
+      yield profilePicture.move(Helpers.storagePath(), fileName)
+
+      if (!profilePicture.moved()) {
+        response.badRequest(profilePicture.errors())
+        return
+      }
+
+      user.profile_picture = Url.resolve(Config.get('app.absoluteUrl'), Route.url('media', {filename: fileName}))
     }
 
-    const fileName = `${new Date().getTime()}.${profilePicture.extension()}`
-    yield profilePicture.move(Helpers.storagePath(), fileName)
-
-    if (!profilePicture.moved()) {
-      response.badRequest(profilePicture.errors())
-      return
-    }
-
-    user.profile_picture = Url.resolve(Config.get('app.absoluteUrl'), Route.url('media', {filename: fileName}))
     yield user.save()
+
+    // Delete the old picture
+    if (oldPath) {
+      Fs.unlink(oldPath, (err) => {
+        if (err) console.warn(err)
+      })
+    }
+
     response.ok(user.completeView())
   }
 
