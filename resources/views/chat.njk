@@ -46,7 +46,7 @@
 
   <script src="/assets/ws.min.js"></script>
   <script>
-    const io = ws('')
+    const io = ws('{{ url }}')
     const loginForm = document.getElementById('login-form')
     const messageForm = document.getElementById('message-form')
     const messageList = document.getElementById('messages')

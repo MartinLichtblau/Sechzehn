@@ -1,6 +1,8 @@
 'use strict'
 
 const Env = use('Env')
+const View = use('View')
+const Config = use('Config')
 const Youch = use('youch')
 const Http = exports = module.exports = {}
 
@@ -71,4 +73,5 @@ Http.handleError = function * (error, request, response) {
  * starting http server.
  */
 Http.onStart = function () {
+  View.global('url', Config.get('app.absoluteUrl'))
 }
