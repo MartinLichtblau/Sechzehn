@@ -36,7 +36,7 @@
         <activity
             android:name=".activities.LoginActivity"
             android:launchMode="singleInstance"
-            android:label="@string/title_activity_login">
+            >
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
