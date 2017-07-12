@@ -1,16 +1,21 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
+import  android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.ncapdevi.fragnav.FragNavController;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
@@ -18,10 +23,18 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenuesFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.OnShowRationale;
+import permissions.dispatcher.PermissionRequest;
+import permissions.dispatcher.RuntimePermissions;
+
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
+@RuntimePermissions
 public class BottomTabsActivity extends AppCompatActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
     //Better convention to properly name the indices what they are in your app
     private final int INDEX_VENUES = FragNavController.TAB1;
@@ -84,6 +97,8 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                     Toast.makeText(BottomTabsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
                 }
             });
+            //assures that app can only be used with permissions — no matter what!
+            BottomTabsActivityPermissionsDispatcher.checkAskAllPermissionsWithCheck(BottomTabsActivity.this);
         }
     }
 
@@ -101,6 +116,78 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         startActivity(intent);
         finish(); //Finish BottomTabs
     }
+
+    @NeedsPermission({
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE})
+    public void checkAskAllPermissions() {
+        Toast.makeText(this, "Welcome to SechZehn!", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnShowRationale({
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE})
+    public void showRationaleForAllPermissions(final PermissionRequest request) {
+        new AlertDialog.Builder(this)
+                .setMessage("To experience Sechzeh you must grant some permissions :-)")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        request.proceed();
+                    }
+                })
+                .setNegativeButton("Leave", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        request.cancel();
+                        finish();
+                    }
+                })
+                .setCancelable(false) // Ref > https://stackoverflow.com/questions/12102777/prevent-android-activity-dialog-from-closing-on-outside-touch
+                .show();
+    }
+
+    @OnPermissionDenied({
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE})
+    public void showDeniedForAllPermissions() {
+        BottomTabsActivityPermissionsDispatcher.checkAskAllPermissionsWithCheck(BottomTabsActivity.this);
+    }
+
+    @OnNeverAskAgain({
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE})
+    public void showNeverAskForAllPermissions() {
+        new AlertDialog.Builder(this)
+                .setMessage("You checked *Never ask again*" +
+                        "\nSechZehn can only serve you if you undo that selection manually in the following dialog.")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Ref > https://stackoverflow.com/questions/41256582/how-to-handle-never-ask-again-checkbox-in-android-m
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null); //Ref > https://stackoverflow.com/questions/6589797/how-to-get-package-name-from-anywhere
+                        intent.setData(uri);
+                        startActivityForResult(intent, 666);
+                    }
+                })
+                .setNegativeButton("Leave", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        BottomTabsActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
 
 
     //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

@@ -57,6 +57,14 @@ dependencies {
     //Images / Photos download, processing and....
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'jp.wasabeef:picasso-transformations:2.1.2'
+    compile 'com.zhihu.android:matisse:0.4.3'
+
+    //Permissions Dispatcher > https://hotchemi.github.io/PermissionsDispatcher/
+    compile('com.github.hotchemi:permissionsdispatcher:2.4.0') {
+        // if you don't use android.app.Fragment you can exclude support for them
+        exclude module: "support-v13"
+    }
+    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.4.0'
 
 
 }
