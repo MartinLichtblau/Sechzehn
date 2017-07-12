@@ -70,7 +70,7 @@ class UserController {
       // See https://www.postgresql.org/docs/8.3/static/earthdistance.html
       const inRadiusQuery = 'earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
       query.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
-      // query.orderByRaw('distance ASC')
+      query.orderBy('distance', 'asc')
 
       totalQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
     }
@@ -95,7 +95,9 @@ class UserController {
       })
     }
 
-    // Fetch the actual data
+    query.orderBy('username', 'asc')
+
+    // Fetch the actual data and complete the Pagination object
     const totalResult = yield totalQuery.count().first()
     pagination.data = yield query.forPage(pagination.page, pagination.perPage)
     pagination.total = Number(totalResult.count)
