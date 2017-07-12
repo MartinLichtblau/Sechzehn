@@ -13,20 +13,21 @@ class MessageController {
 
     const pagination = new Pagination(request)
 
-    const receiverQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'receiver as username')
+    const receiverQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'is_read', 'receiver as username')
       .from('messages').where('sender', username)
 
-    const senderQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'sender as username')
+    const senderQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'is_read', 'sender as username')
       .from('messages').where('receiver', username)
 
     const chatData = yield Database
       .distinct(
         Database.raw(
           `chats.username, users.real_name, users.profile_picture,
-          first_value(sender) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_sender,
-          first_value(receiver) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) last_receiver,
+          first_value(chats.sender) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_sender,
+          first_value(chats.receiver) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) last_receiver,
           first_value(chats.created_at) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_created_at,
-          first_value(body) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_body`
+          first_value(chats.is_read) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_is_read,
+          first_value(chats.body) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_body`
         ))
       .select()
       .from(receiverQuery.union(senderQuery).as('chats')).innerJoin('users', 'chats.username', 'users.username')
@@ -48,7 +49,8 @@ class MessageController {
           sender: row.last_sender,
           receiver: row.last_receiver,
           body: row.last_body,
-          created_at: row.last_created_at
+          created_at: row.last_created_at,
+          is_read: row.last_is_read
         }
       }
     })
@@ -81,17 +83,15 @@ class MessageController {
     const me = request.authUser.username
     const other = request.param('id', null)
 
-    const page = Number(request.input('page', 1))
-    const perPage = Number(request.input('per_page', 10))
+    let page = Number(request.input('page', 1))
+    let perPage = Number(request.input('per_page', 10))
 
-    const validation = yield Validator.validate({page, perPage}, {
-      page: 'integer|min:1',
-      perPage: 'integer|min:1'
-    })
+    if (isNaN(page) || page < 1) {
+      page = 1
+    }
 
-    if (validation.fails()) {
-      response.unprocessableEntity(validation.messages())
-      return
+    if (isNaN(perPage) || perPage < 1) {
+      perPage = 10
     }
 
     const messages = yield Message.query().where(function () {
