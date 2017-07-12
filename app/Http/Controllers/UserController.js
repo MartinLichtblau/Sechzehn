@@ -13,24 +13,15 @@ const Url = require('url')
 const Fs = require('fs')
 const Path = require('path')
 const Exceptions = require('adonis-lucid/src/Exceptions')
+const Pagination = require('./Helper/Pagination')
 
 class UserController {
   * index (request, response) {
     const lat = request.input('lat')
     const lng = request.input('lng')
     const radius = request.input('radius', 10)
-    const page = Number(request.input('page', 1))
-    const perPage = Number(request.input('per_page', 10))
 
-    const validation = yield Validator.validate({page, perPage}, {
-      page: 'integer|min:1',
-      perPage: 'integer|min:1'
-    })
-
-    if (validation.fails()) {
-      response.unprocessableEntity(validation.messages())
-      return
-    }
+    const pagination = new Pagination(request)
 
     if (lat !== null && lng !== null) {
       const validation = yield Validator.validate({lat, lng, radius}, {
@@ -53,23 +44,19 @@ class UserController {
       const inRadiusQuery = 'earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
       query.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
       // query.orderByRaw('distance ASC')
-      const users = yield query.forPage(page, perPage)
+      const users = yield query.forPage(pagination.page, pagination.perPage)
 
       // Total count needed for manually creating the pagination
       const totalQuery = yield User.query().unhidden().whereRaw(inRadiusQuery, [lat, lng, radius * 1000]).count().first()
-      const total = Number(totalQuery.count)
 
-      response.ok({
-        total: Number(total),
-        perPage: perPage,
-        currentPage: page,
-        lastPage: Math.ceil(total / perPage),
-        data: users
-      })
+      pagination.total = Number(totalQuery.count)
+      pagination.data = users
+
+      response.ok(pagination)
       return
     }
 
-    const users = yield User.query().unhidden().paginate(page, perPage)
+    const users = yield User.query().unhidden().paginate(pagination.page, pagination.perPage)
     response.ok(users)
   }
 

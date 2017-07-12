@@ -5,10 +5,13 @@ const User = use('App/Model/User')
 const Validator = use('Validator')
 const Database = use('Database')
 const Exceptions = require('adonis-lucid/src/Exceptions')
+const Pagination = require('./Helper/Pagination')
 
 class MessageController {
   * index (request, response) {
     const username = request.authUser.username
+
+    const pagination = new Pagination(request)
 
     const receiverQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'receiver as username')
       .from('messages').where('sender', username)
@@ -27,9 +30,14 @@ class MessageController {
         ))
       .select()
       .from(receiverQuery.union(senderQuery).as('chats')).innerJoin('users', 'chats.username', 'users.username')
-      .orderBy('last_created_at', 'desc')
+      .orderBy('last_created_at', 'desc').forPage(pagination.page, pagination.perPage)
 
-    const chats = chatData.map(function (row) {
+    // Total count needed for manually creating the pagination
+    const totalQuery = yield Database.from(receiverQuery.union(senderQuery)).countDistinct('username').first()
+    pagination.total = Number(totalQuery.count)
+
+    // Transform the data
+    pagination.data = chatData.map(function (row) {
       return {
         user: {
           username: row.username,
@@ -45,7 +53,7 @@ class MessageController {
       }
     })
 
-    response.ok(chats)
+    response.ok(pagination)
   }
 
   * store (request, response) {
