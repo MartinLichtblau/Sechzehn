@@ -17,49 +17,41 @@ const Pagination = require('./Helper/Pagination')
 
 class UserController {
   * index (request, response) {
-    // const authUsername = request.authUser.username
+    const authUsername = request.authUser.username
     const lat = request.input('lat')
     const lng = request.input('lng')
     const radius = request.input('radius', 10)
     const searchQuery = request.input('query')
-    // const isFriend = false
+    let isFriend = request.input('is_friend')
 
     const pagination = new Pagination(request)
 
-    if (searchQuery === null && (lat === null || lng === null)) {
-      const users = yield User.query().unhidden().paginate(pagination.page, pagination.perPage)
-      response.ok(users)
-      return
-    }
+    // The main query
+    const query = User.query().column(User.visible)
 
-    const query = User.query().unhidden().column(User.visible)
-    let totalQuery, users
+    // The query for calculation the total count
+    const totalQuery = User.query()
+
+    // Get the friends list
+    const friendsQuery = Database.from('friendships').select('relating_user as username')
+      .where('related_user', authUsername).where('friendships.status', 'CONFIRMED')
 
     if (searchQuery !== null) {
-      const validation = yield Validator.validate({searchQuery}, {
-        searchQuery: 'string'
-      })
-
-      if (validation.fails()) {
-        response.unprocessableEntity(validation.messages())
-        return
-      }
-
       // The part of the query that is responsible for defining the similarity
-      const similarityQuery = 'GREATEST(similarity(username, :searchQuery), similarity(real_name, :searchQuery))'
+      const similarityQueryString = 'GREATEST(similarity(username, :searchQuery), similarity(real_name, :searchQuery))'
       const queryParams = {
         searchQuery: searchQuery,
-        threshold: 0.1
+        threshold: 0
       }
 
-      users = yield query.select(Database.raw(similarityQuery + ' as similarity', {searchQuery: searchQuery}))
-        .whereRaw(similarityQuery + ' > :threshold', queryParams)
+      query.select(Database.raw(similarityQueryString + ' as similarity', {searchQuery: searchQuery}))
+        .whereRaw(similarityQueryString + ' > :threshold', queryParams)
         .orderBy('similarity', 'DESC')
-        .forPage(pagination.page, pagination.perPage)
 
-      // Total count needed for manually creating the pagination
-      totalQuery = yield User.query().unhidden().whereRaw(similarityQuery + ' > :threshold', queryParams).count().first()
-    } else if (lat !== null && lng !== null) {
+      totalQuery.whereRaw(similarityQueryString + ' > :threshold', queryParams)
+    }
+
+    if (lat !== null && lng !== null) {
       const validation = yield Validator.validate({lat, lng, radius}, {
         lat: 'required|range:-180,180',
         lng: 'required|range:-180,180',
@@ -80,13 +72,33 @@ class UserController {
       query.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
       // query.orderByRaw('distance ASC')
 
-      users = yield query.forPage(pagination.page, pagination.perPage)
-
-      // Total count needed for manually creating the pagination
-      totalQuery = yield User.query().unhidden().whereRaw(inRadiusQuery, [lat, lng, radius * 1000]).count().first()
+      totalQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
     }
-    pagination.data = users
-    pagination.total = Number(totalQuery.count)
+
+    // If friend check is enabled
+    if (isFriend !== null) {
+      isFriend = Validator.sanitizor.toBoolean(isFriend)
+
+      if (isFriend) {
+        query.where('username', 'in', friendsQuery)
+        totalQuery.where('username', 'in', friendsQuery)
+      } else {
+        query.whereNot('incognito', true).where('username', 'not in', friendsQuery)
+        totalQuery.whereNot('incognito', true).where('username', 'not in', friendsQuery)
+      }
+    } else {
+      query.where(function () {
+        this.whereNot('incognito', true).orWhere('username', 'in', friendsQuery)
+      })
+      totalQuery.where(function () {
+        this.whereNot('incognito', true).orWhere('username', 'in', friendsQuery)
+      })
+    }
+
+    // Fetch the actual data
+    const totalResult = yield totalQuery.count().first()
+    pagination.data = yield query.forPage(pagination.page, pagination.perPage)
+    pagination.total = Number(totalResult.count)
     response.ok(pagination)
   }
 
