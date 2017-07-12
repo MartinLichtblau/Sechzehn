@@ -21,6 +21,7 @@ const Route = use('Route')
  * Homepage
  */
 Route.on('/').render('welcome')
+Route.on('/chat').render('chat')
 
 /**
  * Media handling
@@ -57,11 +58,17 @@ Route.group('api', function () {
   Route.patch('users/:id/friends', 'FriendshipController.update').middleware('auth')
   Route.delete('users/:id/friends', 'FriendshipController.destroy').middleware('auth')
 
+  Route.get('messages', 'MessageController.index').middleware('auth')
+  Route.get('messages/:id', 'MessageController.show').middleware('auth')
+  Route.post('messages/:id', 'MessageController.store').middleware('auth')
+  Route.patch('messages/:id/:message', 'MessageController.update').middleware('auth')
+
   Route
     .resource('users', 'UserController')
     .except('create', 'edit')
     .middleware({
       auth: ['show', 'update', 'destroy']
     })
+
 }).prefix('/api')
   .formats(['json'], false)

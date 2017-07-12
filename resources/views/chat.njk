@@ -1,0 +1,168 @@
+{% extends 'layouts.simple' %}
+
+{% block main %}
+  <h2>Chat</h2>
+  <form id="login-form">
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email">
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password">
+    </div>
+
+    <div class="alert alert-danger" id="login-error">
+    </div>
+
+    <div class="button">
+      <input type="submit" value="Connect">
+    </div>
+  </form>
+  <div id="message-wrapper" style="display: none">
+    <h3>Messages</h3>
+    <div class="messages list-box" id="messages">
+    </div>
+    <h3>Errors</h3>
+    <div class="errors list-box" id="message-errors">
+
+    </div>
+
+    <form id="message-form" class="fullwidth">
+      <div class="field">
+        <label for="message">Message</label>
+        <textarea name="message" id="message"></textarea>
+      </div>
+      <div class="field">
+        <label to="receiver">Receiver</label>
+        <input type="text" name="receiver" id="receiver">
+      </div>
+      <div class="button">
+        <input type="submit" value="Send">
+      </div>
+    </form>
+  </div>
+
+  <script src="/assets/ws.min.js"></script>
+  <script>
+    const io = ws('')
+    const loginForm = document.getElementById('login-form')
+    const messageForm = document.getElementById('message-form')
+    const messageList = document.getElementById('messages')
+    const messageErrorList = document.getElementById('message-errors')
+    var client = null
+
+    var jwt = sessionStorage.getItem('jwt')
+    if (jwt !== null) {
+      initWs(jwt)
+    }
+
+    function handleResponse (response) {
+      return response.json()
+        .then(json => {
+          if (response.ok) {
+            return json
+          } else {
+            return Promise.reject(json)
+          }
+        })
+    }
+
+    function displayError (e) {
+      const newError = document.createElement('div')
+      newError.innerHTML = e.message
+      messageErrorList.appendChild(newError)
+      newError.scrollIntoView()
+    }
+
+    function findParent (node, parentClass) {
+      var currentNode = node
+
+      while (currentNode !== null && !currentNode.classList.contains(parentClass)) {
+        currentNode = currentNode.parentNode
+      }
+
+      return currentNode
+    }
+
+    function displayMessage (m) {
+      const newMessage = document.createElement('div')
+      newMessage.classList = ['message']
+      newMessage.id = 'message-' + m.id
+      newMessage.setAttribute('data-id', m.id)
+      newMessage.setAttribute('data-sender', m.sender)
+      newMessage.setAttribute('data-receiver', m.receiver)
+      const sender = document.createElement('em')
+      const body = document.createElement('p')
+      sender.innerHTML = `${m.sender} - ${m.created_at}`
+      body.innerHTML = m.body
+      newMessage.appendChild(sender)
+      newMessage.appendChild(body)
+      messageList.appendChild(newMessage)
+      newMessage.scrollIntoView()
+
+      newMessage.addEventListener('click', function (e) {
+        e.preventDefault()
+        const source = e.target || e.srcElement
+        const parent = findParent(source, 'message')
+        const id = parent.getAttribute('data-id')
+        const sender = parent.getAttribute('data-sender')
+
+        const message = {
+          id: id,
+          sender: sender,
+          is_read: true
+        }
+
+        client.emit('read', message)
+      })
+    }
+
+    function initWs (jwt) {
+      client = io.channel('messages').withJwt(jwt).connect(console.log)
+
+      document.getElementById('message-wrapper').style.display = 'block'
+      loginForm.style.display = 'none'
+
+      client.on('message', displayMessage)
+
+      client.on('read', function (m) {
+        const message = document.querySelector(`[data-id='${m.id}']`)
+        if (message !== null)
+          message.setAttribute('data-read', m.is_read)
+      })
+
+      client.on('warning', displayError)
+      client.on('error', displayError)
+    }
+
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault()
+
+      fetch('/login', {
+        method: 'post',
+        body: new FormData(loginForm)
+      })
+        .then(handleResponse)
+        .then(data => {
+          sessionStorage.setItem('jwt', data.token)
+          initWs(data.token)
+        })
+        .catch(error => {
+          document.getElementById('login-error').innerHTML = error.message
+          console.error(error)
+        })
+
+    }, false)
+
+    messageForm.addEventListener('submit', function (e) {
+      e.preventDefault()
+      const msg = document.getElementById('message')
+      client.emit('message', {
+        body: msg.value,
+        receiver: document.getElementById('receiver').value
+      })
+    }, false)
+  </script>
+{% endblock %}
