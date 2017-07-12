@@ -142,7 +142,7 @@ class UserController {
 
     const profilePicture = request.file('profile_picture', {
       maxSize: '500kb',
-      allowedExtensions: ['jpg', 'png', 'jpeg']
+      allowedExtensions: ['jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG']
     })
 
     // Delete the old picture
