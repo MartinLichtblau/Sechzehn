@@ -84,7 +84,7 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
                     binding.registerEmail.setError(null);
                     binding.registerUsername.setError(null);
                     Toast.makeText(getActivity(), "Registration successful.", Toast.LENGTH_SHORT).show();
-                    fragNavController().popFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.loginContainer,LoginFragment.newInstance()).commit();
                 } else {
                     try {
                         String error = response.errorBody().string();
