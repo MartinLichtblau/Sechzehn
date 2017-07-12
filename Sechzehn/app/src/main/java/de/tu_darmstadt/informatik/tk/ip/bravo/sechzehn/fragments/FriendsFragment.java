@@ -48,8 +48,8 @@ public class FriendsFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 if (mFragmentNavigation != null) {
-                   // mFragmentNavigation.pushFragment(FriendsFragment.newInstance(mInt+1));
-                    mFragmentNavigation.pushFragment(LoginFragment.newInstance());
+                    mFragmentNavigation.pushFragment(FriendsFragment.newInstance(mInt+1));
+
                 }
 
             }
