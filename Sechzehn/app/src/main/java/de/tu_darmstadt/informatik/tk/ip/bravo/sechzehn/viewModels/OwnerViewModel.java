@@ -3,16 +3,25 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.GenericBody;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -188,4 +197,35 @@ public class OwnerViewModel extends ViewModel {
         });
         return close;
     }
+
+    public LiveData<Boolean> changePicture(Bitmap bitmap){
+        Log.d(this.getClass().toString(), "changePicture");
+        final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
+        //Compress & Convert bitmap so it is absolutely sure under 500kb
+        byte[] byteArray = SzUtils.compressWithJpgToByte(bitmap);
+        Log.i("changePicture |", "Final Bitmap Size is: "+byteArray.length);
+
+        //Retrofit 2 Multipart > https://medium.com/@adinugroho/upload-image-from-android-app-using-retrofit-2-ae6f922b184c
+        RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"),byteArray);
+        MultipartBody.Part picture = MultipartBody.Part.createFormData("profile_picture",getOwnername()+".profile_picture"+".jpg",reqFile);
+        userService.changePicture(getOwnername(), picture).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.body() != null) { //The body is a User object & ErrorBody is empty
+                    owner.setValue(response.body());
+                    makeToast("Looks Alright!");
+                    close.setValue(true);
+                }else {
+                    makeToast("Upps: " + NetworkUtils.parseError(response).getMessage());
+                }
+            }
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+        return close;
+    }
+
+
 }

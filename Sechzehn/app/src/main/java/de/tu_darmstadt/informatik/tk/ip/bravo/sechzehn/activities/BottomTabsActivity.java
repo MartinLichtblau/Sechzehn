@@ -189,7 +189,6 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     }
 
 
-
     //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     public FragNavController getNavController(){

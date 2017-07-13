@@ -34,7 +34,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="-60dp"
                 android:elevation="@dimen/dim_normal"
-                android:scaleType="fitCenter"/>
+                android:tint="#FFFFFF"/>
 
             <RelativeLayout
                 android:id="@+id/userprofile_headerLayout"
