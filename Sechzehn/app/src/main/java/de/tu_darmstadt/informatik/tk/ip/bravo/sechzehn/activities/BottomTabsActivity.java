@@ -76,6 +76,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                 mNavController.clearStack();
             }
         });
+        Toast.makeText(this, "Welcome to SechZehn!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -121,7 +122,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE})
     public void checkAskAllPermissions() {
-        Toast.makeText(this, "Welcome to SechZehn!", Toast.LENGTH_SHORT).show();
+        Log.i("checkAskAllPermissions"," All Permissions granted");
     }
 
     @OnShowRationale({

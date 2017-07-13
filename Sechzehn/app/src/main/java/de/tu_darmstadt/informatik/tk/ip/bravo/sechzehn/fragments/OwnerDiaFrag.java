@@ -49,20 +49,15 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
         ownerVM = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
         binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()), R.layout.diafrag_owner, null, false);
         binding.setFrag(this);
-        binding.setUser(owner);
-
-        customizeFragment();
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
-        builder.setMessage("Are you sure?");
         return builder.create();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding.setUser(ownerVM.getOwner().getValue());
+        customizeFragment();
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -80,7 +75,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             });
 
         }else if(type == "logout"){
-            Toast.makeText(getActivity(), "Logging Out", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
             ((BottomTabsActivity)getActivity()).factoryReset();
 
         }else if(type == "changePassword") {
@@ -119,6 +114,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
 
     private void customizeFragment(){
         if(type == "editProfile"){
+            getDialog().setTitle("Edit Profile");
             owner = ownerVM.getOwner().getValue();
             binding.setUser(owner);
             binding.realname.setVisibility(View.VISIBLE);
@@ -126,14 +122,19 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             binding.address.setVisibility(View.VISIBLE);
             binding.incognitoSwitch.setVisibility(View.VISIBLE);
         }else if(type == "logout"){
+            getDialog().setTitle("Logout");
         }else if(type == "changePassword") {
+            getDialog().setTitle("Change Password");
             binding.currentPassword.setVisibility(View.VISIBLE);
             binding.newPassword.setVisibility(View.VISIBLE);
         }else if(type == "resetPassword") {
+            getDialog().setTitle("Reset Password");
         }else if(type == "changeEmail") {
+            getDialog().setTitle("Change Email");
             binding.newEmail.setVisibility(View.VISIBLE);
             binding.currentPassword.setVisibility(View.VISIBLE);
         }else if(type == "deleteAccount"){
+            getDialog().setTitle("Delete Account");
             binding.currentPassword.setVisibility(View.VISIBLE);
         }else {
             throw new IllegalArgumentException("Invalid Owner DialogFragment Type");

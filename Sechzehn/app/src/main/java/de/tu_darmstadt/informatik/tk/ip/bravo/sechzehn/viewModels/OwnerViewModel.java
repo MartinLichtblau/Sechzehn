@@ -213,7 +213,7 @@ public class OwnerViewModel extends ViewModel {
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.body() != null) { //The body is a User object & ErrorBody is empty
                     owner.setValue(response.body());
-                    makeToast("Looks Alright!");
+                    makeToast("Looks Good!");
                     close.setValue(true);
                 }else {
                     makeToast("Upps: " + NetworkUtils.parseError(response).getMessage());

@@ -52,6 +52,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     private OwnerViewModel viewModel;
     SupportMapFragment mapFragment;
     GoogleMap mMap;
+    User owner;
 
     public static OwnerFragment newInstance() {
         OwnerFragment fragment = new OwnerFragment();
@@ -91,9 +92,8 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
-                binding.setUser(user);
-                Log.d("onChanged User", user.getProfilePicture());
-
+                owner = user;
+                binding.setUser(owner);
                 Picasso.with(getActivity())
                         .load(user.getProfilePicture()) //Picasso needs "http://" or "https://" url
                         .placeholder(R.drawable.ic_portrait) //Placeholders and error images are not resized and must be fairly small images.

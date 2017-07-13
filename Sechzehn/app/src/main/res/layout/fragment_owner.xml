@@ -72,7 +72,7 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_below="@+id/owner_headerLayout"
                 android:orientation="vertical">
 
@@ -81,93 +81,124 @@
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/dim_normal">
 
-                    <LinearLayout
+                    <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/dim_normal"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content">
 
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:id="@+id/edit_profile"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_gravity="top|end"
-                                app:srcCompat="@drawable/ic_edit_black_24dp"
-                                android:onClick="@{frag::editProfile}"/>
-
-                            <TextView
-                                android:id="@+id/Profile"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="@dimen/dim_small"
-                                android:text="Profile"
-                                android:textColor="#000"
-                                android:textSize="@dimen/txt_normal"
-                                android:textStyle="bold" />
-                        </RelativeLayout>
-
-
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/owner_realname"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <android.support.design.widget.TextInputEditText
-                                android:id="@+id/owner_realname_edit"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:enabled="false"
-                                android:hint="Real Name"
-                                android:text="@={user.realName}" />
-                        </android.support.design.widget.TextInputLayout>
-
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/owner_age"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <android.support.design.widget.TextInputEditText
-                                android:id="@+id/owner_age_edit"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:enabled="false"
-                                android:hint="Age"
-                                android:text="@={user.dateOfBirth}" />
-                        </android.support.design.widget.TextInputLayout>
-
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/owner_address"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <android.support.design.widget.TextInputEditText
-                                android:id="@+id/owner_address_edit"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:enabled="false"
-                                android:hint="Address"
-                                android:text="@={user.city}" />
-                        </android.support.design.widget.TextInputLayout>
-
-                        <Switch
-                            android:id="@+id/incognito_switch"
+                        <ImageView
+                            android:id="@+id/edit_profile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/dim_normal"
-                            android:text="Incognito"
-                            android:checked="@={user.incognito}"/>
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="top|end"
+                            app:srcCompat="@drawable/ic_edit_black_24dp"
+                            android:onClick="@{frag::editProfile}"
+                            android:layout_marginRight="16dp"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="16dp" />
+
+                        <TextView style="@style/TextAppearance.AppCompat.Headline"
+                            android:id="@+id/Profile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Profile"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:layout_marginStart="16dp" />
+
+                        <TextView style="@style/TextAppearance.AppCompat.Caption"
+                            android:id="@+id/owner_realname_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Name"
+                            android:layout_marginLeft="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/owner_realname"
+                            android:layout_marginStart="16dp" />
+                        <TextView style="@style/TextAppearance.AppCompat.Menu"
+                            android:id="@+id/owner_realname"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{user.realName,default=`Max Mustermann`}"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintTop_toBottomOf="@+id/Profile"
+                            android:layout_marginLeft="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:layout_marginStart="16dp" />
+
+                        <TextView style="@style/TextAppearance.AppCompat.Caption"
+                            android:id="@+id/owner_age_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Age"
+                            android:layout_marginLeft="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/owner_age"
+                            android:layout_marginStart="16dp" />
+                        <TextView style="@style/TextAppearance.AppCompat.Menu"
+                            android:id="@+id/owner_age"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{user.dateOfBirth,default=99}"
+                            android:layout_marginLeft="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintTop_toBottomOf="@+id/owner_realname_header"
+                            android:layout_marginStart="16dp" />
+
+                        <TextView style="@style/TextAppearance.AppCompat.Caption"
+                            android:id="@+id/owner_birthday_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Birthday"
+                            app:layout_constraintLeft_toRightOf="@+id/owner_age_header"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                            app:layout_constraintTop_toBottomOf="@+id/owner_birthday" />
+                        <TextView style="@style/TextAppearance.AppCompat.Menu"
+                            android:id="@+id/owner_birthday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{user.dateOfBirth,default=`31.12.1999`}"
+                            android:layout_marginStart="16dp"
+                            app:layout_constraintLeft_toRightOf="@+id/owner_age"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintTop_toBottomOf="@+id/owner_realname_header" />
+
+
+                        <TextView  style="@style/TextAppearance.AppCompat.Caption"
+                            android:id="@+id/owner_address_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Address"
+                            android:layout_marginLeft="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/owner_address"
+                            android:layout_marginStart="16dp" />
+                        <TextView style="@style/TextAppearance.AppCompat.Menu"
+                            android:id="@+id/owner_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{user.city,default=`New York`}"
+                            android:layout_marginLeft="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintTop_toBottomOf="@+id/owner_age_header" />
 
                         <Space
-                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/dim_normal" />
-                    </LinearLayout>
-
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintTop_toBottomOf="@+id/owner_address_header"
+                            android:layout_marginLeft="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent" />
+                    </android.support.constraint.ConstraintLayout>
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
