@@ -59,13 +59,18 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         return fragment;
     }
 
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
+        //Get OwnerViewModel from everywhere like below or like
+        // ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_owner, container, false);
         binding.setFrag(this); //Most important to actually bind the variables specified in layout.xml | The owner binding goes in ownerSetup() triggered by async map
-        //Get OwnerViewModel from everywhere like
-        viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
-        // or: viewModel = ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
+        updateOwner();
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         return binding.getRoot();
@@ -88,12 +93,13 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     }
 
     private void updateOwner(){
-        /*Gets updates on change and updates the UI*/
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
+                /*Gets updates on change and updates the UI*/
                 owner = user;
                 binding.setUser(owner);
+
                 Picasso.with(getActivity())
                         .load(user.getProfilePicture()) //Picasso needs "http://" or "https://" url
                         .placeholder(R.drawable.ic_portrait) //Placeholders and error images are not resized and must be fairly small images.
@@ -102,11 +108,13 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                         .transform(new RoundedCornersTransformation(50,20))
                         .into(binding.ownerPicture);
 
-                LatLng pos = viewModel.getLatLng();
-                if(pos != null){
-                    mMap.addMarker(new MarkerOptions().position(pos)
-                            .title(viewModel.getOwnername()));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                if(mMap != null){
+                    LatLng pos = viewModel.getLatLng();
+                    if(pos != null){
+                        mMap.addMarker(new MarkerOptions().position(pos)
+                                .title(viewModel.getOwnername()));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                    }
                 }
             }
         });
@@ -151,6 +159,10 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                 .imageEngine(new PicassoEngine())
                 .forResult(1);
         //Result receive in @onActivityResult
+    }
+
+    public String getAge(){
+        return SzUtils.getAge(SzUtils.timestampToCal(owner.getDateOfBirth()));
     }
 
     @Override

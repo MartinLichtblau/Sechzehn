@@ -1,5 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
@@ -10,13 +11,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.Toast;
+
+import java.util.Calendar;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.DiafragOwnerBinding;
 
@@ -59,6 +66,35 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         customizeFragment();
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    public void changeBirthday(View view){
+        final Calendar newCal = Calendar.getInstance();
+        String dob = owner.getDateOfBirth();
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                newCal.set(Calendar.YEAR, year);
+                newCal.set(Calendar.MONTH, monthOfYear);
+                newCal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                owner.setDateOfBirth(SzUtils.calToTimestamp(newCal));
+                binding.setUser(owner);
+                Log.d("onDateSet", year+"-"+monthOfYear+"-"+dayOfMonth);
+            }
+        };
+
+        if(dob.isEmpty()){
+            //If no date was ever set
+            new DatePickerDialog(getContext(),date,1990,11,30).show();
+        }else{
+            //If some date is already set
+            Calendar oldCal = SzUtils.timestampToCal(owner.getDateOfBirth());
+            new DatePickerDialog(getContext(),date,
+                    oldCal.get(Calendar.YEAR),
+                    oldCal.get(Calendar.MONTH),
+                    oldCal.get(Calendar.DAY_OF_MONTH)).show();
+        }
     }
 
     public void onCancel(View view){
@@ -118,7 +154,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             owner = ownerVM.getOwner().getValue();
             binding.setUser(owner);
             binding.realname.setVisibility(View.VISIBLE);
-            binding.age.setVisibility(View.VISIBLE);
+            binding.ownerBirthday.setVisibility(View.VISIBLE);
             binding.address.setVisibility(View.VISIBLE);
             binding.incognitoSwitch.setVisibility(View.VISIBLE);
         }else if(type == "logout"){

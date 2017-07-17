@@ -7,10 +7,14 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import java.io.ByteArrayOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Created by marti on 12.07.2017.
@@ -71,6 +75,35 @@ public final class SzUtils {
             }
         });
         return scaledImg;
+    }
+
+    public static Calendar timestampToCal(String timestamp){
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            cal.setTime(sdf.parse(timestamp));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return cal;
+    }
+
+    public static String calToTimestamp(Calendar cal){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(cal.getTime());
+    }
+
+    public static String getAge(Calendar dob){
+        //Ref > https://stackoverflow.com/questions/5291503/how-to-create-method-for-age-calculation-method-in-android
+        if (dob == null)
+            return  null;
+        Calendar today = Calendar.getInstance();
+        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)){
+            age--;
+        }
+        return String.valueOf(age);
     }
 
 
