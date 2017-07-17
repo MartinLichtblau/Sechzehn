@@ -37,7 +37,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 @RuntimePermissions
 public class BottomTabsActivity extends AppCompatActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
     //Better convention to properly name the indices what they are in your app
-    private final int INDEX_VENUES = FragNavController.TAB1;
+    private final int INDEX_SEARCH = FragNavController.TAB1;
     private final int INDEX_FRIENDS = FragNavController.TAB2;
     private final int INDEX_OWNER = FragNavController.TAB3;
     private BottomBar mBottomBar;
@@ -49,7 +49,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         super.onCreate(savedInstanceState);
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        mBottomBar.selectTabAtPosition(INDEX_VENUES);
+        mBottomBar.selectTabAtPosition(INDEX_SEARCH);
         mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
                 .transactionListener(this)
                 .rootFragmentListener(this, 3)
@@ -58,13 +58,13 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             @Override
             public void onTabSelected(@IdRes int tabId) {
                 switch (tabId) {
-                    case R.id.bb_menu_nearby:
-                        mNavController.switchTab(INDEX_VENUES);
+                    case R.id.bb_menu_search:
+                        mNavController.switchTab(INDEX_SEARCH);
                         break;
                     case R.id.bb_menu_friends:
                         mNavController.switchTab(INDEX_FRIENDS);
                         break;
-                    case R.id.bb_menu_favorites: //@TODO change icon
+                    case R.id.bb_menu_owner:
                         mNavController.switchTab(INDEX_OWNER);
                         break;
                 }
@@ -248,7 +248,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     @Override
     public Fragment getRootFragment(int index) {
         switch (index) {
-            case INDEX_VENUES:
+            case INDEX_SEARCH:
                 return VenuesFragment.newInstance(0);
             case INDEX_FRIENDS:
                 return FriendsFragment.newInstance(0);
