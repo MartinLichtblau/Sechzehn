@@ -12,7 +12,7 @@
     <!--What's the difference? >>> https://inthecheesefactory.com/blog/things-you-need-to-know-about-android-m-permission-developer-edition/en-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /><!-- Reason: For foto picker-->
     <uses-permission android:name="android.permission.CAMERA" /><!-- Reason: For foto picker to make fotos-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- Reason: To share location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /><!-- Reason: To share location -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- Reason: ? -->
     <uses-permission android:name="android.permission.READ_PROFILE" /> <!-- Reason: ? -->
     <uses-permission android:name="android.permission.READ_CONTACTS" /> <!-- Reason: ? -->
@@ -27,7 +27,8 @@
         android:theme="@style/SzMaterialTheme"
         >
         <activity android:name=".activities.BottomTabsActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -36,7 +37,7 @@
         <activity
             android:name=".activities.LoginActivity"
             android:launchMode="singleInstance"
-            >
+            android:screenOrientation="portrait">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -46,6 +47,7 @@
             </intent-filter>
 
         </activity>
+        <service android:name="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.LocationService"/>
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

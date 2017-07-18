@@ -69,4 +69,11 @@ public interface UserService {
             @Path("username") String username,
             @Part MultipartBody.Part picture
     );
+
+    @PATCH("users/{username}/location")
+    Call<User> updateLocation(
+            @Path("username") String username,
+            @Body RequestBody location
+    );
+
 }

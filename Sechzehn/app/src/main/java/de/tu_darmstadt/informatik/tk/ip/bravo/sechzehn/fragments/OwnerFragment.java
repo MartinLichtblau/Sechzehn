@@ -1,25 +1,17 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
-import android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,13 +23,8 @@ import com.squareup.picasso.Picasso;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.PicassoEngine;
-import com.zhihu.matisse.internal.entity.CaptureStrategy;
-
-import java.io.File;
-import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentOwnerBinding;
 
@@ -50,8 +37,8 @@ import static android.app.Activity.RESULT_OK;
 public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     private FragmentOwnerBinding binding;
     private OwnerViewModel viewModel;
-    SupportMapFragment mapFragment;
-    GoogleMap mMap;
+    private SupportMapFragment mapFragment;
+    GoogleMap map;
     User owner;
 
     public static OwnerFragment newInstance() {
@@ -61,18 +48,18 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        //Get OwnerViewModel from everywhere like below or like
+        // ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
+        viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
-        //Get OwnerViewModel from everywhere like below or like
-        // ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_owner, container, false);
         binding.setFrag(this); //Most important to actually bind the variables specified in layout.xml | The owner binding goes in ownerSetup() triggered by async map
-        updateOwner();
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        updateOwner();
         return binding.getRoot();
     }
 
@@ -83,12 +70,13 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         getChildFragmentManager().beginTransaction()
                 .remove(mapFragment)
                 .commit();
-        mMap = null;
+        map = null;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        //Correct usage of maps fragment > https://stackoverflow.com/a/33525515/3965610
+        map = googleMap;
         updateOwner();
     }
 
@@ -108,12 +96,12 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                         .transform(new RoundedCornersTransformation(50,20))
                         .into(binding.ownerPicture);
 
-                if(mMap != null){
+                if(map != null){
                     LatLng pos = viewModel.getLatLng();
                     if(pos != null){
-                        mMap.addMarker(new MarkerOptions().position(pos)
+                        map.addMarker(new MarkerOptions().position(pos)
                                 .title(viewModel.getOwnername()));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                     }
                 }
             }
