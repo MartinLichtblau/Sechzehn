@@ -16,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,7 +25,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenuesFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import permissions.dispatcher.NeedsPermission;
@@ -280,7 +279,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     public Fragment getRootFragment(int index) {
         switch (index) {
             case INDEX_SEARCH:
-                return VenuesFragment.newInstance(0);
+                return SearchFragment.newInstance(0);
             case INDEX_FRIENDS:
                 return FriendsFragment.newInstance(0);
             case INDEX_OWNER:

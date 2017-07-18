@@ -30,6 +30,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentOwner
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 import static android.app.Activity.RESULT_OK;
@@ -90,10 +91,10 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
 
                 Picasso.with(getActivity())
                         .load(user.getProfilePicture()) //Picasso needs "http://" or "https://" url
-                        .placeholder(R.drawable.ic_portrait) //Placeholders and error images are not resized and must be fairly small images.
-                        .error(R.drawable.ic_portrait)
+                        .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
+                        .error(R.drawable.ic_owner)
                         //.centerCrop().resize(256,256) not neccessary since we do that for each uploaded img by default
-                        .transform(new RoundedCornersTransformation(50,20))
+                        .transform(new CropCircleTransformation())
                         .into(binding.ownerPicture);
 
                 if(map != null){
