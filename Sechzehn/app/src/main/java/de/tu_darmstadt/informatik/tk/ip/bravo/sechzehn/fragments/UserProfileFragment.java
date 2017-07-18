@@ -97,10 +97,14 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
             @Override
             public void onChanged(User user) {
                 binding.setUser(user);
-                if(user.getProfilePicture() != null && user.getProfilePicture() != ""){
-                    //Picasso.with(getActivity()).setLoggingEnabled(true);
-                    Picasso.with(getActivity()).load("http://"+user.getProfilePicture()).transform(new RoundedCornersTransformation(10,10)).into(binding.userprofilePicture); //Picasso needs "http://"
-                }
+
+                Picasso.with(getActivity())
+                        .load("http://"+user.getProfilePicture()) //Picasso needs "http://"
+                        .placeholder(R.drawable.ic_person) //Placeholders and error images are not resized and must be fairly small images.
+                        .centerCrop().resize(256,256)
+                        .transform(new RoundedCornersTransformation(50,20))
+                        .into(binding.userprofilePicture);
+
                 LatLng pos = new LatLng(viewModel.getUser().getValue().getLat(),viewModel.getUser().getValue().getLng());
                 mMap.addMarker(new MarkerOptions().position(pos)
                         .title(getArguments().getString("username")));

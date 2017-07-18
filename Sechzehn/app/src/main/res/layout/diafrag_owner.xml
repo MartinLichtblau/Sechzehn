@@ -33,16 +33,19 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/age"
+        android:id="@+id/owner_birthday"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="false"
         android:visibility="gone">
         <android.support.design.widget.TextInputEditText
             android:id="@+id/age_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Age"
-            android:text="@={user.dateOfBirth}" />
+            android:hint="Birthday"
+            android:text="@={user.dateOfBirth}"
+            android:focusable="false"
+            android:onClick="@{frag::changeBirthday}"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -109,31 +112,27 @@
             android:text="@={frag.newPassword}" />
     </android.support.design.widget.TextInputLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dim_normal"
-        android:layout_gravity="end">
+        android:layout_marginTop="@dimen/dim_normal">
 
-        <Button
+        <Button android:theme="@style/PrimaryFlatButton"
             android:id="@+id/Cancel"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Cancel"
-            android:theme="@style/PrimaryFlatButton"
-            android:onClick="@{frag::onCancel}"/>
+            android:onClick="@{frag::onCancel}"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/Submit" />
 
-        <Button
+        <Button android:theme="@style/PrimaryFlatButton"
             android:id="@+id/Submit"
-            android:layout_toRightOf="@+id/Profile"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Yes"
-            android:theme="@style/PrimaryFlatButton"
-            android:onClick="@{frag::onSubmit}"/>
-    </LinearLayout>
+            android:text="Ok"
+            android:onClick="@{frag::onSubmit}"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 </LinearLayout>
 </layout>

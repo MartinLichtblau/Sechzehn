@@ -34,7 +34,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="-60dp"
                 android:elevation="@dimen/dim_normal"
-                android:scaleType="fitCenter"/>
+                android:tint="#FFFFFF"/>
 
             <RelativeLayout
                 android:id="@+id/userprofile_headerLayout"
@@ -51,7 +51,7 @@
                     android:layout_marginLeft="@dimen/dim_normal"
                     android:layout_marginTop="@dimen/dim_normal"
                     android:layout_toLeftOf="@+id/userprofile_options"
-                    android:src="@drawable/ic_action_user_add" />
+                    android:src="@drawable/ic_user_add" />
 
                 <ImageView
                     android:id="@+id/userprofile_options"

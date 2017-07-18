@@ -1,0 +1,28 @@
+<resources>
+    <!-- inherit from the material theme -->
+    <style name="SzMaterialTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Main theme colors -->
+        <!--   your app branding color for the app bar -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!--<item name="android:buttonStyle">@style/PrimaryFlatButton</item>-->
+        <!--<item name="android:textViewStyle">@style/PrimaryText</item>-->
+    </style>
+
+    <style name="PrimaryFlatButton" parent="SzMaterialTheme">
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="android:colorControlHighlight">@color/colorPrimary</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:drawableTint">@color/colorAccent</item>
+    </style>
+
+    <style name="PrimaryText" parent="@style/SzMaterialTheme">
+        <item name="android:textSize">@dimen/dim_normal</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

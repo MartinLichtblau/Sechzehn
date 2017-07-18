@@ -1,5 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
@@ -10,13 +11,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.Toast;
+
+import java.util.Calendar;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.DiafragOwnerBinding;
 
@@ -49,21 +56,45 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
         ownerVM = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
         binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()), R.layout.diafrag_owner, null, false);
         binding.setFrag(this);
-        binding.setUser(owner);
-
-        customizeFragment();
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
-        builder.setMessage("Are you sure?");
         return builder.create();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding.setUser(ownerVM.getOwner().getValue());
+        customizeFragment();
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    public void changeBirthday(View view){
+        final Calendar newCal = Calendar.getInstance();
+        String dob = owner.getDateOfBirth();
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                newCal.set(Calendar.YEAR, year);
+                newCal.set(Calendar.MONTH, monthOfYear);
+                newCal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                owner.setDateOfBirth(SzUtils.calToTimestamp(newCal));
+                binding.setUser(owner);
+                Log.d("onDateSet", year+"-"+monthOfYear+"-"+dayOfMonth);
+            }
+        };
+
+        if(dob.isEmpty()){
+            //If no date was ever set
+            new DatePickerDialog(getContext(),date,1990,11,30).show();
+        }else{
+            //If some date is already set
+            Calendar oldCal = SzUtils.timestampToCal(owner.getDateOfBirth());
+            new DatePickerDialog(getContext(),date,
+                    oldCal.get(Calendar.YEAR),
+                    oldCal.get(Calendar.MONTH),
+                    oldCal.get(Calendar.DAY_OF_MONTH)).show();
+        }
     }
 
     public void onCancel(View view){
@@ -80,7 +111,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             });
 
         }else if(type == "logout"){
-            Toast.makeText(getActivity(), "Logging Out", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
             ((BottomTabsActivity)getActivity()).factoryReset();
 
         }else if(type == "changePassword") {
@@ -119,21 +150,27 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
 
     private void customizeFragment(){
         if(type == "editProfile"){
+            getDialog().setTitle("Edit Profile");
             owner = ownerVM.getOwner().getValue();
             binding.setUser(owner);
             binding.realname.setVisibility(View.VISIBLE);
-            binding.age.setVisibility(View.VISIBLE);
+            binding.ownerBirthday.setVisibility(View.VISIBLE);
             binding.address.setVisibility(View.VISIBLE);
             binding.incognitoSwitch.setVisibility(View.VISIBLE);
         }else if(type == "logout"){
+            getDialog().setTitle("Logout");
         }else if(type == "changePassword") {
+            getDialog().setTitle("Change Password");
             binding.currentPassword.setVisibility(View.VISIBLE);
             binding.newPassword.setVisibility(View.VISIBLE);
         }else if(type == "resetPassword") {
+            getDialog().setTitle("Reset Password");
         }else if(type == "changeEmail") {
+            getDialog().setTitle("Change Email");
             binding.newEmail.setVisibility(View.VISIBLE);
             binding.currentPassword.setVisibility(View.VISIBLE);
         }else if(type == "deleteAccount"){
+            getDialog().setTitle("Delete Account");
             binding.currentPassword.setVisibility(View.VISIBLE);
         }else {
             throw new IllegalArgumentException("Invalid Owner DialogFragment Type");
