@@ -15,8 +15,9 @@
 
     <style name="PrimaryFlatButton" parent="SzMaterialTheme">
         <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
-        <item name="colorControlHighlight">@color/colorAccent</item>
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:colorControlHighlight">@color/colorPrimary</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:drawableTint">@color/colorAccent</item>
     </style>
 
     <style name="PrimaryText" parent="@style/SzMaterialTheme">

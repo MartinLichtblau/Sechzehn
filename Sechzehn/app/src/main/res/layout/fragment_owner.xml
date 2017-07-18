@@ -85,10 +85,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <!--@TODO make better clickable, and give button style-->
                         <Button android:theme="@style/PrimaryFlatButton"
                             android:id="@+id/edit_profile"
-                            android:drawableTop="@drawable/ic_edit_black_24dp"
+                            android:drawableTop="@drawable/ic_edit"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:onClick="@{frag::editProfile}"
@@ -211,15 +210,12 @@
                         android:layout_marginTop="@dimen/dim_normal"
                         android:orientation="vertical">
 
-                        <TextView
+                        <TextView style="@style/TextAppearance.AppCompat.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/dim_small"
                             android:layout_marginLeft="@dimen/dim_normal"
-                            android:text="Location"
-                            android:textColor="#000"
-                            android:textSize="@dimen/txt_normal"
-                            android:textStyle="bold" />
+                            android:text="Location"/>
 
                         <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
                             android:id="@+id/map"
@@ -249,56 +245,48 @@
                         android:orientation="vertical"
                         android:gravity="center">
 
-                        <TextView
+                        <TextView style="@style/TextAppearance.AppCompat.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/dim_small"
-                            android:text="Account"
-                            android:textColor="#000"
-                            android:textSize="@dimen/txt_normal"
-                            android:textStyle="bold" />
+                            android:text="Account" />
 
                         <Button
                             android:id="@+id/owner_logout"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="Logout"
                             android:theme="@style/PrimaryFlatButton"
                             android:onClick="@{frag::logout}"/>
 
                         <Button
                             android:id="@+id/owner_changepassword"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="Change Password"
                             android:theme="@style/PrimaryFlatButton"
                             android:onClick="@{frag::changePassword}"/>
 
                         <Button
                             android:id="@+id/owner_resetpassword"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="Reset Password"
                             android:theme="@style/PrimaryFlatButton"
                             android:onClick="@{frag::resetPassword}"/>
 
                         <Button
                             android:id="@+id/owner_changeemail"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="Change Email"
                             android:theme="@style/PrimaryFlatButton"
                             android:onClick="@{frag::changeEmail}"/>
 
                         <Button
                             android:id="@+id/owner_deleteaccount"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="Delete Account"
                             android:theme="@style/PrimaryFlatButton"
                             android:onClick="@{frag::deleteAccount}"/>
