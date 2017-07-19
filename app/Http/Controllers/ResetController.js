@@ -103,7 +103,7 @@ class ResetController {
     let message = 'Reset token not valid anymore.'
     let status = 410
 
-    if (Moment().diff(resetToken.created_at, 'days') <= 30) {
+    if (Moment().diff(resetToken.created_at, 'hours') <= 1) {
       // const user = yield resetToken.user().fetch()
       const user = yield User.findOrFail(resetToken.user)
       console.log(user)

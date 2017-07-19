@@ -106,6 +106,8 @@ class UserController {
 
   * store (request, response) {
     const userData = request.only('username', 'email', 'password')
+    // Make all usernames lowercase
+    userData.username = userData.username.toLowerCase()
     const validation = yield Validator.validate(userData, User.rules)
 
     if (validation.fails()) {
