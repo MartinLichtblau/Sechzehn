@@ -309,7 +309,7 @@ class UserController {
     user.lng = location.lng
 
     yield user.save()
-    response.ok(user.completeView())
+    response.noContent()
   }
 
   * destroy (request, response) {
