@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
@@ -75,10 +76,11 @@ public class FriendsFragment extends BaseFragment {
         });
 
         //set the items to your ItemAdapter
-        List<User> friendList = viewModel.getFriends(null, null).observe(this, new Observer<List<User>>() {
+        viewModel.getFriends(null, null).observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(@Nullable List<User> users) {
-                fastItemAdapter.add(users); //@TODO retrieve data from viewModel
+                //fastItemAdapter.add(users); //@TODO retrieve data from viewModel
+                Toast.makeText(getActivity(), "onChanged"+users.isEmpty(), Toast.LENGTH_SHORT).show();
             }
         });
 
