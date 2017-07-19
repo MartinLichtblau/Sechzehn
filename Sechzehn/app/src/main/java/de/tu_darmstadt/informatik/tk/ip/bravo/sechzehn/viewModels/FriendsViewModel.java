@@ -29,15 +29,15 @@ public class FriendsViewModel extends ViewModel {
         userService = ServiceGenerator.createService(UserService.class,SzUtils.getToken());
     }
 
-    public LiveData<Boolean> getFriends(@Nullable Integer page, @Nullable Integer perPage){
+    public LiveData<List<User>> getFriends(@Nullable Integer page, @Nullable Integer perPage){
         Log.d(TAG, "getFriends");
-        final MutableLiveData<Boolean> close = new MutableLiveData<Boolean>();
+        final MutableLiveData<List<User>> friendsList = new MutableLiveData<List<User>>();
         userService.getFriends(SzUtils.getOwnername(), page, perPage).enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if(response.body() != null) { //The body is a List of Users & ErrorBody is empty
                     Log.d(TAG, "getFriends: "+response.body());
-                    close.setValue(true);
+                    friendsList.setValue(response.body());
                 }else{
                     //Log.d(TAG, "getFriends: "+NetworkUtils.parseError(response).getMessage());
                 }
@@ -47,7 +47,7 @@ public class FriendsViewModel extends ViewModel {
 
             }
         });
-        return close;
+        return friendsList;
     }
 
 

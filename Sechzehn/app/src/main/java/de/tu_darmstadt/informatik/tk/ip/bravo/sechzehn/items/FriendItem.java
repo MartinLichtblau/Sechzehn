@@ -1,4 +1,4 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.adapters;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items;
 
 
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +13,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
  * Created by marti on 19.07.2017.
  */
 
-public class SampleItem extends AbstractItem<SampleItem, SampleItem.ViewHolder> {
+public class FriendItem extends AbstractItem<FriendItem, FriendItem.ViewHolder> {
     private final int ID = 1;
     public String name = "TestName";
     public String description = "TestDescription";
