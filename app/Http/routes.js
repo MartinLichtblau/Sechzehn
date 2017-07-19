@@ -66,7 +66,6 @@ Route.group('api', function () {
   Route
     .resource('users', 'UserController')
     .except('create', 'edit')
-    .middleware('auth')
-
+    .middleware({auth: ['index', 'show', 'update', 'destroy']})
 }).prefix('/api')
   .formats(['json'], false)
