@@ -26,7 +26,8 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.LocationService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -60,6 +61,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             startActivity(intent);
             finish();
         }
+        SzUtils.initialize(getSharedPreferences("Sechzehn",0));
 
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
@@ -281,7 +283,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             case INDEX_SEARCH:
                 return SearchFragment.newInstance(0);
             case INDEX_FRIENDS:
-                return FriendsFragment.newInstance(0);
+                return FriendsFragment.newInstance();
             case INDEX_OWNER:
                 return OwnerFragment.newInstance();         //In Background gets owners data from server
         }
