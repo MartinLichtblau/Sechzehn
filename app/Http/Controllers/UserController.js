@@ -8,9 +8,9 @@ const User = use('App/Model/User')
 const Route = use('Route')
 const Config = use('Config')
 const TokenGenerator = use('TokenGenerator')
+const Storage = use('Storage')
 const Mail = use('Mail')
 const Url = require('url')
-const Fs = require('fs')
 const Path = require('path')
 const Exceptions = require('adonis-lucid/src/Exceptions')
 const Pagination = require('./Helper/Pagination')
@@ -176,36 +176,14 @@ class UserController {
       allowedExtensions: ['jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG']
     })
 
-    let oldPath = null
+    const oldUrl = user.profile_picture
 
-    // Save path of the old picture to delete it later
-    if (user.profile_picture !== null && user.profile_picture.startsWith(Config.get('app.absoluteUrl'))) {
-      oldPath = Helpers.storagePath(user.profile_picture.split('/').pop())
-    }
-
-    if (profilePicture === null || profilePicture === '') {
-      user.profile_picture = null
-      yield user.save()
-    } else {
-      const fileName = `${new Date().getTime()}.${profilePicture.extension()}`
-      yield profilePicture.move(Helpers.storagePath(), fileName)
-
-      if (!profilePicture.moved()) {
-        response.badRequest(profilePicture.errors())
-        return
-      }
-
-      user.profile_picture = Url.resolve(Config.get('app.absoluteUrl'), Route.url('media', {filename: fileName}))
-    }
-
+    // Save the new image
+    user.profile_picture = yield Storage.store(profilePicture)
     yield user.save()
 
     // Delete the old picture
-    if (oldPath) {
-      Fs.unlink(oldPath, (err) => {
-        if (err) console.warn(err)
-      })
-    }
+    yield Storage.delete(oldUrl)
 
     response.ok(user.completeView())
   }
