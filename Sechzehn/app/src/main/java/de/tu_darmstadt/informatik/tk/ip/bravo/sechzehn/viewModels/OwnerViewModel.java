@@ -4,17 +4,12 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.GenericBody;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
@@ -22,7 +17,6 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

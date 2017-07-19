@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -21,8 +22,22 @@ import java.util.Calendar;
  */
 
 public final class SzUtils {
+    private static SharedPreferences sharedPreferences;
 
     private void SzUtils(){}
+
+    public static void initialize(SharedPreferences sP){
+        if(sharedPreferences == null)
+            sharedPreferences = sP;
+    }
+
+    public static String getToken(){
+        return sharedPreferences.getString("JWT","");
+    }
+
+    public static String getOwnername(){
+        return sharedPreferences.getString("ownername","");
+    }
 
     public static String getRealPathFromURI(Context context, Uri uri) {
         //Ref > https://stackoverflow.com/questions/30974359/how-to-get-full-path-if-image-to-send-to-server-by-multipart-in-android/30974742
@@ -105,6 +120,8 @@ public final class SzUtils {
         }
         return String.valueOf(age);
     }
+
+
 
 
 }

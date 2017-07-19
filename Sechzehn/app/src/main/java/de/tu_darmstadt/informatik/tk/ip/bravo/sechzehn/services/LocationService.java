@@ -1,14 +1,10 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services;
 
 import android.app.Service;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
@@ -20,7 +16,8 @@ import com.google.android.gms.location.LocationServices;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.GenericBody;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
