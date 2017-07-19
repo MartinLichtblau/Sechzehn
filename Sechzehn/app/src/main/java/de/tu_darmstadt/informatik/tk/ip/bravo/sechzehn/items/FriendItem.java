@@ -8,6 +8,7 @@ import com.mikepenz.fastadapter.items.AbstractItem;
 import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 
 /**
  * Created by marti on 19.07.2017.
@@ -15,8 +16,15 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 
 public class FriendItem extends AbstractItem<FriendItem, FriendItem.ViewHolder> {
     private final int ID = 1;
-    public String name = "TestName";
-    public String description = "TestDescription";
+    public String realname = "TestName";
+    public String username = "TestDescription";
+
+    public static FriendItem create(User u){
+        FriendItem f = new FriendItem();
+        f.realname =u.getRealName();
+        f.username =u.getUsername();
+        return f;
+    }
 
     //The unique ID for this type of item
     @SuppressWarnings("ResourceType") //@TODO //should be a defined int ID unique for this type of item
@@ -38,10 +46,10 @@ public class FriendItem extends AbstractItem<FriendItem, FriendItem.ViewHolder> 
         super.bindView(viewHolder, payloads);
 
         //bind our data
-        //set the text for the name
-        viewHolder.name.setText(name);
-        //set the text for the description or hide
-        viewHolder.description.setText(description);
+        //set the text for the realname
+        viewHolder.name.setText(realname);
+        //set the text for the username or hide
+        viewHolder.description.setText(username);
     }
 
     //reset the view here (this is an optional method, but recommended)

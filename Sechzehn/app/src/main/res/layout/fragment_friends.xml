@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <SearchView
+            android:id="@+id/friendsSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </SearchView>
+
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+            android:id="@+id/friendsList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/item_progress_bar"
-            android:layout_marginTop="@dimen/dim_normal" />
+            android:layout_above="@+id/item_progress_bar" />
 
-        <ProgressBar
-            android:id="@+id/item_progress_bar"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:elevation="@dimen/dim_normal"
-            android:padding="@dimen/dim_normal"
-            android:visibility="gone" />
-    </RelativeLayout>
+    </LinearLayout>
 </layout>

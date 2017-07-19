@@ -1,12 +1,8 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,20 +14,23 @@ import com.mikepenz.fastadapter.adapters.FooterAdapter;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 import com.mikepenz.fastadapter_extensions.items.ProgressItem;
 
-import java.util.List;
-
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.FriendItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentFriendsBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.FriendsViewModel;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 /**
  * Created by niccapdevila on 3/26/16.
  */
-public class FriendsFragment extends BaseFragment {
-    private FragmentFriendsBinding binding;
-    private FriendsViewModel viewModel;
+public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding> implements SearchView.OnQueryTextListener, FastAdapter.OnClickListener<FriendItem> {
+
     //save our FastAdapter
     private FastItemAdapter<FriendItem> fastItemAdapter;
     private FooterAdapter<ProgressItem> footerAdapter;
@@ -43,50 +42,52 @@ public class FriendsFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(this).get(FriendsViewModel.class);
-        viewModel.initialize();
+    protected FragmentFriendsBinding initDataBinding(LayoutInflater inflater, @Nullable ViewGroup container) {
+        return FragmentFriendsBinding.inflate(inflater, container, false);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_friends, container, false);
-        RecyclerView recyclerView = binding.recyclerView;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    protected void useDataBinding(FragmentFriendsBinding binding) {
+        fastItemAdapter = new FastItemAdapter<>();
+        fastItemAdapter.withOnClickListener(this);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.friendsList.setLayoutManager(llm);
+        binding.friendsList.setAdapter(fastItemAdapter);
 
-        //create our FastAdapter which will manage everything
-        fastItemAdapter  = new FastItemAdapter();
-        fastItemAdapter .withSelectable(true);
-
-        //set our adapters to the RecyclerView
-        //we wrap our FastAdapter inside the ItemAdapter -> This allows us to chain adapters for more complex useCases
-        recyclerView.setAdapter(fastItemAdapter);
-
-        //create our FooterAdapter which will manage the progress items
-        footerAdapter = new FooterAdapter<>();
-
-        //configure our fastAdapter
-        fastItemAdapter.withOnClickListener(new FastAdapter.OnClickListener<FriendItem>() {
-            @Override
-            public boolean onClick(View v, IAdapter<FriendItem> adapter, FriendItem item, int position) {
-                //Toast.makeText(v.getContext(), (item).name.getText(v.getContext()), Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });
-
-        //set the items to your ItemAdapter
-        viewModel.getFriends(null, null).observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(@Nullable List<User> users) {
-                //fastItemAdapter.add(users); //@TODO retrieve data from viewModel
-                Toast.makeText(getActivity(), "onChanged"+users.isEmpty(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-
-        return binding.getRoot();
+        binding.friendsSearch.setOnQueryTextListener(this);
     }
 
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+
+        ServiceGenerator.createService(UserService.class, SzUtils.getToken()).getUsers(1, 10, null, null, null, null, query).enqueue(new Callback<Pagination<User>>() {
+            @Override
+            public void onResponse(Call<Pagination<User>> call, Response<Pagination<User>> response) {
+                if (response.isSuccessful()) {
+                    fastItemAdapter.clear();
+                    for (User u : response.body().data) {
+                        fastItemAdapter.add(FriendItem.create(u));
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Pagination<User>> call, Throwable t) {
+                Toast.makeText(getActivity(), "Connectivity error!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return true;
+    }
+
+    public boolean onClick(View v, IAdapter<FriendItem> adapter, FriendItem item, int position) {
+        fragNavController().pushFragment(UserProfileFragment.newInstance(item.username));
+        return true;
+    }
 }
