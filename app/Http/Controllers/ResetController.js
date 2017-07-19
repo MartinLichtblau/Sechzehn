@@ -82,10 +82,10 @@ class ResetController {
 
   * confirm (request, response) {
     const token = request.param('token')
-    const passwords = request.only('password', 'password_confirmation')
+    const passwords = request.only('password')
     const type = request.accepts('json', 'html')
 
-    const validation = yield Validator.validate(passwords, {password: 'required|confirmed'})
+    const validation = yield Validator.validate(passwords, {password: 'required|string'})
 
     if (validation.fails()) {
       if (type === 'json') {
