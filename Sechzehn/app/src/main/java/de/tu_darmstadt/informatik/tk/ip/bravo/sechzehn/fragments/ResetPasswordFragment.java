@@ -5,11 +5,39 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
+import android.content.Intent;
 import android.view.View;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.ForgotPwFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.ResetPasswordFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.LoginService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentForgotPwBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.LoginService;
+
+import java.util.List;
+
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentResetPasswordBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.LoginService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +48,8 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "token";
+
+    User user = new User();
 
 
     // TODO: Rename and change types of parameters
@@ -58,6 +88,34 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
         return FragmentResetPasswordBinding.inflate(inflater, container, false);
     }
 
-public void confirm(View view){}
+    @Override
+    protected void useDataBinding(FragmentResetPasswordBinding binding) {
+        binding.setUser(user);
+        binding.setSelf(this);
+    }
 
+public void confirm(View view){
+
+    if (!binding.resetPasswordPassword.getText().toString().equals(binding.resetPasswordPasswordConfirmation.getText().toString())) {
+        binding.resetPasswordPasswordConfirmation.setError("Passwords do not match.");
+        return;
+    } else {
+        binding.resetPasswordPasswordConfirmation.setError(null);
+    }
+
+                ServiceGenerator.createService(LoginService.class).resetPasswordConfirm(token, user).enqueue(new Callback<Object>() {
+                    @Override
+                    public void onResponse(Call<Object> call, Response<Object> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getActivity(), "new password set successful", Toast.LENGTH_LONG).show();}
+                    }
+
+                    @Override
+                    public void onFailure(Call<Object> call, Throwable t) {
+                        Toast.makeText(getActivity(), "Connectivity error.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+    }
 }

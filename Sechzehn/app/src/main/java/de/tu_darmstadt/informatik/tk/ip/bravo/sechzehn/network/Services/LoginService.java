@@ -26,4 +26,6 @@ public interface LoginService {
 
     @GET("/confirm/{token}")
     Call<Object> confirmEmail(@Path("token") String token);
+
+
 }

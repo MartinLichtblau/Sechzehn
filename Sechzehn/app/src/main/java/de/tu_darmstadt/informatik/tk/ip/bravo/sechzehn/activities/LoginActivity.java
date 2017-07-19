@@ -76,7 +76,9 @@ public class LoginActivity extends AppCompatActivity {
                 if (pathSegments.get(0).equals("reset")) {
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.loginContainer, ResetPasswordFragment.newInstance(pathSegments.get(1)))
-                            .commit();
+                            //.commit();  https://stackoverflow.com/questions/7575921/illegalstateexception-can-not-perform-this-action-after-onsaveinstancestate-wit
+                            .commitAllowingStateLoss(); // Fix crash while starting app from Email-link
+
                 } else if (pathSegments.get(0).equals("confirm")) {
                     ServiceGenerator.createService(LoginService.class).confirmEmail(pathSegments.get(1)).enqueue(new Callback<Object>() {
                         @Override
