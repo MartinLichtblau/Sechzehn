@@ -85,7 +85,7 @@ class ResetController {
     const passwords = request.only('password')
     const type = request.accepts('json', 'html')
 
-    const validation = yield Validator.validate(passwords, {password: 'required|string'})
+    const validation = yield Validator.validate(passwords, {password: 'required'})
 
     if (validation.fails()) {
       if (type === 'json') {
@@ -104,7 +104,9 @@ class ResetController {
     let status = 410
 
     if (Moment().diff(resetToken.created_at, 'days') <= 30) {
-      const user = yield resetToken.user().fetch()
+      // const user = yield resetToken.user().fetch()
+      const user = yield User.findOrFail(resetToken.user)
+      console.log(user)
       user.password = yield Hash.make(passwords.password)
       yield user.save()
 
