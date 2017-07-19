@@ -12,6 +12,6 @@ module.exports = {
    |
    */
   cloudinary: {
-    url: Env.get('CLOUDINARY_URL')
+    url: Env.get('CLOUDINARY_URL', null)
   }
 }

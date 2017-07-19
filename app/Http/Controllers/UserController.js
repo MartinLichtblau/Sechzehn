@@ -1,6 +1,5 @@
 'use strict'
 
-const Helpers = use('Helpers')
 const Validator = use('Validator')
 const Hash = use('Hash')
 const Database = use('Database')
