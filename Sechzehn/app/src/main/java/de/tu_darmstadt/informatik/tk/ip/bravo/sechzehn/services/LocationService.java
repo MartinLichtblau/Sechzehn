@@ -18,6 +18,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.GenericBody;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,15 +37,14 @@ public class LocationService extends Service implements
     private LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
     private static UserService userService;
-    String ownername;
+    public static String ownername;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-        String token = getSharedPreferences("Sechzehn",0).getString("JWT","");
-        ownername = getSharedPreferences("Sechzehn",0).getString("ownername","");
-        userService = ServiceGenerator.createService(UserService.class,token);
+        ownername = SzUtils.getOwnername();
+        userService = ServiceGenerator.createService(UserService.class,SzUtils.getToken());
     }
 
     @Override
@@ -168,28 +168,32 @@ public class LocationService extends Service implements
 
     @Override
     public void onLocationChanged(Location location) {
-        if(isBetterLocation(location,previousBestLocation)){ //@TODO update only if location significantly (e.g.500m) moved
-            Log.e(TAG, "position: " + location.getLatitude() + ", " + location.getLongitude() + " accuracy: " + location.getAccuracy());
+        //Update only if new location is better and moved more than 100 meters
+        if(isBetterLocation(location,previousBestLocation)){
+            if(previousBestLocation == null || location.distanceTo(previousBestLocation) > 100){
                 updateLocation(location);
+            }
         }
     }
 
     protected void updateLocation(Location location) {
-            RequestBody body = new GenericBody()
+        Log.e(TAG, "position: " + location.getLatitude() + ", " + location.getLongitude() + " accuracy: " + location.getAccuracy());
+        previousBestLocation = location;
+        RequestBody body = new GenericBody()
                     .put("lat", String.valueOf(location.getLatitude()))
                     .put("lng", String.valueOf(location.getLongitude())).generate();
             userService.updateLocation(ownername, body).enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
-                    //@TODO * changeLocation should return as little as possible, not whole user object, just 200 ok is enough
                     if(response.isSuccessful()) {
+                        //Toast.makeText(LocationService.this, "Location successfully updated", Toast.LENGTH_SHORT).show();
                     }else{
-                        Toast.makeText(LocationService.this, NetworkUtils.parseError(response).getMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(LocationService.this, NetworkUtils.parseError(response).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
-                    Toast.makeText(LocationService.this, "Error: "+t.getCause(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LocationService.this, "Error: "+t.getCause(), Toast.LENGTH_SHORT).show();
                 }
             });
     }

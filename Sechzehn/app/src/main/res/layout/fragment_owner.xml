@@ -56,18 +56,7 @@
                     android:textColor="#fff"
                     android:textSize="@dimen/txt_large"
                     android:textStyle="bold"
-                    android:text="@{user.username}" />
-
-                <TextView
-                    android:id="@+id/owner_slogan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/owner_username"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/dim_small"
-                    android:text="I am the best!"
-                    android:textColor="#fff"
-                    android:textSize="@dimen/txt_normal" />
+                    android:text="@{user.username}"/>
             </RelativeLayout>
 
             <LinearLayout
@@ -173,7 +162,7 @@
                             android:id="@+id/owner_address_header"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Address"
+                            android:text="City"
                             android:layout_marginLeft="16dp"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/owner_address"

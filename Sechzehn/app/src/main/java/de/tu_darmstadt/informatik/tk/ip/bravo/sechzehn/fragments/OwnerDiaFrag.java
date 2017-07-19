@@ -115,13 +115,20 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             ((BottomTabsActivity)getActivity()).factoryReset();
 
         }else if(type == "changePassword") {
-            ownerVM.changePassword(currentPassword, newPassword).observe(this, new Observer<Boolean>() {
-                @Override
-                public void onChanged(@Nullable Boolean close) {
-                    dismiss();
-                }
-            });
-
+            if (!binding.newPasswordEdit.getText().equals(binding.newPasswordConfirmEdit.getText())) {
+                binding.newPasswordEdit.setError("Passwords do not match.");
+                binding.newPasswordConfirmEdit.setError("Passwords do not match.");
+                return;
+            }else{
+                binding.newPasswordEdit.setError(null);
+                binding.newPasswordConfirmEdit.setError(null);
+                ownerVM.changePassword(currentPassword, newPassword).observe(this, new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(@Nullable Boolean close) {
+                        dismiss();
+                    }
+                });
+            }
         }else if(type == "resetPassword") {
             ownerVM.resetPassword().observe(this, new Observer<Boolean>() {
                 @Override
@@ -163,6 +170,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             getDialog().setTitle("Change Password");
             binding.currentPassword.setVisibility(View.VISIBLE);
             binding.newPassword.setVisibility(View.VISIBLE);
+            binding.newPasswordConfirm.setVisibility(View.VISIBLE);
         }else if(type == "resetPassword") {
             getDialog().setTitle("Reset Password");
         }else if(type == "changeEmail") {
