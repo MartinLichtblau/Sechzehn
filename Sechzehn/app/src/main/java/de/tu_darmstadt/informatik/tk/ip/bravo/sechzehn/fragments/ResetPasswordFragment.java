@@ -107,6 +107,7 @@ public void confirm(View view){
                     @Override
                     public void onResponse(Call<Object> call, Response<Object> response) {
                         if (response.isSuccessful()) {
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.loginContainer,LoginFragment.newInstance()).commitAllowingStateLoss();
                             Toast.makeText(getActivity(), "new password set successful", Toast.LENGTH_LONG).show();}
                     }
 
