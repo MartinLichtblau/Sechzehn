@@ -16,7 +16,7 @@ import com.mikepenz.fastadapter_extensions.items.ProgressItem;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.FriendItem;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.UserItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentFriendsBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
@@ -29,10 +29,10 @@ import retrofit2.Response;
 /**
  * Created by niccapdevila on 3/26/16.
  */
-public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding> implements SearchView.OnQueryTextListener, FastAdapter.OnClickListener<FriendItem> {
+public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding> implements SearchView.OnQueryTextListener, FastAdapter.OnClickListener<UserItem> {
 
     //save our FastAdapter
-    private FastItemAdapter<FriendItem> fastItemAdapter;
+    private FastItemAdapter<UserItem> fastItemAdapter;
     private FooterAdapter<ProgressItem> footerAdapter;
 
 
@@ -66,13 +66,15 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
     @Override
     public boolean onQueryTextSubmit(String query) {
 
-        ServiceGenerator.createService(UserService.class, SzUtils.getToken()).getUsers(1, 10, null, null, null, null, query).enqueue(new Callback<Pagination<User>>() {
+        ServiceGenerator.createService(UserService.class, SzUtils.getToken())
+                .getUsers(1, 10, null, null, null, null, query)
+                .enqueue(new Callback<Pagination<User>>() {
             @Override
             public void onResponse(Call<Pagination<User>> call, Response<Pagination<User>> response) {
                 if (response.isSuccessful()) {
                     fastItemAdapter.clear();
                     for (User u : response.body().data) {
-                        fastItemAdapter.add(FriendItem.create(u));
+                        fastItemAdapter.add(UserItem.create(u,fragNavController()));
                     }
                 }
 
@@ -86,8 +88,8 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
         return true;
     }
 
-    public boolean onClick(View v, IAdapter<FriendItem> adapter, FriendItem item, int position) {
-        fragNavController().pushFragment(UserProfileFragment.newInstance(item.username));
+    public boolean onClick(View v, IAdapter<UserItem> adapter, UserItem item, int position) {
+        fragNavController().pushFragment(UserProfileFragment.newInstance(item.user.getUsername()));
         return true;
     }
 }

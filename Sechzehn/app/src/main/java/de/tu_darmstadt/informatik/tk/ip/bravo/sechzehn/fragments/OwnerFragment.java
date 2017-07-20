@@ -47,7 +47,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         return fragment;
     }
 
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Get OwnerViewModel from everywhere like below or like
         // ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
@@ -81,7 +81,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         updateOwner();
     }
 
-    private void updateOwner(){
+    private void updateOwner() {
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -97,9 +97,9 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                         .transform(new CropCircleTransformation())
                         .into(binding.ownerPicture);
 
-                if(map != null){
+                if (map != null) {
                     LatLng pos = viewModel.getLatLng();
-                    if(pos != null){
+                    if (pos != null) {
                         map.addMarker(new MarkerOptions().position(pos)
                                 .title(viewModel.getOwnername()));
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
@@ -109,37 +109,37 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         });
     }
 
-    public void editProfile(View view){
+    public void editProfile(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("editProfile");
         mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
-    public void logout(View view){
+    public void logout(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("logout");
         mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
-    public void resetPassword(View view){
+    public void resetPassword(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("resetPassword");
         mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
-    public void changePassword(View view){
+    public void changePassword(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changePassword");
         mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
-    public void changeEmail(View view){
+    public void changeEmail(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changeEmail");
         mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
-    public void deleteAccount(View view){
+    public void deleteAccount(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("deleteAccount");
         mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
-    public void changePicture(View view){
+    public void changePicture(View view) {
         Matisse.from(OwnerFragment.this)
                 .choose(MimeType.allOf())
                 .maxSelectable(1)
@@ -150,8 +150,11 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         //Result receive in @onActivityResult
     }
 
-    public String getAge(){
-        return SzUtils.getAge(SzUtils.timestampToCal(owner.getDateOfBirth()));
+    public String getAge() {
+        if (owner.getDateOfBirth() != null) {
+            return SzUtils.getAge(SzUtils.timestampToCal(owner.getDateOfBirth()));
+        }
+        return "";
     }
 
     @Override
@@ -159,7 +162,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
             Uri uri = Matisse.obtainResult(data).get(0);
-            SzUtils.centerCropImage(getActivity(),uri).observe(this, new Observer<Bitmap>() {
+            SzUtils.centerCropImage(getActivity(), uri).observe(this, new Observer<Bitmap>() {
                 @Override
                 public void onChanged(@Nullable Bitmap bitmap) {
                     viewModel.changePicture(bitmap);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:orientation="vertical"
@@ -17,7 +18,17 @@
             android:id="@+id/friendsList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/item_progress_bar" />
+             />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:backgroundTint="@color/colorAccent"
+            app:elevation="6dp"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_user_add" />
 
     </LinearLayout>
 </layout>

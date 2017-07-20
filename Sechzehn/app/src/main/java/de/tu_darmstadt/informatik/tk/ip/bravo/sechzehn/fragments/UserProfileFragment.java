@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -17,6 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfileUserBinding;
@@ -92,23 +94,24 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
         });
     }
 
-    private void setup(){
+    private void setup() {
         viewModel.getUser().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
                 binding.setUser(user);
 
                 Picasso.with(getActivity())
-                        .load("http://"+user.getProfilePicture()) //Picasso needs "http://"
+                        .load("http://" + user.getProfilePicture()) //Picasso needs "http://"
                         .placeholder(R.drawable.ic_person) //Placeholders and error images are not resized and must be fairly small images.
-                        .centerCrop().resize(256,256)
-                        .transform(new RoundedCornersTransformation(50,20))
+                        .centerCrop().resize(256, 256)
+                        .transform(new RoundedCornersTransformation(50, 20))
                         .into(binding.userprofilePicture);
-
-                LatLng pos = new LatLng(viewModel.getUser().getValue().getLat(),viewModel.getUser().getValue().getLng());
-                mMap.addMarker(new MarkerOptions().position(pos)
-                        .title(getArguments().getString("username")));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                if (viewModel.getUser().getValue().getLat() != null && viewModel.getUser().getValue().getLng() != null) {
+                    LatLng pos = new LatLng(viewModel.getUser().getValue().getLat(), viewModel.getUser().getValue().getLng());
+                    mMap.addMarker(new MarkerOptions().position(pos)
+                            .title(getArguments().getString("username")));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                }
             }
         });
     }
