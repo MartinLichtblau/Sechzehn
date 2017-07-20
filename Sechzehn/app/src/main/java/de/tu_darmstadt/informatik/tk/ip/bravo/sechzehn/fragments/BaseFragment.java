@@ -16,6 +16,7 @@ import android.widget.Button;
 import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.ncapdevi.fragnav.FragNavController;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 
@@ -26,7 +27,7 @@ public abstract class BaseFragment extends LifecycleFragment {
 
     public static final String ARGS_INSTANCE = "de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.argsInstance";
 
-    FragNavController mFragmentNavigation;
+    AnimatedFragNavController mFragmentNavigation;
     int mInt = 0;
 
     @Override
@@ -43,7 +44,7 @@ public abstract class BaseFragment extends LifecycleFragment {
     protected void initView(View view) {
     }
 
-    public FragNavController fragNavController() {
+    public AnimatedFragNavController fragNavController() {
         if(mFragmentNavigation==null){
             throw new NullPointerException("The FragNavController is not available.");
         }
@@ -54,7 +55,7 @@ public abstract class BaseFragment extends LifecycleFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof NavController) {
-            mFragmentNavigation = ((NavController) context).getNavController();
+            mFragmentNavigation =((NavController) context).getNavController();
         }
     }
 
@@ -67,7 +68,7 @@ public abstract class BaseFragment extends LifecycleFragment {
     }
 
     public interface NavController {
-        FragNavController getNavController();
+        AnimatedFragNavController getNavController();
     }
 
 }

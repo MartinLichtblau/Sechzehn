@@ -9,12 +9,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
 import com.mikepenz.fastadapter.items.AbstractItem;
 import com.ncapdevi.fragnav.FragNavController;
+import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Picasso;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment;
@@ -27,21 +31,22 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 public class UserItem extends AbstractItem<UserItem, UserItem.ViewHolder> {
 
     public User user;
-    public FragNavController fragNavController;
+    public AnimatedFragNavController fragNavController;
 
-    public static UserItem create(User u, FragNavController fragNavController) {
+    public static UserItem create(User u, AnimatedFragNavController fragNavController) {
         UserItem f = new UserItem();
         f.user = u;
         f.fragNavController = fragNavController;
         return f;
     }
 
+
     //The unique ID for this type of item
     @SuppressWarnings("ResourceType")
 
     @Override
     public int getType() {
-        return R.id.user_item;
+        return R.id.class_user_item;
     }
 
     //The layout to be used for this type of item
@@ -67,14 +72,20 @@ public class UserItem extends AbstractItem<UserItem, UserItem.ViewHolder> {
 
         //bind our data
         //set the text for the realname
-        viewHolder.name.setText(user.getRealName());
-        //set the text for the username or hide
-        viewHolder.username.setText(user.getUsername());
+        if (user.getRealName() != null) {
+            viewHolder.name.setText(user.getRealName());
+            //set the text for the username or hide
+            viewHolder.username.setText(user.getUsername());
+        }else {
+            viewHolder.name.setText(user.getUsername());
+        }
+
+
         String profPic = user.getProfilePicture();
         if (profPic != null) {
-            profPic.replaceFirst("https://", "http://");
+
             Picasso.with(context)
-                    .load(profPic) //Picasso needs "http://"
+                    .load(profPic)
                     .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
                     .centerCrop().resize(40, 40)
                     .transform(new RoundedCornersTransformation(20, 0))
@@ -97,6 +108,23 @@ public class UserItem extends AbstractItem<UserItem, UserItem.ViewHolder> {
         holder.username.setText(null);
         holder.profilePicture.setImageIcon(null);
         holder.message.setOnClickListener(null);
+    }
+
+    public static boolean isChanged(List<UserItem> a, List<User> b) {
+
+        // Check for sizes and nulls
+        if ((a.size() != b.size()) || (a == null && b != null) || (a != null && b == null)) {
+            return true;
+        }
+
+        if (a == null && b == null) return false;
+
+        for (int i = 0; i < a.size(); i++) {
+            if (!a.get(i).user.equals(b.get(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //Init the viewHolder for this Item

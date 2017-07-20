@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import  android.Manifest;
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -21,6 +22,8 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.ncapdevi.fragnav.FragNavController;
+
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
@@ -47,7 +50,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     private final int INDEX_FRIENDS = FragNavController.TAB2;
     private final int INDEX_OWNER = FragNavController.TAB3;
     private BottomBar mBottomBar;
-    public FragNavController mNavController;
+    public AnimatedFragNavController mNavController;
     private static OwnerViewModel ownerViewModel;
 
     @Override
@@ -66,10 +69,10 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
         mBottomBar.selectTabAtPosition(INDEX_SEARCH);
-        mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
+        mNavController =new AnimatedFragNavController( FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
                 .transactionListener(this)
                 .rootFragmentListener(this, 3)
-                .build();
+                .build());
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
@@ -224,7 +227,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
 
     //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    public FragNavController getNavController(){
+    public AnimatedFragNavController getNavController(){
         return mNavController;
     }
 
@@ -232,7 +235,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     public void onBackPressed() {
         if (mNavController.isRootFragment()) { //Bottom of fragment stack is reached
             //go back to home tab fragment
-            switchTabAndBar(2);
+            switchTabAndBar(INDEX_SEARCH);
         } else {
             mNavController.popFragment();
         }

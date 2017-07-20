@@ -1,5 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
@@ -90,8 +92,8 @@ public interface UserService {
 
     /*Friendships >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
     @GET("users/{username}/friends")
-    Call<List<User>> getFriends(
-            @Path("username") String username,
+    Call<Pagination<User>> getFriends(
+            @Path("username") @NonNull String username,
             @Query("page") Integer page,
             @Query("per_page") Integer per_page
     );
