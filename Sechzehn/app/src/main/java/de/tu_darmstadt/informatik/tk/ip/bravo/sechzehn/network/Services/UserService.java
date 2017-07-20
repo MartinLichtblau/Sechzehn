@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services;
 
 import java.util.List;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import okhttp3.MultipartBody;
@@ -24,13 +25,23 @@ import retrofit2.http.Query;
 
 public interface UserService {
 
-/*Users Collection >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+    /*Users Collection >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
     @GET("users/{username}")
     Call<User> getUser(
             @Path("username") String username
     );
 
-/*User >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+    @GET("users")
+    Call<Pagination<User>> getUsers(
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPage,
+            @Query("lat") Double lat,
+            @Query("lng") Double lng,
+            @Query("radius") Double radius,
+            @Query("is_friend") Boolean isFriend,
+            @Query("query") String query);
+
+    /*User >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
     @POST("users")
     Call<UserToken> createUser(@Body User user);
 
@@ -77,7 +88,7 @@ public interface UserService {
             @Body RequestBody location
     );
 
-/*Friendships >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+    /*Friendships >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
     @GET("users/{username}/friends")
     Call<List<User>> getFriends(
             @Path("username") String username,

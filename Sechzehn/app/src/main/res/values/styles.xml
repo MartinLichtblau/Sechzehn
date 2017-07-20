@@ -9,8 +9,8 @@
         <!--   theme UI controls like checkboxes and text fields -->
         <item name="colorAccent">@color/colorAccent</item>
 
-        <!--<item name="android:buttonStyle">@style/PrimaryFlatButton</item>-->
-        <!--<item name="android:textViewStyle">@style/PrimaryText</item>-->
+        <!--<item realname="android:buttonStyle">@style/PrimaryFlatButton</item>-->
+        <!--<item realname="android:textViewStyle">@style/PrimaryText</item>-->
     </style>
 
     <style name="PrimaryFlatButton" parent="SzMaterialTheme">
