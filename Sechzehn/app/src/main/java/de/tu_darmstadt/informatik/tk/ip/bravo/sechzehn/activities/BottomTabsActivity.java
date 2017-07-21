@@ -1,12 +1,11 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import  android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -31,6 +30,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import permissions.dispatcher.NeedsPermission;
@@ -53,61 +53,53 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     private BottomBar mBottomBar;
     public FragNavController mNavController;
     public static OwnerViewModel ownerVM;
-    public MutableLiveData<Integer> allOk = new MutableLiveData<>();
+    public MutableLiveData<Integer> checkStages = new MutableLiveData<>();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull login
         super.onCreate(savedInstanceState);
-        String token = getSharedPreferences("Sechzehn",0).getString("JWT","");
-        String ownername = getSharedPreferences("Sechzehn",0).getString("ownername","");
-        if(TextUtils.isEmpty(token) || TextUtils.isEmpty(ownername)){
-            Intent intent=new Intent(this,LoginActivity.class);
-            startActivity(intent);
-            finish(); //Finish does not stop the code here, for that you have to add return!!!!!!!!!!!
-            return;
-        }else{
-            openApp(savedInstanceState);
-        }
-    }
-
-    private void openApp(final Bundle savedInstanceState){
         SzUtils.initialize(getSharedPreferences("Sechzehn",0));
         ownerVM = ViewModelProviders.of(BottomTabsActivity.this).get(OwnerViewModel.class);
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
-        mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        checkRequirements().observeForever(new Observer<Integer>() {
+
+        checkRequirements().observeForever(new Observer<Boolean>() {
             @Override
-            public void onChanged(@Nullable Integer sum) {
-                if(sum == 3){
-                    mBottomBar.selectTabAtPosition(INDEX_SEARCH);
-                    mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
-                            .transactionListener(BottomTabsActivity.this)
-                            .rootFragmentListener(BottomTabsActivity.this, 3)
-                            .build();
-                    mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
-                        @Override
-                        public void onTabSelected(@IdRes int tabId) {
-                            switch (tabId) {
-                                case R.id.bb_menu_search:
-                                    mNavController.switchTab(INDEX_SEARCH);
-                                    break;
-                                case R.id.bb_menu_friends:
-                                    mNavController.switchTab(INDEX_FRIENDS);
-                                    break;
-                                case R.id.bb_menu_owner:
-                                    mNavController.switchTab(INDEX_OWNER);
-                                    break;
-                            }
-                        }
-                    });
-                    mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {
-                        @Override
-                        public void onTabReSelected(@IdRes int tabId) {
-                            mNavController.clearStack();
-                        }
-                    });
+            public void onChanged(@Nullable Boolean requirementsOK) {
+                if(requirementsOK){
+                    runApp(savedInstanceState);
                 }
+            }
+        });
+    }
+
+    private void runApp(Bundle savedInstanceState){
+        mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
+        mBottomBar.selectTabAtPosition(INDEX_SEARCH);
+        mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
+                .transactionListener(BottomTabsActivity.this)
+                .rootFragmentListener(BottomTabsActivity.this, 3)
+                .build();
+        mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                switch (tabId) {
+                    case R.id.bb_menu_search:
+                        mNavController.switchTab(INDEX_SEARCH);
+                        break;
+                    case R.id.bb_menu_friends:
+                        mNavController.switchTab(INDEX_FRIENDS);
+                        break;
+                    case R.id.bb_menu_owner:
+                        mNavController.switchTab(INDEX_OWNER);
+                        break;
+                }
+            }
+        });
+        mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+            @Override
+            public void onTabReSelected(@IdRes int tabId) {
+                mNavController.clearStack();
             }
         });
     }
@@ -115,23 +107,76 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     @Override
     protected void onStart() {
         super.onStart();
+        //checkRequirements(); @TODO check requirements @onStart also?
     }
 
-    public MutableLiveData<Integer> checkRequirements(){
-        allOk.setValue(0);
-        //1. Check Play Services are available
-        if(checkPlayServices())
-            allOk.setValue(allOk.getValue()+1);
+    public MutableLiveData<Boolean> checkRequirements(){
+        final MutableLiveData<Boolean> requirementsOK = new MutableLiveData<>();
+        requirementsOK.setValue(false);
+        checkStages.setValue(0);
 
-        //2. Check permissions
-        BottomTabsActivityPermissionsDispatcher.startSechzehnWithCheck(BottomTabsActivity.this);
-
-        //3. Check server connection
-        checkConnection();
-        return allOk;
+        checkStages.observeForever(new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer stage) {
+                switch (stage){
+                    case 0:
+                        //0.Check if user is logged in
+                        checkLoggedIn();
+                        break;
+                    case 1:
+                        //1. Check if Play Services are available
+                        checkPlayServices();
+                        break;
+                    case 2:
+                        //2. Check permissions
+                        BottomTabsActivityPermissionsDispatcher.checkPermissionsWithCheck(BottomTabsActivity.this);
+                        break;
+                    case 3:
+                        //3. Start/Check LocationService, Initialize/Check owner profile and location
+                        startService(new Intent(BottomTabsActivity.this, LocationService.class));
+                        checkProfile();
+                        break;
+                    case 4:
+                        requirementsOK.setValue(true);
+                        checkStages.setValue(0);
+                        checkStages.removeObserver(this);
+                        break;
+                    default:
+                        Toast.makeText(BottomTabsActivity.this, "Fatal ERROR in checkRequirements — You should not see that —", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        return requirementsOK;
     }
 
-    public void checkConnection(){
+    public void checkLoggedIn() {
+        if(TextUtils.isEmpty(SzUtils.getToken()) || TextUtils.isEmpty(SzUtils.getOwnername())){
+            Intent intent = new Intent(this,LoginActivity.class);
+            startActivity(intent);
+            this.finish(); //Finish does not stop the code here, for that you have to add return!!!!!!!!!!!
+            return;
+        }else
+            checkStages.setValue(checkStages.getValue()+1);
+    }
+
+    public void checkPlayServices() {
+        //Ref. > https://stackoverflow.com/questions/42005217/detecting-play-services-installed-and-play-services-used-in-app
+        final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
+        int resultCode = api.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (api.isUserResolvableError(resultCode))
+                api.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            else {
+                Toast.makeText(this, "This device is not supported, since it does not have Google Play Services installed.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            checkStages.setValue(checkStages.getValue());
+        }
+        checkStages.setValue(checkStages.getValue()+1);
+    }
+
+    public void checkProfile(){
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
@@ -143,33 +188,35 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                     progressDialog.setMessage("LOADING....");
                 }else if (resource.status == Resource.Status.ERROR) {
                     progressDialog.setMessage("ERROR: " + resource.message);
+                    /*checkStages.setValue(checkStages.getValue());*/
                     new Handler().postDelayed(new Runnable() { //Test every 3 second again
                         public void run() {
-                            ownerVM.initOwner(SzUtils.getOwnername());
+                            BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
                         }
                     }, 3000);
                 } else if (resource.status == Resource.Status.SUCCESS) {
-                    progressDialog.hide();
-                    allOk.setValue(allOk.getValue()+1);
+                    if(ownerVM.getLatLng() == null){
+                        progressDialog.setMessage("Waiting for GPS location");
+                        new Handler().postDelayed(new Runnable() { //Test every 3 second again
+                            public void run() {
+                                BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
+                            }
+                        }, 3000);
+                    }else{
+                        progressDialog.hide();
+                        checkStages.setValue(checkStages.getValue()+1);
+                    }
                 }
             }
         });
-    }
-
-    public void factoryReset(){
-        getSharedPreferences("Sechzehn", 0).edit().clear().apply();
-        Intent intent = new Intent(this, LoginActivity.class);
-        ownerVM = null;
-        startActivity(intent);
-        finish(); //Finish BottomTabs
     }
 
     @NeedsPermission({
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION})
-    public void startSechzehn() {
-        allOk.setValue(allOk.getValue()+1);
+    public void checkPermissions() {
+        checkStages.setValue(checkStages.getValue()+1);
     }
 
     @OnShowRationale({
@@ -201,7 +248,7 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION})
     public void showDeniedForAllPermissions() {
-        BottomTabsActivityPermissionsDispatcher.startSechzehnWithCheck(BottomTabsActivity.this);
+        BottomTabsActivityPermissionsDispatcher.checkPermissionsWithCheck(BottomTabsActivity.this);
     }
 
     @OnNeverAskAgain({
@@ -239,23 +286,6 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         BottomTabsActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    public boolean checkPlayServices() {
-        //Ref. > https://stackoverflow.com/questions/42005217/detecting-play-services-installed-and-play-services-used-in-app
-        final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
-        int resultCode = api.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (api.isUserResolvableError(resultCode))
-                api.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            else {
-                Toast.makeText(this, "This device is not supported, since it does not have Google Play Services installed.", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
-
     public static OwnerViewModel getOwnerViewModel() {
         //Use OwnerViewModel to access all data and functions concerning the owner
         //It in here and not in BaseFragment since this MainActivity is the one and only element that we can access always
@@ -263,6 +293,13 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         return ownerVM;
     }
 
+    public void factoryReset(){
+        getSharedPreferences("Sechzehn", 0).edit().clear().apply();
+        Intent intent = new Intent(this, LoginActivity.class);
+        ownerVM = null;
+        startActivity(intent);
+        finish(); //Finish BottomTabs
+    }
 
         //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 

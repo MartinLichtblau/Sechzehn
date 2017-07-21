@@ -55,12 +55,6 @@ public class SearchFragment extends BaseFragment  implements OnMapReadyCallback 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        ((BottomTabsActivity)getActivity()).allOk.observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer integer) {
-
-            }
-        });
         mapFragment.getMapAsync(SearchFragment.this);
 
         return binding.getRoot();
