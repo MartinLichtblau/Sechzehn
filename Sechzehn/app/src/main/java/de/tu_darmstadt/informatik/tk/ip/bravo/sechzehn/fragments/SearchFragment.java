@@ -1,12 +1,16 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.app.ProgressDialog;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,8 +22,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentSearchBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel;
 
@@ -29,8 +37,6 @@ public class SearchFragment extends BaseFragment  implements OnMapReadyCallback 
     private FragmentSearchBinding binding;
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
-
-
     private SupportMapFragment mapFragment;
     private GoogleMap map;
 
@@ -42,14 +48,21 @@ public class SearchFragment extends BaseFragment  implements OnMapReadyCallback 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         searchVM = ViewModelProviders.of(this).get(SearchViewModel.class);
-        ownerVM = ViewModelProviders.of(this).get(OwnerViewModel.class);
+        ownerVM = BottomTabsActivity.getOwnerViewModel();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        ((BottomTabsActivity)getActivity()).allOk.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer integer) {
+
+            }
+        });
+        mapFragment.getMapAsync(SearchFragment.this);
+
         return binding.getRoot();
     }
 
@@ -71,28 +84,47 @@ public class SearchFragment extends BaseFragment  implements OnMapReadyCallback 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        setUpMap(map);
+        setUpMap();
     }
 
-    private void setUpMap(GoogleMap map){
-        if(map == null)
-            return;
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
+    private void setUpMap(){
+        if(ownerVM.getLatLng() != null){
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
 
-        addUsersNearby();
-        //addVenuesNearby();
-
+            addUsersNearby();
+            //addVenuesNearby();
+        }
 
     }
 
     private void addUsersNearby(){
-        List<User> userList = searchVM.getUsersNearby();
+        searchVM.getXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, 100.0).observe(this, new Observer<Resource>() {
+                    @Override
+                    public void onChanged(@Nullable Resource resource) {
+                        if (resource.status == Resource.Status.LOADING)
+                            Toast.makeText(getContext(), "Loading, please wait...", Toast.LENGTH_SHORT).show();
+                        else if (resource.status == Resource.Status.ERROR) {
+                            Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
+                        } else if (resource.status == Resource.Status.SUCCESS) {
+                            Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
+                            if (resource.data != null && resource.data.getClass().equals(Pagination.class)) {
+                                Toast.makeText(getContext(), "got Class Pagination", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+    }
+
+/*
+                    if(pagination == null)
+                    return;
+            }
+        });
         if(userList.isEmpty())
             return;
-        for(userList){
+        for (User u : .data) {
+        }
             map.addMarker(new MarkerOptions()
                     .position(new LatLng(,))
-                    .title(username));
-        }
-    }
+                    .title(username));*/
 }

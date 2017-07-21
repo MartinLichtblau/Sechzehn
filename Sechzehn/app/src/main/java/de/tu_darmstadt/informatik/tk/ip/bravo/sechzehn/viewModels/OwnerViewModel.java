@@ -4,10 +4,12 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.GenericBody;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
@@ -26,37 +28,34 @@ import retrofit2.Response;
  */
 
 public class OwnerViewModel extends ViewModel {
-    private String token;
     private MutableLiveData<User> owner = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
-    private UserService userService;
+    private static final UserService userService = ServiceGenerator.createService(UserService.class,SzUtils.getToken());
     private MutableLiveData<String> toastMessage = new MutableLiveData<String>();
+    private MutableLiveData<Resource> resource = new MutableLiveData<>();
+
 
 
     public LiveData<User> getOwner(){
         return owner;
     }
 
-    public void initOwner(String ownername, String token){
-        if(owner.getValue() != null){
-            Log.d(this.getClass().toString(), "initOwner | owner can only be set once");
-            return;
-        }
-        Log.d(this.getClass().toString(), "initOwner");
-        this.token = token;
-        userService = ServiceGenerator.createService(UserService.class,token);
+    public MutableLiveData<Resource> initOwner(String ownername){
+        resource.setValue(Resource.loading(null));
         userService.getUser(ownername).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful())
+                if (response.isSuccessful()) {
                     owner.setValue(response.body());
-                Log.d(this.toString(),"code: "+String.valueOf(response.code())+" — msg: "+response.message()+" — body: "+response.body());
-                }
+                    resource.setValue(Resource.success(response.body()));
+                } else
+                    resource.setValue(Resource.error(NetworkUtils.parseError(response).getMessage(), null));
+            }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                // the network call was a failure
-                Log.e(this.toString(),"getUser.onFailure | ",t.getCause());
+                resource.setValue(Resource.error(t.toString(),null));
             }
         });
+        return resource;
     }
 
     public String getOwnername(){

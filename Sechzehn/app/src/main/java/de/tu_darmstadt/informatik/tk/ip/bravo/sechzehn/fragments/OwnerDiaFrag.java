@@ -53,7 +53,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         type = getArguments().getString("type");
-        ownerVM = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
+        ownerVM = BottomTabsActivity.getOwnerViewModel();
         binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()), R.layout.diafrag_owner, null, false);
         binding.setFrag(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -84,7 +84,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             }
         };
 
-        if(dob.isEmpty()){
+        if(dob == null){
             //If no date was ever set
             new DatePickerDialog(getContext(),date,1990,11,30).show();
         }else{

@@ -25,22 +25,22 @@ import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.PicassoEngine;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentOwnerBinding;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 import static android.app.Activity.RESULT_OK;
 
 public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     private FragmentOwnerBinding binding;
-    private OwnerViewModel viewModel;
+    public OwnerViewModel viewModel;
     private SupportMapFragment mapFragment;
-    GoogleMap map;
-    User owner;
+    private GoogleMap map;
+    private User owner;
 
     public static OwnerFragment newInstance() {
         OwnerFragment fragment = new OwnerFragment();
@@ -49,9 +49,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        //Get OwnerViewModel from everywhere like below or like
-        // ((BottomTabsActivity)getActivity()).getOwnerViewModel(); // > https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
-        viewModel = ViewModelProviders.of(getActivity()).get(OwnerViewModel.class);
+        viewModel = BottomTabsActivity.getOwnerViewModel();
     }
 
     @Override
@@ -97,13 +95,10 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                         .transform(new CropCircleTransformation())
                         .into(binding.ownerPicture);
 
-                if(map != null){
-                    LatLng pos = viewModel.getLatLng();
-                    if(pos != null){
-                        map.addMarker(new MarkerOptions().position(pos)
-                                .title(viewModel.getOwnername()));
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
-                    }
+                LatLng pos = viewModel.getLatLng();
+                if(map != null && pos != null){
+                    map.addMarker(new MarkerOptions().position(pos).title(viewModel.getOwnername()));
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                 }
             }
         });
@@ -149,11 +144,6 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                 .forResult(1);
         //Result receive in @onActivityResult
     }
-
-    public String getAge(){
-        return SzUtils.getAge(SzUtils.timestampToCal(owner.getDateOfBirth()));
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -168,6 +158,12 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         }
     }
 
+    public String getAge(String timestamp){
+        if(timestamp != null)
+            return SzUtils.getAge(SzUtils.timestampToCal(timestamp));
+        else
+            return  null;
+    }
 
 }
 
