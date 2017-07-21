@@ -1,23 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <SearchView
-            android:id="@+id/friendsSearch"
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/md_grey_300"
+            android:elevation="3dp"
+            android:minHeight="?attr/actionBarSize"
+            android:paddingLeft="0dp"
+            android:paddingRight="16dp"
+            android:theme="?attr/actionBarTheme">
 
-        </SearchView>
+            <SearchView
+                android:id="@+id/friendsSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground">
+
+
+            </SearchView>
+        </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/friendsList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/item_progress_bar" />
+            android:foregroundTint="@android:color/white" />
 
     </LinearLayout>
 </layout>

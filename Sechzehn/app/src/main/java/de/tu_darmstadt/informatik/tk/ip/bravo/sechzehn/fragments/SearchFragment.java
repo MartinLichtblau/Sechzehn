@@ -45,7 +45,7 @@ public class SearchFragment extends BaseFragment  implements OnMapReadyCallback 
         return fragment;
     }
 
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         searchVM = ViewModelProviders.of(this).get(SearchViewModel.class);
         ownerVM = BottomTabsActivity.getOwnerViewModel();
@@ -81,44 +81,42 @@ public class SearchFragment extends BaseFragment  implements OnMapReadyCallback 
         setUpMap();
     }
 
-    private void setUpMap(){
-        if(ownerVM.getLatLng() != null){
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
+    private void setUpMap() {
+        if (ownerVM.getLatLng() != null) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 9));
 
-            addUsersNearby();
-            //addVenuesNearby();
+            searchUsersNearby();
+            //searchVenuesNearby();
         }
 
     }
 
-    private void addUsersNearby(){
+    private void searchUsersNearby() {
         searchVM.getXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, 100.0).observe(this, new Observer<Resource>() {
-                    @Override
-                    public void onChanged(@Nullable Resource resource) {
-                        if (resource.status == Resource.Status.LOADING)
-                            Toast.makeText(getContext(), "Loading, please wait...", Toast.LENGTH_SHORT).show();
-                        else if (resource.status == Resource.Status.ERROR) {
-                            Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
-                        } else if (resource.status == Resource.Status.SUCCESS) {
-                            Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
-                            if (resource.data != null && resource.data.getClass().equals(Pagination.class)) {
-                                Toast.makeText(getContext(), "got Class Pagination", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+            @Override
+            public void onChanged(@Nullable Resource resource) {
+                if (resource.status == Resource.Status.LOADING)
+                    Toast.makeText(getContext(), "Loading, please wait...", Toast.LENGTH_SHORT).show();
+                else if (resource.status == Resource.Status.ERROR) {
+                    Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
+                } else if (resource.status == Resource.Status.SUCCESS) {
+                    if (resource.data != null && resource.data.getClass().equals(Pagination.class)) {
+                        Pagination<User> usersPage = (Pagination<User>) resource.data;
+                        Toast.makeText(getContext(), "SUCCESS: " + usersPage.total + " users nearby", Toast.LENGTH_SHORT).show();
+                        mapUsersNearby(usersPage);
                     }
-                });
-    }
-
-/*
-                    if(pagination == null)
-                    return;
+                }
             }
         });
-        if(userList.isEmpty())
-            return;
-        for (User u : .data) {
-        }
+    }
+
+    private void mapUsersNearby(Pagination<User> usersPage) {
+        List<User> usersList = usersPage.data;
+        for (User u : usersList) {
             map.addMarker(new MarkerOptions()
-                    .position(new LatLng(,))
-                    .title(username));*/
+                    .position(new LatLng(u.getLat(),u.getLng()))
+                    .title(u.getUsername()));
+        }
+    }
 }
+

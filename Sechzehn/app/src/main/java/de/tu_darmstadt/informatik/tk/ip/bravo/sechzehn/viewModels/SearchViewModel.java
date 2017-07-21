@@ -54,28 +54,4 @@ public class SearchViewModel extends ViewModel {
         });
         return resource;
     }
-
-
-    public LiveData<List<User>> getFriends(@Nullable Integer page, @Nullable Integer perPage){
-        Log.d(TAG, "getFriends");
-        final MutableLiveData<List<User>> friendList = new MutableLiveData<List<User>>();
-        userService.getFriends(SzUtils.getOwnername(), page, perPage).enqueue(new Callback<List<User>>() {
-            @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                if(response.body() != null) { //The body is a List of Users & ErrorBody is empty
-                    Log.d(TAG, "getFriends: "+response.body());
-                    friendList.setValue(response.body());
-                }else{
-                    //Log.d(TAG, "getFriends: "+NetworkUtils.parseError(response).getMessage());
-                }
-            }
-            @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-
-            }
-        });
-        return friendList;
-    }
-
-
 }

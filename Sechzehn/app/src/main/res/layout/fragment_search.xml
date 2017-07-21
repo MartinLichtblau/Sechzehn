@@ -15,17 +15,21 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <fragment
+        <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            map:uiCompass="false"
+            map:uiRotateGestures="false"
+            map:uiScrollGestures="false"
+            map:uiTiltGestures="false"/>
 
         <SearchView
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@color/common_google_signin_btn_text_dark_disabled"
+            android:background="@color/md_grey_300"
             android:orientation="horizontal" />
 
         <GridLayout

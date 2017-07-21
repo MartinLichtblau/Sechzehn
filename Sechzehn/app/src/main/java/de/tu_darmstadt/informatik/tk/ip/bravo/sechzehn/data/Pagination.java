@@ -1,5 +1,8 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
 
+import android.support.annotation.NonNull;
+
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,5 +14,6 @@ public class Pagination<T> {
     public int perPage;
     public int currentPage;
     public int lastPage;
-    public List<T> data;
+    @NonNull
+    public List<T> data = new LinkedList<>();
 }

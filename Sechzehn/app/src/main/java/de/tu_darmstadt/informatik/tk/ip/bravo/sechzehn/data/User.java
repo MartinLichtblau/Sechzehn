@@ -8,6 +8,7 @@ import java.security.PublicKey;
 
 public class User {
 
+
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -39,6 +40,9 @@ public class User {
     @SerializedName("incognito")
     @Expose
     private boolean incognito;
+    @SerializedName("confirmed")
+    @Expose
+    private boolean confirmed;
 
     public boolean isIncognito() {
         return incognito;
@@ -55,10 +59,6 @@ public class User {
     public void setConfirmed(boolean confirmed) {
         this.confirmed = confirmed;
     }
-
-    @SerializedName("confirmed")
-    @Expose
-    private boolean confirmed;
 
     public String getEmail() {
         return email;
@@ -158,4 +158,35 @@ public class User {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (incognito != user.incognito) return false;
+        if (confirmed != user.confirmed) return false;
+        if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (username != null ? !username.equals(user.username) : user.username != null)
+            return false;
+        if (realName != null ? !realName.equals(user.realName) : user.realName != null)
+            return false;
+        if (city != null ? !city.equals(user.city) : user.city != null) return false;
+        if (profilePicture != null ? !profilePicture.equals(user.profilePicture) : user.profilePicture != null)
+            return false;
+        if (dateOfBirth != null ? !dateOfBirth.equals(user.dateOfBirth) : user.dateOfBirth != null)
+            return false;
+        if (lat != null ? !lat.equals(user.lat) : user.lat != null) return false;
+        if (lng != null ? !lng.equals(user.lng) : user.lng != null) return false;
+        if (password != null ? !password.equals(user.password) : user.password != null)
+            return false;
+        return email != null ? email.equals(user.email) : user.email == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }
