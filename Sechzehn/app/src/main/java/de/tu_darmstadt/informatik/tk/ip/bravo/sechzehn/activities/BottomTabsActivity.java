@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import  android.Manifest;
 import android.app.ProgressDialog;
+import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;
 import android.app.Activity;
@@ -21,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -52,7 +54,7 @@ import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
 @RuntimePermissions
-public class BottomTabsActivity extends AppCompatActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
+public class BottomTabsActivity extends LifecycleActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
     //Better convention to properly realname the indices what they are in your app
     private final int INDEX_SEARCH = FragNavController.TAB1;
     private final int INDEX_FRIENDS = FragNavController.TAB2;
@@ -63,27 +65,26 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     public MutableLiveData<Integer> checkStages = new MutableLiveData<>();
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull login
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle savedInstanceState) {
+        //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull
+        super.onCreate(null);
         SzUtils.initialize(getSharedPreferences("Sechzehn",0));
         ownerVM = ViewModelProviders.of(BottomTabsActivity.this).get(OwnerViewModel.class);
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
 
-        checkRequirements().observeForever(new Observer<Boolean>() {
+        checkRequirements().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean requirementsOK) {
                 if(requirementsOK){
-                    runApp(savedInstanceState);
+                    runApp();
                 }
             }
         });
     }
 
-    private void runApp(Bundle savedInstanceState){
+    private void runApp(){
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        mBottomBar.selectTabAtPosition(INDEX_SEARCH);
-        mNavController =new AnimatedFragNavController( FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
+        mNavController =new AnimatedFragNavController( FragNavController.newBuilder(null, getSupportFragmentManager(), R.id.container)
                 .transactionListener(this)
                 .rootFragmentListener(this, 3)
                 .build());
@@ -111,18 +112,12 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //checkRequirements(); @TODO check requirements @onStart also?
-    }
-
     public MutableLiveData<Boolean> checkRequirements(){
         final MutableLiveData<Boolean> requirementsOK = new MutableLiveData<>();
         requirementsOK.setValue(false);
         checkStages.setValue(0);
 
-        checkStages.observeForever(new Observer<Integer>() {
+        checkStages.observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer stage) {
                 switch (stage){
@@ -145,7 +140,6 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                         break;
                     case 4:
                         requirementsOK.setValue(true);
-                        checkStages.setValue(0);
                         checkStages.removeObserver(this);
                         break;
                     default:
@@ -203,14 +197,14 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
                     }, 3000);
                 } else if (resource.status == Resource.Status.SUCCESS) {
                     if(ownerVM.getLatLng() == null){
-                        progressDialog.setMessage("Waiting for GPS location");
+                        progressDialog.setMessage("Waiting for GPS-Update");
                         new Handler().postDelayed(new Runnable() { //Test every 3 second again
                             public void run() {
                                 BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
                             }
                         }, 3000);
                     }else{
-                        progressDialog.hide();
+                        progressDialog.dismiss();
                         checkStages.setValue(checkStages.getValue()+1);
                     }
                 }
@@ -347,8 +341,8 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     @Override
     public void onTabTransaction(Fragment fragment, int index) {
         // If we have a backstack, show the back button
-        if (getSupportActionBar() != null && mNavController != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(!mNavController.isRootFragment());
+        if (getActionBar() != null && mNavController != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(!mNavController.isRootFragment());
         }
     }
 
@@ -356,8 +350,8 @@ public class BottomTabsActivity extends AppCompatActivity implements BaseFragmen
     public void onFragmentTransaction(Fragment fragment, FragNavController.TransactionType transactionType) {
         //do fragmentty stuff. Maybe change title, I'm not going to tell you how to live your life
         // If we have a backstack, show the back button @TODO perhaps we should show the title bar with back button. What do you think?
-        if (getSupportActionBar() != null && mNavController != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(!mNavController.isRootFragment());
+        if (getActionBar() != null && mNavController != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(!mNavController.isRootFragment());
         }
     }
 

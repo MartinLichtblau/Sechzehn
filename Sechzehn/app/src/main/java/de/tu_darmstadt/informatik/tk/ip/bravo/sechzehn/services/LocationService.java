@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
@@ -17,7 +18,6 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.GenericBody;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -32,30 +32,30 @@ public class LocationService extends Service implements
 
     private static final String TAG = "LocationService";
     private static final int TWO_MINUTES = 1000 * 60 * 2;
-    private boolean currentlyProcessingLocation = false;
     public Location previousBestLocation = null;
     private LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
     private static UserService userService;
-    public static String ownername;
+    private static String token;
+    private static String ownername;
 
 
     @Override
     public void onCreate() {
+        //Is called multiple times again by Android System, after destroy, and runs also when main activity destroyed
+        Log.d(TAG, "onCreate");
         super.onCreate();
         ownername = SzUtils.getOwnername();
-        userService = ServiceGenerator.createService(UserService.class,SzUtils.getToken());
+        token = SzUtils.getToken();
+        userService = ServiceGenerator.createService(UserService.class,token);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // if we are currently trying to get a location and the alarm manager has called this again,
-        // no need to start processing a new location.
-        if (!currentlyProcessingLocation) {
-            currentlyProcessingLocation = true;
-            startTracking();
-        }
-        return START_NOT_STICKY;
+        //Is called multiple times again by Android System, after destroy, and runs also when main activity destroyed
+        Log.d(TAG, "onStartCommand");
+        startTracking();
+        return START_STICKY;
     }
 
     private void startTracking() {
@@ -178,7 +178,7 @@ public class LocationService extends Service implements
     }
 
     protected void updateLocation(Location location) {
-        Log.e(TAG, "position: " + location.getLatitude() + ", " + location.getLongitude() + " accuracy: " + location.getAccuracy());
+        Log.d(TAG, "updateLocation() | position: " + location.getLatitude() + ", " + location.getLongitude() + " accuracy: " + location.getAccuracy());
         previousBestLocation = location;
         RequestBody body = new GenericBody()
                     .put("lat", String.valueOf(location.getLatitude()))

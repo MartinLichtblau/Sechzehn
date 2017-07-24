@@ -22,21 +22,26 @@ import java.util.Calendar;
  */
 
 public final class SzUtils {
-    private static SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences; //SharedPreferences are null when app is not running
+    private static String ownername;
+    private static String token;
 
     private void SzUtils(){}
 
     public static void initialize(SharedPreferences sP){
-        if(sharedPreferences == null)
+        if(sharedPreferences == null){
             sharedPreferences = sP;
+            ownername = sharedPreferences.getString("ownername","");
+            token = sharedPreferences.getString("JWT","");
+        }
     }
 
     public static String getToken(){
-        return sharedPreferences.getString("JWT","");
+        return token;
     }
 
     public static String getOwnername(){
-        return sharedPreferences.getString("ownername","");
+        return ownername;
     }
 
     public static String getRealPathFromURI(Context context, Uri uri) {
@@ -74,21 +79,21 @@ public final class SzUtils {
                 .centerCrop()
                 .resize(512,512)
                 .into(new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                //This gets called when your application has the requested resource in the bitmap object
-                Log.i("onBitmapLoaded | ", "Bitmap size is: "+bitmap.getAllocationByteCount());
-                scaledImg.setValue(bitmap);
-            }
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                //This gets called if the library failed to load the resource
-            }
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                //This gets called when the request is started
-            }
-        });
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        //This gets called when your application has the requested resource in the bitmap object
+                        Log.i("onBitmapLoaded | ", "Bitmap size is: "+bitmap.getAllocationByteCount());
+                        scaledImg.setValue(bitmap);
+                    }
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        //This gets called if the library failed to load the resource
+                    }
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        //This gets called when the request is started
+                    }
+                });
         return scaledImg;
     }
 
