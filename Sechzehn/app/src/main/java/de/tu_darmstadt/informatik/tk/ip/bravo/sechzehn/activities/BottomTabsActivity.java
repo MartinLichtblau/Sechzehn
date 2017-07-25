@@ -147,7 +147,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     }
 
     public void checkLoggedIn() {
-        SzUtils.initialize(getSharedPreferences("Sechzehn",0));
+        SzUtils.initialize(getBaseContext());
         if(TextUtils.isEmpty(SzUtils.getToken()) || TextUtils.isEmpty(SzUtils.getOwnername())){
             factoryReset();
         }else{
@@ -354,11 +354,11 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     public Fragment getRootFragment(int index) {
         switch (index) {
             case INDEX_SEARCH:
-                return SearchFragment.newInstance();
+                return OwnerFragment.newInstance();         //In Background gets owners data from server
             case INDEX_FRIENDS:
                 return FriendsFragment.newInstance();
             case INDEX_OWNER:
-                return OwnerFragment.newInstance();         //In Background gets owners data from server
+                return SearchFragment.newInstance();
         }
         throw new IllegalStateException("Need to send an index that we know");
     }

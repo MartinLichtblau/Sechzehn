@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -43,7 +44,7 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 import static android.databinding.DataBindingUtil.inflate;
 
-public class SearchFragment extends BaseFragment {
+public class SearchFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
     private FragmentSearchBinding binding;
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
@@ -66,14 +67,7 @@ public class SearchFragment extends BaseFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         Toast.makeText(getActivity(), "FragNavController is null = "+(mFragmentNavigation==null), Toast.LENGTH_SHORT).show();
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                map = googleMap;
-                setUpMap();
-            }
-        });
-
+        mapFragment.getMapAsync(this);
         return binding.getRoot();
     }
 
@@ -98,15 +92,6 @@ public class SearchFragment extends BaseFragment {
 
             searchUsersNearby();
             //searchVenuesNearby();
-
-            map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    UserProfileFragment userProfileFragment = UserProfileFragment.newInstance("Xaradas");
-                    fragNavController().pushFragment(userProfileFragment);
-                   /* fragNavController().showDialogFragment(OwnerDiaFrag.newInstance("logout"));*/
-                }
-            });
         }
     }
 
@@ -133,7 +118,7 @@ public class SearchFragment extends BaseFragment {
         for (final User u : usersList) {
             final MarkerOptions markerO = new MarkerOptions();
             markerOList.add(markerO);
-            LiveData<Bitmap> icon = SzUtils.loadImage(getActivity(), u.getProfilePicture());
+            LiveData<Bitmap> icon = SzUtils.createThumb(SzUtils.ThumbType.USER, u.getProfilePicture());
             icon.observe(this, new Observer<Bitmap>() {
                 @Override
                 public void onChanged(@Nullable Bitmap bitmap) {
@@ -141,7 +126,7 @@ public class SearchFragment extends BaseFragment {
                             .title(u.getUsername())
                             .snippet("Open Profile")
                             .infoWindowAnchor(0.5f, 0.5f)
-                            .alpha(0.7f)
+                            /*.alpha(0.7f)*/
                             .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
                     /*markerO.icon(BitmapDescriptorFactory.defaultMarker());*/
                     map.addMarker(markerO);
@@ -153,6 +138,26 @@ public class SearchFragment extends BaseFragment {
                 map.addMarker(markerO);
             }
         }*/
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        setUpMap();
+        map.setOnInfoWindowClickListener(this);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        final String username = marker.getTitle();
+        new Handler().postDelayed(new Runnable() {
+            //Maps Bug UI Hang while replacing fragment
+            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
+            @Override
+            public void run() {
+                fragNavController().pushFragment(UserProfileFragment.newInstance(username));
+            }
+        }, 100);
     }
 }
 
