@@ -23,7 +23,6 @@
             android:layout_weight="1"
             map:uiCompass="false"
             map:uiRotateGestures="false"
-            map:uiScrollGestures="false"
             map:uiTiltGestures="false"/>
 
         <SearchView

@@ -106,7 +106,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
 
     public void editProfile(View view){
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("editProfile");
-        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
+         mFragmentNavigation.showDialogFragment(ownerDiaFrag);
     }
 
     public void logout(View view){

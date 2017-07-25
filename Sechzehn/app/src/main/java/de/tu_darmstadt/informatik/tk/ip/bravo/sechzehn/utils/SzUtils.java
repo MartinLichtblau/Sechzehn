@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import com.squareup.picasso.Picasso;
@@ -16,6 +17,9 @@ import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 /**
  * Created by marti on 12.07.2017.
@@ -71,6 +75,58 @@ public final class SzUtils {
     }
 
     public static MutableLiveData<Bitmap> centerCropImage(Context context,Uri uri){
+        final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<Bitmap>();
+        Picasso.with(context)
+                .load(uri)
+                .centerCrop()
+                .resize(512,512)
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        //This gets called when your application has the requested resource in the bitmap object
+                        Log.i("onBitmapLoaded | ", "Bitmap size is: "+bitmap.getAllocationByteCount());
+                        scaledImg.setValue(bitmap);
+                    }
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        //This gets called if the library failed to load the resource
+                    }
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        //This gets called when the request is started
+                    }
+                });
+        return scaledImg;
+    }
+
+    public static MutableLiveData<Bitmap> loadImage(@Nullable Context context, @Nullable String url){
+        final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<Bitmap>();
+        Picasso.with(context)
+                .load(url)
+                .placeholder(R.drawable.ic_owner)
+                .error(R.drawable.ic_owner)
+                .centerCrop().resize(80,80)
+                .transform(new CropCircleTransformation())
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        //This gets called when your application has the requested resource in the bitmap object
+                        Log.i("onBitmapLoaded | ", "Bitmap size is: "+bitmap.getAllocationByteCount());
+                        scaledImg.setValue(bitmap);
+                    }
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        //This gets called if the library failed to load the resource
+                    }
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        //This gets called when the request is started
+                    }
+                });
+        return scaledImg;
+    }
+
+    public static MutableLiveData<Bitmap> B(Context context,Uri uri){
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<Bitmap>();
         Picasso.with(context)
                 .load(uri)

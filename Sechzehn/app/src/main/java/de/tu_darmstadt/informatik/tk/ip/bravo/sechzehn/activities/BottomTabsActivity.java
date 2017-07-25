@@ -65,23 +65,23 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     public MutableLiveData<Integer> checkStages = new MutableLiveData<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull
-        super.onCreate(null);
-        setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs); //Just settings for the looks
+        super.onCreate(savedInstanceState);
         checkRequirements().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean requirementsOK) {
                 if(requirementsOK){
-                    runApp();
+                    runApp(savedInstanceState);
                 }
             }
         });
     }
 
-    private void runApp(){
+    private void runApp(Bundle savedInstanceState){
+        setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        mNavController = new AnimatedFragNavController( FragNavController.newBuilder(null, getSupportFragmentManager(), R.id.container)
+        mNavController = new AnimatedFragNavController(FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
                 .transactionListener(this)
                 .rootFragmentListener(this, 3)
                 .build());
