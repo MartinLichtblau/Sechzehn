@@ -68,10 +68,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     protected void onCreate(Bundle savedInstanceState) {
         //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull
         super.onCreate(null);
-        SzUtils.initialize(getSharedPreferences("Sechzehn",0));
-        ownerVM = ViewModelProviders.of(BottomTabsActivity.this).get(OwnerViewModel.class);
-        setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
-
+        setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs); //Just settings for the looks
         checkRequirements().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean requirementsOK) {
@@ -84,7 +81,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     private void runApp(){
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        mNavController =new AnimatedFragNavController( FragNavController.newBuilder(null, getSupportFragmentManager(), R.id.container)
+        mNavController = new AnimatedFragNavController( FragNavController.newBuilder(null, getSupportFragmentManager(), R.id.container)
                 .transactionListener(this)
                 .rootFragmentListener(this, 3)
                 .build());
@@ -140,7 +137,6 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                         break;
                     case 4:
                         requirementsOK.setValue(true);
-                        checkStages.removeObserver(this);
                         break;
                     default:
                         Toast.makeText(BottomTabsActivity.this, "Fatal ERROR in checkRequirements — You should not see that —", Toast.LENGTH_SHORT).show();
@@ -151,13 +147,12 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     }
 
     public void checkLoggedIn() {
+        SzUtils.initialize(getSharedPreferences("Sechzehn",0));
         if(TextUtils.isEmpty(SzUtils.getToken()) || TextUtils.isEmpty(SzUtils.getOwnername())){
-            Intent intent = new Intent(this,LoginActivity.class);
-            startActivity(intent);
-            this.finish(); //Finish does not stop the code here, for that you have to add return!!!!!!!!!!!
-            return;
-        }else
+            factoryReset();
+        }else{
             checkStages.setValue(checkStages.getValue()+1);
+        }
     }
 
     public void checkPlayServices() {
@@ -178,6 +173,8 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     }
 
     public void checkProfile(){
+        ownerVM = ViewModelProviders.of(this).get(OwnerViewModel.class);
+
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
@@ -189,7 +186,6 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                     progressDialog.setMessage("LOADING....");
                 }else if (resource.status == Resource.Status.ERROR) {
                     progressDialog.setMessage("ERROR: " + resource.message);
-                    /*checkStages.setValue(checkStages.getValue());*/
                     new Handler().postDelayed(new Runnable() { //Test every 3 second again
                         public void run() {
                             BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
@@ -197,7 +193,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                     }, 3000);
                 } else if (resource.status == Resource.Status.SUCCESS) {
                     if(ownerVM.getLatLng() == null){
-                        progressDialog.setMessage("Waiting for GPS-Update");
+                        progressDialog.setMessage("Waiting for your GPS-Location");
                         new Handler().postDelayed(new Runnable() { //Test every 3 second again
                             public void run() {
                                 BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
@@ -297,7 +293,6 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     public void factoryReset(){
         getSharedPreferences("Sechzehn", 0).edit().clear().apply();
         Intent intent = new Intent(this, LoginActivity.class);
-        ownerVM = null;
         startActivity(intent);
         finish(); //Finish BottomTabs
     }

@@ -36,8 +36,8 @@ public class LocationService extends Service implements
     private LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
     private static UserService userService;
-    private static String token;
-    private static String ownername;
+    private static final String token = SzUtils.getToken();
+    private static String ownername = SzUtils.getOwnername();
 
 
     @Override
@@ -45,8 +45,6 @@ public class LocationService extends Service implements
         //Is called multiple times again by Android System, after destroy, and runs also when main activity destroyed
         Log.d(TAG, "onCreate");
         super.onCreate();
-        ownername = SzUtils.getOwnername();
-        token = SzUtils.getToken();
         userService = ServiceGenerator.createService(UserService.class,token);
     }
 

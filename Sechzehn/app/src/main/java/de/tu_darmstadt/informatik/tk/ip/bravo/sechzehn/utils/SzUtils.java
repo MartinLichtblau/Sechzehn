@@ -29,11 +29,9 @@ public final class SzUtils {
     private void SzUtils(){}
 
     public static void initialize(SharedPreferences sP){
-        if(sharedPreferences == null){
             sharedPreferences = sP;
             ownername = sharedPreferences.getString("ownername","");
             token = sharedPreferences.getString("JWT","");
-        }
     }
 
     public static String getToken(){
