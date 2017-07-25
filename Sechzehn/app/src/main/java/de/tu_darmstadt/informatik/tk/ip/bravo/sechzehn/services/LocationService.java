@@ -32,6 +32,7 @@ public class LocationService extends Service implements
 
     private static final String TAG = "LocationService";
     private static final int TWO_MINUTES = 1000 * 60 * 2;
+    private boolean currentlyProcessingLocation = false;
     public Location previousBestLocation = null;
     private LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
@@ -52,7 +53,13 @@ public class LocationService extends Service implements
     public int onStartCommand(Intent intent, int flags, int startId) {
         //Is called multiple times again by Android System, after destroy, and runs also when main activity destroyed
         Log.d(TAG, "onStartCommand");
-        startTracking();
+        if (!currentlyProcessingLocation) {
+            // if we are currently trying to get a location and the alarm manager has called this again,
+            // no need to start processing a new location.
+            //If we do it would crash....
+            currentlyProcessingLocation = true;
+            startTracking();
+        }
         return START_STICKY;
     }
 
