@@ -56,7 +56,7 @@ public abstract class BaseFragment extends LifecycleFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof NavController) {
-            mFragmentNavigation = ((BottomTabsActivity)getActivity()).getNavController();
+            mFragmentNavigation = (NavController context);
         }
         Toast.makeText(getActivity(), "FragNavController is null = "+(mFragmentNavigation==null), Toast.LENGTH_SHORT).show();
     }

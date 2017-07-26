@@ -28,8 +28,10 @@ import com.ncapdevi.fragnav.FragNavController;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
@@ -44,7 +46,7 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 import static android.databinding.DataBindingUtil.inflate;
 
-public class SearchFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback {
     private FragmentSearchBinding binding;
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
@@ -66,8 +68,17 @@ public class SearchFragment extends BaseFragment implements OnMapReadyCallback, 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         Toast.makeText(getActivity(), "FragNavController is null = "+(mFragmentNavigation==null), Toast.LENGTH_SHORT).show();
-        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
+        getGoogleMap();
+        initalSearch();
+        searchVM.getUserMap().observe(this, new Observer<HashMap<User, Marker>>() {
+            @Override
+            public void onChanged(@Nullable HashMap<Marker, User> userMap){
+                showUsersOnMap(userMap);
+            }
+        });
+        /*searchVM.getVenueMap().observe(.......*/
+
         return binding.getRoot();
     }
 
@@ -86,13 +97,24 @@ public class SearchFragment extends BaseFragment implements OnMapReadyCallback, 
         map = null;
     }
 
-    private void setUpMap() {
-        if (ownerVM.getLatLng() != null) {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 9));
+    public void getGoogleMap(){
+        if(null == mapFragment)
+            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if(null == map)
+            mapFragment.getMapAsync(this);
+    }
 
-            searchUsersNearby();
-            //searchVenuesNearby();
+    private void initalSearch(){
+        //Show only nearby users and venues
+        searchVM.searchXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, 99.0);
+        /*searchVM.searchXVenuesNearby(...*/
+    }
+
+    private void showUsersOnMap(HashMap<Marker,User> userMap) {
+        for(Map.Entry<User,Marker> entry : userMap.entrySet()){
+            map.(entry.getValue());
         }
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 9));
     }
 
     private void searchUsersNearby() {
@@ -133,17 +155,11 @@ public class SearchFragment extends BaseFragment implements OnMapReadyCallback, 
                 }
             });
         }
-      /*  if (!SzUtils.loadImage(getActivity(), "").hasObservers()){
-            for (MarkerOptions markerO : markerOList) {
-                map.addMarker(markerO);
-            }
-        }*/
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        setUpMap();
         map.setOnInfoWindowClickListener(this);
     }
 

@@ -81,7 +81,8 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     private void runApp(Bundle savedInstanceState){
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        mNavController = new AnimatedFragNavController(FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
+        mNavController = new AnimatedFragNavController(
+                FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
                 .transactionListener(this)
                 .rootFragmentListener(this, 3)
                 .build());

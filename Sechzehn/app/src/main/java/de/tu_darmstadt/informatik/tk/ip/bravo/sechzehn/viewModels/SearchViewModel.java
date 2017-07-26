@@ -2,14 +2,19 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.location.Location;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
@@ -29,8 +34,18 @@ import retrofit2.Response;
 public class SearchViewModel extends ViewModel {
     private final String TAG = "SearchViewModel";
     private static final UserService userService = ServiceGenerator.createService(UserService.class,SzUtils.getToken());
+    public MutableLiveData<HashMap<Marker, MarkerOptions>> userMarkers = new MutableLiveData<>();
+    /*public MutableLiveData<HashMap<Venue,Marker>> venueMap = new MutableLiveData<>();*/
 
-    public MutableLiveData<Resource> getXUsersNearby(Integer numberUsers, Double lat, Double lng, Double radius){
+    public MutableLiveData<HashMap<User,Marker>> getUserMap(){
+        return userMap;
+    }
+
+    /*public MutableLiveData<HashMap<Venue,Marker>> getVenueMap(){
+        return venueMap;
+    }*/
+
+    public MutableLiveData<Resource> searchXUsersNearby(Integer numberUsers, Double lat, Double lng, Double radius){
         return getUsers(null, numberUsers, lat, lng,radius,null,null);
     }
 
