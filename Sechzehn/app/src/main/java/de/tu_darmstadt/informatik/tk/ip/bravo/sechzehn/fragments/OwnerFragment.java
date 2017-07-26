@@ -106,32 +106,32 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
 
     public void editProfile(View view){
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("editProfile");
-         mFragmentNavigation.showDialogFragment(ownerDiaFrag);
+         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
     public void logout(View view){
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("logout");
-        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
+        fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
     public void resetPassword(View view){
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("resetPassword");
-        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
+        fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
     public void changePassword(View view){
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changePassword");
-        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
+        fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
     public void changeEmail(View view){
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changeEmail");
-        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
+        fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
     public void deleteAccount(View view){
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("deleteAccount");
-        mFragmentNavigation.showDialogFragment(ownerDiaFrag);
+        fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
     public void changePicture(View view){

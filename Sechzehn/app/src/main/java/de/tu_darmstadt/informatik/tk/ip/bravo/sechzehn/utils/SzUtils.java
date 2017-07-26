@@ -109,46 +109,32 @@ public final class SzUtils {
         return scaledImg;
     }
 
-    public static MutableLiveData<Bitmap> createThumb(final ThumbType type, String url){
+    public static MutableLiveData<Bitmap> createUserThumb(String url){
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
-            if(user_background == null){
-                user_background = Bitmap.createScaledBitmap(
-                        BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_person_pin), 120, 120, false);
-            }
-        /*if(venue_background == null){
-            venue_background = Bitmap.createScaledBitmap(
-                    BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin), 120, 120, false);
-        }*/
-
+        if(null == user_background){
+            user_background = Bitmap.createScaledBitmap(
+                    BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_person_pin), 120, 120, false);
+        }
+        if(TextUtils.isEmpty(url)){
+            scaledImg.setValue(user_background);
+        }
         Picasso.with(context)
-                .load(url)
-                /*.placeholder(R.drawable.ic_owner)
-                .error(R.drawable.ic_owner)*/
-                .centerCrop().resize(100, 100)
-                .transform(new CropCircleTransformation())
-                .into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        switch (type){
-                            case USER:
-                                scaledImg.setValue(mergeToPin(user_background, bitmap));
-                                break;
-                            case VENUE:
-                                //scaledImg.setValue(mergeToPin(venue_background, bitmap));
-                                break;
-                            default:
-                                Log.e("SzUtils", "Unknown thumb type in createThumb()");
-                        }
-                    }
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        //This gets called if the library failed to load the resource
-                    }
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        //This gets called when the request is started
-                    }
-                });
+            .load(url)
+            .centerCrop().resize(100, 100)
+            .transform(new CropCircleTransformation())
+            .into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    scaledImg.setValue(mergeToPin(user_background, bitmap));
+                }
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    scaledImg.setValue(user_background);
+                }
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            });
         return scaledImg;
     }
 

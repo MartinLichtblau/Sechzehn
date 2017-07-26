@@ -51,7 +51,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
     private SupportMapFragment mapFragment;
-    private GoogleMap map;
+    public GoogleMap map;
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -62,23 +62,32 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         super.onCreate(savedInstanceState);
         searchVM = ViewModelProviders.of(this).get(SearchViewModel.class);
         ownerVM = BottomTabsActivity.getOwnerViewModel();
+
+        searchVM.searchResultUsers.observe(this, new Observer<Resource>() {
+            @Override
+            public void onChanged(@Nullable Resource resource) {
+                switch (resource.status){
+                    case LOADING:
+                        Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
+                        break;
+                    case ERROR:
+                        Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
+                        break;
+                    case SUCCESS:
+                        Pagination<User> usersPage = (Pagination<User>) resource.data;
+                        Toast.makeText(getContext(), "Found"+usersPage.total+" users", Toast.LENGTH_SHORT).show();
+                        showUsers(usersPage.data);
+                        break;
+                }
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
-        Toast.makeText(getActivity(), "FragNavController is null = "+(mFragmentNavigation==null), Toast.LENGTH_SHORT).show();
-
-        getGoogleMap();
-        initalSearch();
-        searchVM.getUserMap().observe(this, new Observer<HashMap<User, Marker>>() {
-            @Override
-            public void onChanged(@Nullable HashMap<Marker, User> userMap){
-                showUsersOnMap(userMap);
-            }
-        });
-        /*searchVM.getVenueMap().observe(.......*/
-
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
         return binding.getRoot();
     }
 
@@ -97,63 +106,40 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         map = null;
     }
 
-    public void getGoogleMap(){
-        if(null == mapFragment)
-            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if(null == map)
-            mapFragment.getMapAsync(this);
-    }
-
     private void initalSearch(){
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, 99.0);
         /*searchVM.searchXVenuesNearby(...*/
     }
 
-    private void showUsersOnMap(HashMap<Marker,User> userMap) {
-        for(Map.Entry<User,Marker> entry : userMap.entrySet()){
-            map.(entry.getValue());
-        }
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 9));
+    public void showUsers(List<User> userList){
+        showUsersOnMap(userList);
+        /*showUsersOnList(userList);*/
     }
 
-    private void searchUsersNearby() {
-        searchVM.getXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, 100.0).observe(this, new Observer<Resource>() {
-            @Override
-            public void onChanged(@Nullable Resource resource) {
-                if (resource.status == Resource.Status.ERROR) {
-                    Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
-                } else if (resource.status == Resource.Status.SUCCESS) {
-                    if (resource.data != null && resource.data.getClass().equals(Pagination.class)) {
-                        Pagination<User> usersPage = (Pagination<User>) resource.data;
-                        Toast.makeText(getContext(), usersPage.total + " users nearby", Toast.LENGTH_SHORT).show();
-                        mapUsersNearby(usersPage);
-                    }
-                }
-            }
-        });
-    }
-
-    private void mapUsersNearby(Pagination<User> usersPage) {
-        List<User> usersList = usersPage.data;
-        List<MarkerOptions> markerOList = new ArrayList<>();
-        for (final User u : usersList) {
-            final MarkerOptions markerO = new MarkerOptions();
-            markerOList.add(markerO);
-            LiveData<Bitmap> icon = SzUtils.createThumb(SzUtils.ThumbType.USER, u.getProfilePicture());
-            icon.observe(this, new Observer<Bitmap>() {
+    private void showUsersOnMap(List<User> userList) {
+        final HashMap<Marker,User> usersOnMap = new HashMap<>();
+        for (final User user :  userList){
+            SzUtils.createUserThumb(user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
                 @Override
                 public void onChanged(@Nullable Bitmap bitmap) {
-                    markerO.position(new LatLng(u.getLat(),u.getLng()))
-                            .title(u.getUsername())
+                    final MarkerOptions markerOptions = new MarkerOptions()
+                            .position(new LatLng(user.getLat(),user.getLng()))
+                            .title(user.getUsername())
                             .snippet("Open Profile")
                             .infoWindowAnchor(0.5f, 0.5f)
-                            /*.alpha(0.7f)*/
                             .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                    /*markerO.icon(BitmapDescriptorFactory.defaultMarker());*/
-                    map.addMarker(markerO);
+                    Marker marker = map.addMarker(markerOptions);
+                    usersOnMap.put(marker,user);
                 }
             });
+        }
+        searchVM.usersOnMap.setValue(usersOnMap);
+    }
+
+    private void hideUsersOnMap(HashMap<Marker,User> userMap) {
+        for(Map.Entry<Marker,User> entry : userMap.entrySet()){
+            entry.getKey().remove();
         }
     }
 
@@ -161,16 +147,25 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setOnInfoWindowClickListener(this);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 9));
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initalSearch();
+            }
+        }, 100);
     }
 
     @Override
-    public void onInfoWindowClick(Marker marker) {
+    public void onInfoWindowClick(final Marker marker) {
         final String username = marker.getTitle();
         new Handler().postDelayed(new Runnable() {
             //Maps Bug UI Hang while replacing fragment
             // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
             @Override
             public void run() {
+                //@TODO differ between users and venues
                 fragNavController().pushFragment(UserProfileFragment.newInstance(username));
             }
         }, 100);

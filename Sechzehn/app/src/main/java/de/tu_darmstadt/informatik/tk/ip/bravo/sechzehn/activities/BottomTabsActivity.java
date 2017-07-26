@@ -355,11 +355,11 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     public Fragment getRootFragment(int index) {
         switch (index) {
             case INDEX_SEARCH:
-                return OwnerFragment.newInstance();         //In Background gets owners data from server
+                return SearchFragment.newInstance();
             case INDEX_FRIENDS:
                 return FriendsFragment.newInstance();
             case INDEX_OWNER:
-                return SearchFragment.newInstance();
+                return OwnerFragment.newInstance();         //In Background gets owners data from server
         }
         throw new IllegalStateException("Need to send an index that we know");
     }
