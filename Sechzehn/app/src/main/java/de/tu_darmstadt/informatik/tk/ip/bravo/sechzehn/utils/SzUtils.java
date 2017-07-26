@@ -12,19 +12,27 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.IllegalFormatException;
+import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils.ThumbType.USER;
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils.ThumbType.VENUE;
 
 /**
  * Created by marti on 12.07.2017.
@@ -38,6 +46,7 @@ public final class SzUtils {
     private static Bitmap user_background;
     private static Bitmap venue_background;
     public enum ThumbType {USER, VENUE}
+    final static List<Target> strongReferenceTargetList = new ArrayList<>();
 
     private void SzUtils(){}
 
@@ -46,6 +55,12 @@ public final class SzUtils {
         sharedPreferences = cx.getSharedPreferences("Sechzehn",0);
         ownername = sharedPreferences.getString("ownername","");
         token = sharedPreferences.getString("JWT","");
+
+        user_background = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_person_pin), 120, 120, false);
+
+        venue_background = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_search), 120, 120, false);
     }
 
     public static String getToken(){
@@ -109,32 +124,42 @@ public final class SzUtils {
         return scaledImg;
     }
 
-    public static MutableLiveData<Bitmap> createUserThumb(String url){
+    public static MutableLiveData<Bitmap> createThumb(@NonNull ThumbType type, @Nullable String url){
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
-        if(null == user_background){
-            user_background = Bitmap.createScaledBitmap(
-                    BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_person_pin), 120, 120, false);
+        final Bitmap background;
+        switch (type){
+            case VENUE:
+                background = venue_background;
+            break;
+            default:
+                background = user_background;
         }
-        if(TextUtils.isEmpty(url)){
-            scaledImg.setValue(user_background);
-        }
+        if(TextUtils.isEmpty(url))
+            scaledImg.setValue(background);
+
+        final Target target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                strongReferenceTargetList.remove(this);
+                scaledImg.setValue(mergeToPin(background, bitmap));
+            }
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                strongReferenceTargetList.add(this);
+                scaledImg.setValue(background);
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        };
+        strongReferenceTargetList.add(target);
+
         Picasso.with(context)
-            .load(url)
-            .centerCrop().resize(100, 100)
-            .transform(new CropCircleTransformation())
-            .into(new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    scaledImg.setValue(mergeToPin(user_background, bitmap));
-                }
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    scaledImg.setValue(user_background);
-                }
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-                }
-            });
+                .load(url)
+                .centerCrop().resize(100, 100)
+                .transform(new CropCircleTransformation())
+                .into(target);
+
         return scaledImg;
     }
 

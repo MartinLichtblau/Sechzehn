@@ -113,32 +113,38 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     }
 
     public void showUsers(List<User> userList){
-        showUsersOnMap(userList);
+        drawUsersOnMap(userList);
         /*showUsersOnList(userList);*/
     }
 
-    private void showUsersOnMap(List<User> userList) {
-        final HashMap<Marker,User> usersOnMap = new HashMap<>();
+    private void drawUsersOnMap(List<User> userList) {
+        final HashMap<Marker,MarkerOptions> usersOnMap = new HashMap<>();
         for (final User user :  userList){
-            SzUtils.createUserThumb(user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
+            SzUtils.createThumb(SzUtils.ThumbType.USER, user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
                 @Override
                 public void onChanged(@Nullable Bitmap bitmap) {
-                    final MarkerOptions markerOptions = new MarkerOptions()
-                            .position(new LatLng(user.getLat(),user.getLng()))
-                            .title(user.getUsername())
-                            .snippet("Open Profile")
-                            .infoWindowAnchor(0.5f, 0.5f)
-                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                    MarkerOptions markerOptions = new MarkerOptions()
+                        .position(new LatLng(user.getLat(),user.getLng()))
+                        .title(user.getUsername())
+                        .snippet("Open Profile")
+                        .infoWindowAnchor(0.5f, 0.5f)
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
                     Marker marker = map.addMarker(markerOptions);
-                    usersOnMap.put(marker,user);
+                    usersOnMap.put(marker,markerOptions);
                 }
             });
         }
         searchVM.usersOnMap.setValue(usersOnMap);
     }
 
-    private void hideUsersOnMap(HashMap<Marker,User> userMap) {
-        for(Map.Entry<Marker,User> entry : userMap.entrySet()){
+    private void showUsersOnMap(HashMap<Marker,MarkerOptions> userMap) {
+        for(Map.Entry<Marker,MarkerOptions> entry : userMap.entrySet()){
+            map.addMarker(entry.getValue());
+        }
+    }
+
+    private void hideUsersOnMap(HashMap<Marker,MarkerOptions> userMap) {
+        for(Map.Entry<Marker,MarkerOptions> entry : userMap.entrySet()){
             entry.getKey().remove();
         }
     }
@@ -149,12 +155,11 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         map.setOnInfoWindowClickListener(this);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 9));
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initalSearch();
-            }
-        }, 100);
+        if(null == searchVM.usersOnMap.getValue()){
+            initalSearch(); //Initialize anew
+        }else{
+            showUsersOnMap(searchVM.usersOnMap.getValue()); //show last state
+        }
     }
 
     @Override

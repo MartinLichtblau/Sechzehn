@@ -35,19 +35,10 @@ public class SearchViewModel extends ViewModel {
     private final String TAG = "SearchViewModel";
     private static final UserService userService = ServiceGenerator.createService(UserService.class,SzUtils.getToken());
     public MutableLiveData<Resource> searchResultUsers = new MutableLiveData<>();
-    public MutableLiveData<HashMap<Marker,User>> usersOnMap = new MutableLiveData<>();
+    public MutableLiveData<HashMap<Marker,MarkerOptions>> usersOnMap = new MutableLiveData<>();
     /*public MutableLiveData<HashMap<Marker,Venue>> venuesOnMap = new MutableLiveData<>();
     * public MutableLiveData<Resource> searchResultVenues = new MutableLiveData<>();*/
 
-/*
-    public MutableLiveData<Resource> getSearchResultUsers(){
-        return searchResultUsers;
-    }
-
-    public MutableLiveData<HashMap<Marker,User>> getUsersOnMap(){
-        return usersOnMap;
-    }
-*/
 
     public void searchXUsersNearby(Integer numberUsers, Double lat, Double lng, Double radius){
         getUsers(null, numberUsers, lat, lng,radius,null,null);
@@ -70,6 +61,4 @@ public class SearchViewModel extends ViewModel {
             }
         });
     }
-
-
 }
