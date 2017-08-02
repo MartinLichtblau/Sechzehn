@@ -2,6 +2,7 @@
 
 const Lucid = use('Lucid')
 const Hash = use('Hash')
+const Moment = require('moment')
 
 class User extends Lucid {
   /**
@@ -69,7 +70,7 @@ class User extends Lucid {
      * Hashing password before storing to the
      * database.
      */
-    this.addHook('beforeCreate', function * (next) {
+    this.addHook('beforeCreate', function* (next) {
       this.password = yield Hash.make(this.password)
       yield next
     })
@@ -149,6 +150,16 @@ class User extends Lucid {
    */
   friends () {
     return this.belongsToMany('App/Model/User', 'friendships', 'relating_user', 'related_user')
+  }
+
+  /**
+   * Format the date_of_birth as YYYY-MM-DD.
+   *
+   * @param dob - the date of birth
+   * @returns {*|String}
+   */
+  getDateOfBirth (dob) {
+    return (dob ? Moment(dob).format('YYYY-MM-DD') : dob)
   }
 }
 

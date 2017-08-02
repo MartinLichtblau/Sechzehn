@@ -31,9 +31,10 @@ class ResetToken extends Lucid {
    * Get the user that is related to this ResetToken.
    * @returns {Object}
    */
-  user () {
-    return this.belongsTo('App/Model/User', 'username', 'user')
-  }
+  // user () {
+  // return this.belongsTo('App/Model/User', 'username', 'user')
+  // return this.belongsTo('App/Model/User', 'user', 'username')
+  // }
 }
 
 module.exports = ResetToken
