@@ -295,6 +295,8 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     public void factoryReset(){
         getSharedPreferences("Sechzehn", 0).edit().clear().apply();
         ownerVM = null;
+        Intent locationServiceIntent = new Intent(this, LocationService.class);
+        stopService(locationServiceIntent);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         this.finish(); //Finish BottomTabs
