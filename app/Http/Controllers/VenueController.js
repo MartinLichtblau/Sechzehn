@@ -60,13 +60,12 @@ class VenueController {
       query.orderBy('distance', 'asc')
 
       totalQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
-
-      // Fetch the actual data and complete the Pagination object
-      const totalResult = yield totalQuery.count().first()
-      pagination.data = yield query.forPage(pagination.page, pagination.perPage)
-      pagination.total = Number(totalResult.count)
-      response.ok(pagination)
     }
+    // Fetch the actual data and complete the Pagination object
+    const totalResult = yield totalQuery.count().first()
+    pagination.data = yield query.forPage(pagination.page, pagination.perPage)
+    pagination.total = Number(totalResult.count)
+    response.ok(pagination)
   }
 
   * show (request, response) {
