@@ -6,25 +6,27 @@ import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.ChatUser;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentMessageBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.ChatService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import io.socket.client.Ack;
@@ -32,10 +34,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,6 +50,9 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
     private String username;
 
+    private User user;
+
+    private int totalItemCountServer;
 
     private ImageLoader imageLoader = new ImageLoader() {
         @Override
@@ -59,7 +61,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         }
     };
 
-    private final MessagesListAdapter<Message> adapter = new MessagesListAdapter<>(username, imageLoader);
+    private MessagesListAdapter<Message> adapter;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -119,10 +121,11 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
     @Override
     protected void useDataBinding(FragmentMessageBinding binding) {
+        adapter = new MessagesListAdapter<>(username, imageLoader);
         IO.Options options = new IO.Options();
         options.query = "token=" + SzUtils.getToken();
         try {
-            socket = IO.socket("https://iptk.herokuapp.com/messages", options);
+            socket = IO.socket("https://iptk.herokuapp.com/socket.io/messages", options);
             socket.on("error", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
@@ -137,18 +140,51 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         adapter.setLoadMoreListener(new MessagesListAdapter.OnLoadMoreListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                ServiceGenerator.createService(ChatService.class).getMessages(
-                        SzUtils.getOwnername(), page, totalItemsCount
-                ).enqueue(new DefaultCallback<Pagination<Message>>(getActivity()) {
-                              @Override
-                              public void onResponse(Call<Pagination<Message>> call, Response<Pagination<Message>> response) {
-                                  adapter.addToEnd(response.body().data, false);
-                              }
-                          }
-                );
+
+                Log.d("ChatLoad", page + " " + totalItemsCount);
+                if (totalItemsCount < totalItemCountServer) {
+                    loadMessages(page + 1, 10);
+                }
             }
         });
         binding.messagesList.setAdapter(adapter);
         binding.messagesInput.setInputListener(inputListener);
+        loadMessages(1, 10);
+
+
+    }
+
+
+    private void loadMessages(final int page, final int totalItemsCount) {
+        ServiceGenerator.createService(UserService.class)
+                .getUser(username)
+                .enqueue(new DefaultCallback<User>(getActivity()) {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        user = response.body();
+                        ServiceGenerator.createService(ChatService.class)
+                                .getMessages(username, page, totalItemsCount)
+                                .enqueue(new DefaultCallback<Pagination<Message>>(getActivity()) {
+                                             @Override
+                                             public void onResponse(Call<Pagination<Message>> call, Response<Pagination<Message>> response) {
+                                                 ChatUser owner = new ChatUser(BottomTabsActivity.getOwnerViewModel().getOwner().getValue());
+                                                 totalItemCountServer = response.body().total;
+                                                 List<Message> messages = response.body().data;
+                                                 if (messages.isEmpty()) {
+                                                     return;
+                                                 }
+                                                 for (Message m : messages) {
+                                                     if (m.receiver.equals(username)) {
+                                                         m.user = new ChatUser(user);
+                                                     } else {
+                                                         m.user = owner;
+                                                     }
+                                                 }
+                                                 adapter.addToEnd(messages, false);
+                                             }
+                                         }
+                                );
+                    }
+                });
     }
 }

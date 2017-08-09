@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import com.stfalcon.chatkit.commons.models.IMessage;
 import com.stfalcon.chatkit.commons.models.IUser;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -13,9 +16,9 @@ import java.util.Date;
 public class Message implements IMessage {
     public  String id;
     @SerializedName("created_at")
-    public Date created;
+    public String created;
     @SerializedName("updated_at")
-    public Date updated;
+    public String updated;
     @SerializedName("is_read")
     public boolean isRead;
 
@@ -48,9 +51,14 @@ public class Message implements IMessage {
     public IUser getUser() {
         return user;
     }
-
+    private static final SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Override
     public Date getCreatedAt() {
-        return created;
+
+        try {
+            return parser.parse(created);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 }

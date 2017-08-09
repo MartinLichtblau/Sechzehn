@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import retrofit2.Call;
@@ -20,6 +21,7 @@ public abstract class DefaultCallback<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
+        Log.e("HTTP Error:",t.getCause().toString());
         Toast.makeText(context, "Connectivity error!", Toast.LENGTH_SHORT).show();
     }
 }
