@@ -6,6 +6,7 @@ const Validator = use('Validator')
 const Database = use('Database')
 const Exceptions = require('adonis-lucid/src/Exceptions')
 const Pagination = require('./Helper/Pagination')
+const Moment = require('moment')
 
 class MessageController {
   * index (request, response) {
@@ -13,10 +14,10 @@ class MessageController {
 
     const pagination = new Pagination(request)
 
-    const receiverQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'is_read', 'receiver as username')
+    const receiverQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'updated_at', 'is_read', 'receiver as username')
       .from('messages').where('sender', username)
 
-    const senderQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'is_read', 'sender as username')
+    const senderQuery = Database.select('sender', 'receiver', 'body', 'created_at', 'updated_at', 'is_read', 'sender as username')
       .from('messages').where('receiver', username)
 
     const chatData = yield Database
@@ -26,6 +27,7 @@ class MessageController {
           first_value(chats.sender) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_sender,
           first_value(chats.receiver) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) last_receiver,
           first_value(chats.created_at) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_created_at,
+          first_value(chats.updated_at) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) last_updated_at,
           first_value(chats.is_read) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_is_read,
           first_value(chats.body) OVER (PARTITION BY chats.username ORDER BY chats.created_at DESC) as last_body`
         ))
@@ -38,7 +40,7 @@ class MessageController {
     pagination.total = Number(totalQuery.count)
 
     // Transform the data
-    pagination.data = chatData.map(function (row) {
+    pagination.data = chatData.map(row => {
       return {
         user: {
           username: row.username,
@@ -49,7 +51,8 @@ class MessageController {
           sender: row.last_sender,
           receiver: row.last_receiver,
           body: row.last_body,
-          created_at: row.last_created_at,
+          created_at: this.formatDate(row.last_created_at),
+          updated_at: this.formatDate(row.last_updated_at),
           is_read: row.last_is_read
         }
       }
@@ -125,6 +128,16 @@ class MessageController {
     }
 
     response.ok(message)
+  }
+
+  /**
+   * Format the the as YYYY-MM-DD HH:mm:ss.
+   *
+   * @param date - the date
+   * @returns {*|String}
+   */
+  formatDate (date) {
+    return (date ? Moment(date).format('YYYY-MM-DD HH:mm:ss') : date)
   }
 }
 
