@@ -9,7 +9,7 @@
 \documentclass[accentcolor=tud1c]{tudreport}	
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath, enumitem, graphicx, lipsum, listings, mathtools, parskip, parcolumns}
+\usepackage{amsmath, enumitem, graphicx, hyperref, lipsum, listings, mathtools, parcolumns}
 
 % https://scm.informatik.tu-darmstadt.de/news/129-technical-documentation-sample
 
@@ -48,9 +48,33 @@
 % ! max. 1 page !
 
 
-\chapter{Architecture}\label{ch:architecture}
+\chapter{Overview}\label{ch:overview}
 % ! image demanded !
+\section{Architecture}\label{sec:architecture}
+In the following sections we describe the technologies used by us.
 % components and their interaction
+\section{Server}\label{sec:server}
+Server is hosted on Heroku\cite{heroku}
+\subsection{Node.js}
+\cite{nodejs}
+\subsection{AdonisJs}\label{sec:adonisjs}
+\cite{adonisjs}
+\subsection{PostgreSQL}
+\cite{postgresql}
+\subsection{JSON Web Tokens}\label{sec:json_web_tokens}
+The Authentication in our project is done with JSON Web Tokens(JWTs)\cite{jwt}.
+
+\section{Client}\label{sec:client}
+\subsection{Android Data Binding}
+\cite{databinding}
+\subsection{Retrofit}
+\cite{retrofit}
+\subsection{GSON}
+\cite{gson}
+\subsection{ChatKit}
+\cite{chatkit}
+
+% TODO
 % technologies used
 % interfaces
 % pls explain your design decisions!
@@ -58,11 +82,52 @@
 
 
 \chapter{Feature Explanation}\label{ch:feature_explanation}
+\section{System Requirements}
+\section{Get Started}
+\section{App Flow}
 % system requirements, get started, functionalities, features, app flow, ...
 
 \chapter{Feature List}\label{ch:feature_list}
 % ! 1 page !
 % pls only list the most relevant implemented features
 
-	
+% Bibliography
+\begin{thebibliography}{9}
+	\bibitem{heroku}
+		\textit{Heroku}, 
+		Accessed: 2017-08-09, \\
+		\url{https://www.heroku.com/}
+	\bibitem{nodejs}
+		\textit{API Reference Documentation}, 
+		Accessed: 2017-08-09, \\
+		\url{https://nodejs.org/en/docs/}
+	\bibitem{adonisjs}
+		\textit{AdonisJs at a Glance}, 
+		Accessed: 2017-08-09, \\
+		\url{https://adonisjs.com/docs/3.2/overview}
+	\bibitem{postgresql}
+		\textit{PostgreSQL: Documentation}, 
+		Accessed: 2017-08-09, \\
+		\url{https://www.postgresql.org/docs/}
+	\bibitem{jwt}
+		\textit{Introduction to JSON Web Tokens}, 
+		Accessed: 2017-08-09, \\
+		\url{https://jwt.io/introduction/}
+	\bibitem{databinding}
+		\textit{Data Binding Library}, 
+		Accessed: 2017-08-09, \\
+		\url{https://developer.android.com/topic/libraries/data-binding/index.html}
+	\bibitem{retrofit}
+		\textit{Retrofit: A type-safe HTTP client for Android and Java}, 
+		Accessed: 2017-08-09, \\	
+		\url{https://square.github.io/retrofit/}
+	\bibitem{gson}
+		\textit{Google GSON}, 
+		Accessed: 2017-08-09, \\
+		\url{https://github.com/google/gson}
+	\bibitem{chatkit}
+		\textit{ChatKit for Android}, 
+		Accessed: 2017-08-09, \\
+		\url{https://github.com/stfalcon-studio/ChatKit}
+\end{thebibliography}
 \end{document}
