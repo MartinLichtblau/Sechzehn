@@ -1,0 +1,66 @@
+% accentcolor - https://www.tu-darmstadt.de/media/medien_stabsstelle_km/services/medien_cd/das_bild_der_tu_darmstadt.pdf (pages 17-18)
+% amsmath	- formatting math stuff	(ftp://ftp.ams.org/pub/tex/doc/amsmath/amsldoc.pdf)
+% enumitem	- formatting enumerates	(http://ftp.uni-erlangen.de/ctan/macros/latex/contrib/enumitem/enumitem.pdf)
+% graphicx	- images				(http://ctan.space-pro.be/tex-archive/macros/latex/required/graphics/grfguide.pdf)
+% lipsum	- lorem ipsum			(ftp://ftp.fu-berlin.de/tex/CTAN/macros/latex/contrib/lipsum/lipsum.pdf)
+% listings	- source code			(http://texdoc.net/texmf-dist/doc/latex/listings/listings.pdf)
+% mathtools	- amsmath extension		(ftp://ftp.fu-berlin.de/tex/CTAN/macros/latex/contrib/mathtools/mathtools.pdf)
+% parskip	- splittitle 
+\documentclass[accentcolor=tud1c]{tudreport}	
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, enumitem, graphicx, lipsum, listings, mathtools, parskip, parcolumns}
+
+% https://scm.informatik.tu-darmstadt.de/news/129-technical-documentation-sample
+
+
+% Specifying new commands
+\newcommand{\titlerow}[2]{
+    \begin{parcolumns}[colwidths={1=.15\linewidth}]{2}
+        \colchunk[1]{#1:}
+        \colchunk[2]{#2}
+    \end{parcolumns}
+    \vspace{0.2cm}
+}
+
+% configuring title
+\title{Internet-Praktikum: Telekooperation}
+\setinstitutionlogo{./res/logo.pdf}
+
+\subtitle{
+	\titlerow{Project}{Sechzehn}
+	\titlerow{Team Bravo}{Alexander Geiß {\normalsize(alexanderhelmut.geiss@stud.tu-darmstadt.de)}, \\ 
+	                      Lukas Klein {\normalsize(lukas.klein@stud.tu-darmstadt.de)},  \\ 
+	                      Martin Lichtblau {\normalsize(martin.lichtblau@stud.tu-darmstadt.de)}, \\ 
+	                      Johannes Semsch {\normalsize(johannesmaximilianchristian.semsch@stud.tu-darmstadt.de)}, \\ 
+	                      Tim Walter {\normalsize(tim.walter.10@stud.tu-darmstadt.de)}}
+}
+
+
+
+% document 
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\chapter{Motivation}\label{ch:motivation}
+% ! max. 1 page !
+
+\chapter{Architecture}\label{ch:architecture}
+% ! image demanded !
+% components and their interaction
+% technologies used
+% interfaces
+% pls explain your design decisions!
+% pls explain the particular components, interfaces,..(e.g., app, database, API,..) in detail.
+
+\chapter{Feature Explanation}\label{ch:feature_explanation}
+% system requirements, get started, functionalities, features, app flow, ...
+
+\chapter{Feature List}\label{ch:feature_list}
+% ! 1 page !
+% pls only list the most relevant implemented features
+
+	
+\end{document}
