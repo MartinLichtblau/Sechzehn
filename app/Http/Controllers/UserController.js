@@ -125,6 +125,10 @@ class UserController {
   * show (request, response) {
     const authUsername = request.authUser.username
 
+    if (request.param('id', null) === authUsername) {
+      response.ok(request.authUser.completeView())
+    }
+
     const user = yield User.query().where('username', request.param('id', null))
       .leftJoin(Database.raw('friendships on users.username = friendships.relating_user and ? = friendships.related_user', [authUsername]))
       .first()
@@ -133,9 +137,7 @@ class UserController {
       throw new Exceptions.ModelNotFoundException()
     }
 
-    if (user.username === authUsername) {
-      response.ok(user.completeView())
-    } else if (user.status === 'CONFIRMED') {
+    if (user.status === 'CONFIRMED') {
       response.ok(user.friendView())
     } else {
       response.ok(user.strangerView())

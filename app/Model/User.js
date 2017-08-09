@@ -70,7 +70,7 @@ class User extends Lucid {
      * Hashing password before storing to the
      * database.
      */
-    this.addHook('beforeCreate', function* (next) {
+    this.addHook('beforeCreate', function * (next) {
       this.password = yield Hash.make(this.password)
       yield next
     })
@@ -115,7 +115,8 @@ class User extends Lucid {
       lat: this.lat,
       lng: this.lng,
       incognito: this.incognito,
-      confirmed: this.confirmed
+      confirmed: this.confirmed,
+      friendship_status: 'SELF'
     }
   }
 
