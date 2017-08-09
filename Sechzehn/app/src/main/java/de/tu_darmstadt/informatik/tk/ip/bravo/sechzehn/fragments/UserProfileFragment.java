@@ -10,56 +10,102 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfileUserBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.UserProfileViewModel;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 
-public class UserProfileFragment extends BaseFragment implements OnMapReadyCallback {
-    private ImageView addFriendButton;
-    private ImageView optionsButton;
-    private static final String USERNAME = "username";
-    private UserProfileViewModel viewModel;
+public class UserProfileFragment extends BaseFragment {
+    private UserProfileViewModel userProfileVM;
     private FragmentProfileUserBinding binding;
     SupportMapFragment mapFragment;
-    GoogleMap mMap;
+    GoogleMap map;
+    private User user;
 
     public static UserProfileFragment newInstance(String username) {
         Bundle bundle = new Bundle();
-        bundle.putString(USERNAME, username);
+        bundle.putString("username", username);
         UserProfileFragment fragment = new UserProfileFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        userProfileVM = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+        userProfileVM.initUser(getArguments().getString("username"));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile_user, container, false);
-        addFriendButton = binding.userprofileAddfriend;
-        optionsButton = binding.userprofileOptions;
+        binding.setFrag(this);
 
-        viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
-        if (viewModel.getUser().getValue() == null)
-            viewModel.initUser(getArguments().getString("username"));
+        userProfileVM.getUser().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(@Nullable User u) {
+                user = u;
+                binding.setUser(user);
 
-        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+                Picasso.with(getActivity())
+                        .load(user.getProfilePicture()) //Picasso needs "http://" or "https://" url
+                        .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
+                        .error(R.drawable.ic_owner)
+                        //.centerCrop().resize(256,256) not neccessary since we do that for each uploaded img by default
+                        .transform(new CropCircleTransformation())
+                        .into(binding.userprofilePicture);
+
+                ;
+                switch(user.getFriendshipStatus()){
+                    case NONE:
+                        binding.userprofileFriendshipStatus.setImageResource(R.drawable.ic_user_add);
+                        break;
+                    case RELATED_CONFIRMED:
+                        binding.userprofileFriendshipStatus.setImageResource(R.drawable.ic_outgoing_request);
+                        break;
+                    case RELATING_CONFIRMED:
+                        binding.userprofileFriendshipStatus.setImageResource(R.drawable.ic_incoming_request);
+                        break;
+                    case CONFIRMED:
+                        binding.userprofileFriendshipStatus.setImageResource(R.drawable.ic_checkdone);
+                        break;
+                    default:
+                        break;
+                }
+
+                mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+                        map = googleMap;
+                        LatLng pos = userProfileVM.getLatLng();
+                        if(map != null && pos != null){
+                            map.addMarker(new MarkerOptions()
+                                    .position(pos)
+                                    .title(user.getUsername())
+                                    .icon(BitmapDescriptorFactory.defaultMarker(340)));
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+                        }
+                    }
+                });
+            }
+        });
 
         return binding.getRoot();
     }
@@ -70,50 +116,18 @@ public class UserProfileFragment extends BaseFragment implements OnMapReadyCallb
         getChildFragmentManager().beginTransaction()
                 .remove(mapFragment)
                 .commit();
-        mMap = null;
+        map = null;
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        setup();
+    public String getAge(String timestamp){
+        if(timestamp != null)
+            return SzUtils.getAge(SzUtils.timestampToCal(timestamp));
+        else
+            return  null;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        addFriendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-        optionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-    }
-
-    private void setup() {
-        viewModel.getUser().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                binding.setUser(user);
-
-                Picasso.with(getActivity())
-                        .load("http://" + user.getProfilePicture()) //Picasso needs "http://"
-                        .placeholder(R.drawable.ic_person) //Placeholders and error images are not resized and must be fairly small images.
-                        .centerCrop().resize(256, 256)
-                        .transform(new RoundedCornersTransformation(50, 20))
-                        .into(binding.userprofilePicture);
-                if (viewModel.getUser().getValue().getLat() != null && viewModel.getUser().getValue().getLng() != null) {
-                    LatLng pos = new LatLng(viewModel.getUser().getValue().getLat(), viewModel.getUser().getValue().getLng());
-                    mMap.addMarker(new MarkerOptions().position(pos)
-                            .title(getArguments().getString("username")));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
-                }
-            }
-        });
+    public void addFriend(View view){
+        userProfileVM.addFriend(userProfileVM.getUsername());
     }
 }
 

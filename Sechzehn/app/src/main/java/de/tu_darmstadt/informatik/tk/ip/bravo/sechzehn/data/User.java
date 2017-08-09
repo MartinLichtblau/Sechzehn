@@ -16,6 +16,7 @@ public class User {
     @SerializedName("username")
     @Expose
     private String username;
+
     @SerializedName("real_name")
     @Expose
     private String realName;
@@ -44,6 +45,20 @@ public class User {
     @SerializedName("confirmed")
     @Expose
     private boolean confirmed;
+
+    @SerializedName("friendship_status")
+    @Expose
+    private FriendshipStatus friendshipStatus;
+
+    //Ref > http://blog.jensdriller.com/simple-deserialization-of-java-enums-using-google-gson-annotations/
+    public enum FriendshipStatus {
+        @SerializedName("NONE") NONE,
+        @SerializedName("SELF") SELF,
+        @SerializedName("CONFIRMED") CONFIRMED,
+        @SerializedName("RELATED_CONFIRMED") RELATED_CONFIRMED,
+        @SerializedName("RELATED_CONFIRMED") RELATING_CONFIRMED,
+        UNKNOWN
+    }
 
     public boolean isIncognito() {
         return incognito;
@@ -145,6 +160,14 @@ public class User {
         this.lng = lng;
     }
 
+    public FriendshipStatus getFriendshipStatus() {
+        return friendshipStatus;
+    }
+
+    public void setFriendshipStatus(FriendshipStatus friendshipStatus) {
+        this.friendshipStatus = friendshipStatus;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -160,6 +183,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", incognito=" + incognito +
                 ", confirmed=" + confirmed +
+                ", friendshipStatus=" + friendshipStatus +
                 '}';
     }
 

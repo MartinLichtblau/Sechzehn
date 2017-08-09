@@ -98,4 +98,9 @@ public interface UserService {
             @Query("per_page") Integer per_page
     );
 
+    @POST("users/{username}/friends")
+    Call<Object> addFriend(
+            @Path("username") @NonNull String username
+    );
+
 }
