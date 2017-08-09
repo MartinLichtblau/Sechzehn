@@ -1,18 +1,21 @@
 \BOOKMARK [0][-]{chapter.1}{Motivation}{}% 1
 \BOOKMARK [0][-]{chapter.2}{Overview}{}% 2
 \BOOKMARK [1][-]{section.2.1}{Architecture}{chapter.2}% 3
-\BOOKMARK [1][-]{section.2.2}{Server}{chapter.2}% 4
-\BOOKMARK [2][-]{subsection.2.2.1}{Node.js}{section.2.2}% 5
-\BOOKMARK [2][-]{subsection.2.2.2}{AdonisJs}{section.2.2}% 6
-\BOOKMARK [2][-]{subsection.2.2.3}{PostgreSQL}{section.2.2}% 7
-\BOOKMARK [2][-]{subsection.2.2.4}{JSON Web Tokens}{section.2.2}% 8
-\BOOKMARK [1][-]{section.2.3}{Client}{chapter.2}% 9
-\BOOKMARK [2][-]{subsection.2.3.1}{Android Data Binding}{section.2.3}% 10
-\BOOKMARK [2][-]{subsection.2.3.2}{Retrofit}{section.2.3}% 11
-\BOOKMARK [2][-]{subsection.2.3.3}{GSON}{section.2.3}% 12
-\BOOKMARK [2][-]{subsection.2.3.4}{ChatKit}{section.2.3}% 13
-\BOOKMARK [0][-]{chapter.3}{Feature Explanation}{}% 14
-\BOOKMARK [1][-]{section.3.1}{System Requirements}{chapter.3}% 15
-\BOOKMARK [1][-]{section.3.2}{Get Started}{chapter.3}% 16
-\BOOKMARK [1][-]{section.3.3}{App Flow}{chapter.3}% 17
-\BOOKMARK [0][-]{chapter.4}{Feature List}{}% 18
+\BOOKMARK [2][-]{subsection.2.1.1}{Diagram Interaction}{section.2.1}% 4
+\BOOKMARK [2][-]{subsection.2.1.2}{ERM}{section.2.1}% 5
+\BOOKMARK [2][-]{subsection.2.1.3}{UML Diagram}{section.2.1}% 6
+\BOOKMARK [1][-]{section.2.2}{Server}{chapter.2}% 7
+\BOOKMARK [2][-]{subsection.2.2.1}{Node.js}{section.2.2}% 8
+\BOOKMARK [2][-]{subsection.2.2.2}{AdonisJs}{section.2.2}% 9
+\BOOKMARK [2][-]{subsection.2.2.3}{PostgreSQL}{section.2.2}% 10
+\BOOKMARK [2][-]{subsection.2.2.4}{JSON Web Tokens}{section.2.2}% 11
+\BOOKMARK [1][-]{section.2.3}{Client}{chapter.2}% 12
+\BOOKMARK [2][-]{subsection.2.3.1}{Android Data Binding}{section.2.3}% 13
+\BOOKMARK [2][-]{subsection.2.3.2}{Retrofit}{section.2.3}% 14
+\BOOKMARK [2][-]{subsection.2.3.3}{GSON}{section.2.3}% 15
+\BOOKMARK [2][-]{subsection.2.3.4}{ChatKit}{section.2.3}% 16
+\BOOKMARK [0][-]{chapter.3}{Feature Explanation}{}% 17
+\BOOKMARK [1][-]{section.3.1}{System Requirements}{chapter.3}% 18
+\BOOKMARK [1][-]{section.3.2}{Get Started}{chapter.3}% 19
+\BOOKMARK [1][-]{section.3.3}{App Flow}{chapter.3}% 20
+\BOOKMARK [0][-]{chapter.4}{Feature List}{}% 21
