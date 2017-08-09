@@ -19,9 +19,20 @@ public class Message implements IMessage {
     @SerializedName("is_read")
     public boolean isRead;
 
+    public String sender;
+
+    public String  receiver;
+
     public String body;
 
     public IUser user;
+
+    public Message(){}
+    public Message(String sender, String receiver, String body) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.body = body;
+    }
 
     @Override
     public String getId() {

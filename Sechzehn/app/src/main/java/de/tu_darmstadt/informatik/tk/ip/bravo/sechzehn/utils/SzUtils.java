@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -47,6 +48,8 @@ public final class SzUtils {
     private static Bitmap venue_background;
     public enum ThumbType {USER, VENUE}
     final static List<Target> strongReferenceTargetList = new ArrayList<>();
+
+    public final static Gson gson = new Gson();
 
     private void SzUtils(){}
 

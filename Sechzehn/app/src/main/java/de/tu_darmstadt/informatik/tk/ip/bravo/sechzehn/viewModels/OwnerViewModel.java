@@ -177,7 +177,7 @@ public class OwnerViewModel extends ViewModel {
         userService.deleteAccount(getOwnername(),body).enqueue(new Callback<Object>() {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
-                if(response.isSuccessful()) {
+                if(response.body() != null) {
                     makeToast("We will miss you!");
                     close.setValue(true);
                 }else{

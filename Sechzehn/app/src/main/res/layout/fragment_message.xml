@@ -11,10 +11,18 @@
             name="user"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
     </data>
-
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <com.stfalcon.chatkit.messages.MessagesList
         android:id="@+id/messagesList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/input" />
+    <com.stfalcon.chatkit.messages.MessageInput
+        android:id="@+id/messagesInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:inputHint="Enter a message"/></FrameLayout>
 </layout>

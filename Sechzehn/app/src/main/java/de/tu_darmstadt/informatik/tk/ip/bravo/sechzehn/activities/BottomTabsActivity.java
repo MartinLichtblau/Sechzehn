@@ -108,6 +108,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                 mNavController.clearStack();
             }
         });
+        postOwnerToasts();
     }
 
     public MutableLiveData<Boolean> checkRequirements(){
@@ -293,9 +294,20 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     public void factoryReset(){
         getSharedPreferences("Sechzehn", 0).edit().clear().apply();
+        ownerVM = null;
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
-        finish(); //Finish BottomTabs
+        this.finish(); //Finish BottomTabs
+        return;
+    }
+
+    private void postOwnerToasts(){
+        ownerVM.receiveToast().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                Toast.makeText(BottomTabsActivity.this, s, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
