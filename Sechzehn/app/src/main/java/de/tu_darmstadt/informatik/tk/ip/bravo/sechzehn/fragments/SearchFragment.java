@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -119,20 +120,23 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
 
     private void drawUsersOnMap(List<User> userList) {
         final HashMap<Marker,MarkerOptions> usersOnMap = new HashMap<>();
-        for (final User user :  userList){
-            SzUtils.createThumb(SzUtils.ThumbType.USER, user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
-                @Override
-                public void onChanged(@Nullable Bitmap bitmap) {
-                    MarkerOptions markerOptions = new MarkerOptions()
-                        .position(new LatLng(user.getLat(),user.getLng()))
-                        .title(user.getUsername())
-                        .snippet("Open Profile")
-                        .infoWindowAnchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                    Marker marker = map.addMarker(markerOptions);
-                    usersOnMap.put(marker,markerOptions);
-                }
-            });
+        for (final User user :  userList) {
+            if (!TextUtils.equals(user.getUsername(), ownerVM.getOwnername())) {
+                //Filter our owner
+                SzUtils.createThumb(SzUtils.ThumbType.USER, user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
+                    @Override
+                    public void onChanged(@Nullable Bitmap bitmap) {
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(new LatLng(user.getLat(), user.getLng()))
+                                .title(user.getUsername())
+                                .snippet("Open Profile")
+                                .infoWindowAnchor(0.5f, 0.5f)
+                                .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                        Marker marker = map.addMarker(markerOptions);
+                        usersOnMap.put(marker, markerOptions);
+                    }
+                });
+            }
         }
         searchVM.usersOnMap.setValue(usersOnMap);
     }
@@ -152,6 +156,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        map.setMyLocationEnabled(true);
         map.setOnInfoWindowClickListener(this);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 9));
 
