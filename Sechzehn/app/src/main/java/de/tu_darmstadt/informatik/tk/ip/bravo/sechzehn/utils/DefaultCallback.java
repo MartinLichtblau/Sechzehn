@@ -21,7 +21,7 @@ public abstract class DefaultCallback<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        Log.e("HTTP Error:",t.getCause().toString());
+        Log.e("HTTP Error:",t.toString());
         Toast.makeText(context, "Connectivity error!", Toast.LENGTH_SHORT).show();
     }
 }

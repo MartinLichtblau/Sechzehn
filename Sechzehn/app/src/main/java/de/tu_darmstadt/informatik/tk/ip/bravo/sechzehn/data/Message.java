@@ -49,6 +49,9 @@ public class Message implements IMessage {
 
     @Override
     public IUser getUser() {
+        if(user==null){
+            throw new NullPointerException("The User of this message is not set. It is required to set it.");
+        }
         return user;
     }
     private static final SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
