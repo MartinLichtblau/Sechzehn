@@ -223,7 +223,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
             Manifest.permission.ACCESS_FINE_LOCATION})
     public void showRationaleForAllPermissions(final PermissionRequest request) {
         new AlertDialog.Builder(this)
-                .setMessage("To experience Sechzeh you must grant some permissions :-)")
+                .setMessage("To experience Sechzehn you must grant some permissions :-)")
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

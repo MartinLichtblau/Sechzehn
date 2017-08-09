@@ -65,7 +65,7 @@ public class OwnerViewModel extends ViewModel {
     public LatLng getLatLng(){
         if(owner.getValue().getLat() != null && owner.getValue().getLng() != null)
             return new LatLng(owner.getValue().getLat(),owner.getValue().getLng());
-        return null;
+        return new LatLng(49.872825,8.651193); //TODO Remove after finished Debug
     }
 
     public LiveData<String> receiveToast(){

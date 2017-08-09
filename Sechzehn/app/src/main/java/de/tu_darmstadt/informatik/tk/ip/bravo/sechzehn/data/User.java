@@ -3,10 +3,11 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.stfalcon.chatkit.commons.models.IUser;
 
 import java.security.PublicKey;
 
-public class User {
+public class User{
 
 
     @SerializedName("id")

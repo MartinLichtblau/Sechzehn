@@ -58,6 +58,12 @@ dependencies {
     //The tiny Materialize library used for its useful helper classes
     compile 'com.mikepenz:materialize:1.0.2@aar'
 
+    compile 'com.github.stfalcon:chatkit:0.2.2'
+
+    compile ('io.socket:socket.io-client:1.0.0') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
 
     //Android Lifecycle Architecture > https://developer.android.com/topic/libraries/architecture/adding-components.html
     compile "android.arch.lifecycle:runtime:1.0.0-alpha3"

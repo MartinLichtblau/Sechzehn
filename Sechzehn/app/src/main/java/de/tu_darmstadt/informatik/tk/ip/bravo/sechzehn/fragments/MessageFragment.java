@@ -7,8 +7,14 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
+import com.stfalcon.chatkit.commons.ImageLoader;
+import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentMessageBinding;
 
 /**
@@ -25,6 +31,12 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
     private String username;
 
+    ImageLoader imageLoader = new ImageLoader() {
+        @Override
+        public void loadImage(ImageView imageView, String url) {
+            Picasso.with(getActivity()).load(url).into(imageView);
+        }
+    };
 
     public MessageFragment() {
         // Required empty public constructor
@@ -57,5 +69,17 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     @Override
     protected FragmentMessageBinding initDataBinding(LayoutInflater inflater, @Nullable ViewGroup container) {
         return FragmentMessageBinding.inflate(inflater,container,false);
+    }
+
+    @Override
+    protected void useDataBinding(FragmentMessageBinding binding) {
+        final MessagesListAdapter<Message> adapter = new MessagesListAdapter<>(username, imageLoader);
+        adapter.setLoadMoreListener(new MessagesListAdapter.OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                //TODO
+            }
+        });
+        binding.messagesList.setAdapter(adapter);
     }
 }
