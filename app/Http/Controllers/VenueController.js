@@ -3,6 +3,7 @@
 const Venue = use('App/Model/Venue')
 const Database = use('Database')
 const Validator = use('Validator')
+const VenueRetriever = use('App/Utils/VenueRetriever')
 const Pagination = require('./Helper/Pagination')
 
 class VenueController {
@@ -11,6 +12,8 @@ class VenueController {
     const lng = request.input('lng')
     const radius = request.input('radius', 10)
     const searchQuery = request.input('query')
+
+    yield VenueRetriever.retrieve(lat, lng, radius)
 
     const pagination = new Pagination(request)
 
@@ -67,18 +70,6 @@ class VenueController {
   }
 
   * show (request, response) {
-    //
-  }
-
-  * store (request, response) {
-    //
-  }
-
-  * update (request, response) {
-    //
-  }
-
-  * destroy (request, response) {
     //
   }
 }
