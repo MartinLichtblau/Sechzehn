@@ -113,7 +113,7 @@ class MessageController {
     const message = yield Message.findOrFail(request.param('message', null))
 
     if (message.receiver === me && message.sender === other) {
-      message.is_read = message.is_read || Validator.sanitizor.toBoolean(data.is_read)
+      message.is_read = message.is_read === true || Validator.sanitizor.toBoolean(data.is_read)
 
       yield message.save()
     } else if (message.sender === me && message.receiver === other) {
