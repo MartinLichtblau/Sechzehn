@@ -211,8 +211,7 @@
                             android:name="com.google.android.gms.maps.SupportMapFragment"
                             android:layout_width="match_parent"
                             android:layout_height="160dp"
-                            map:liteMode="true"
-                            map:mapType="normal" />
+                            map:liteMode="true"/>
 
 
                         <Space

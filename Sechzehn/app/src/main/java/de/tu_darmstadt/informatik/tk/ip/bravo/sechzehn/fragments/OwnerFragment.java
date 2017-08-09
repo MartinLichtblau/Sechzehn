@@ -17,6 +17,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
@@ -58,7 +59,6 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         binding.setFrag(this); //Most important to actually bind the variables specified in layout.xml | The owner binding goes in ownerSetup() triggered by async map
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        updateOwner();
         return binding.getRoot();
     }
 
@@ -70,6 +70,11 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                 .remove(mapFragment)
                 .commit();
         map = null;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
     }
 
     @Override
@@ -97,7 +102,10 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
 
                 LatLng pos = viewModel.getLatLng();
                 if(map != null && pos != null){
-                    map.addMarker(new MarkerOptions().position(pos).title(viewModel.getOwnername()));
+                    map.addMarker(new MarkerOptions()
+                            .position(pos)
+                            .title(viewModel.getOwnername())
+                            .icon(BitmapDescriptorFactory.defaultMarker(340)));
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
                 }
             }
