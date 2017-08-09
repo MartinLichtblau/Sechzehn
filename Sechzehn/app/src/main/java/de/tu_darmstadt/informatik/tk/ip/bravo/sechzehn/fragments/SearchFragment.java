@@ -25,6 +25,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.maps.android.SphericalUtil;
 import com.ncapdevi.fragnav.FragNavController;
 import com.squareup.picasso.Picasso;
 
@@ -64,24 +66,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         searchVM = ViewModelProviders.of(this).get(SearchViewModel.class);
         ownerVM = BottomTabsActivity.getOwnerViewModel();
 
-        searchVM.searchResultUsers.observe(this, new Observer<Resource>() {
-            @Override
-            public void onChanged(@Nullable Resource resource) {
-                switch (resource.status){
-                    case LOADING:
-                        Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
-                        break;
-                    case ERROR:
-                        Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
-                        break;
-                    case SUCCESS:
-                        Pagination<User> usersPage = (Pagination<User>) resource.data;
-                        Toast.makeText(getContext(), "Found"+usersPage.total+" users", Toast.LENGTH_SHORT).show();
-                        showUsers(usersPage.data);
-                        break;
-                }
-            }
-        });
+        observeSearchResults();
     }
 
     @Override
@@ -107,10 +92,61 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         map = null;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        map.setMyLocationEnabled(true);
+        map.setOnInfoWindowClickListener(this);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 10));
+
+        if(null == searchVM.usersOnMap.getValue()){
+            initalSearch(); //Initialize anew
+        }else{
+            showUsersOnMap(searchVM.usersOnMap.getValue()); //show last state
+        }
+    }
+
+    @Override
+    public void onInfoWindowClick(final Marker marker) {
+        final String username = marker.getTitle();
+        new Handler().postDelayed(new Runnable() {
+            //Maps Bug UI Hang while replacing fragment
+            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
+            @Override
+            public void run() {
+                //@TODO differ between users and venues
+                fragNavController().pushFragment(UserProfileFragment.newInstance(username));
+            }
+        }, 100);
+    }
+
     private void initalSearch(){
         //Show only nearby users and venues
-        searchVM.searchXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, 99.0);
+        searchVM.searchXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, getVisibleRange(map));
         /*searchVM.searchXVenuesNearby(...*/
+    }
+
+    public void observeSearchResults(){
+        searchVM.searchResultUsers.observe(this, new Observer<Resource>() {
+            @Override
+            public void onChanged(@Nullable Resource resource) {
+                switch (resource.status){
+                    case LOADING:
+                        Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
+                        break;
+                    case ERROR:
+                        Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
+                        break;
+                    case SUCCESS:
+                        Pagination<User> usersPage = (Pagination<User>) resource.data;
+                        Toast.makeText(getContext(), "Found"+usersPage.total+" users", Toast.LENGTH_SHORT).show();
+                        showUsers(usersPage.data);
+                        break;
+                }
+            }
+        });
+
+        //Observe Venue search result changes
     }
 
     public void showUsers(List<User> userList){
@@ -141,6 +177,12 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         searchVM.usersOnMap.setValue(usersOnMap);
     }
 
+    public Double getVisibleRange(GoogleMap map){
+        VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
+        return SphericalUtil.computeDistanceBetween(
+                visibleRegion.farLeft, map.getCameraPosition().target) / 1000;
+    }
+
     private void showUsersOnMap(HashMap<Marker,MarkerOptions> userMap) {
         for(Map.Entry<Marker,MarkerOptions> entry : userMap.entrySet()){
             map.addMarker(entry.getValue());
@@ -151,34 +193,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         for(Map.Entry<Marker,MarkerOptions> entry : userMap.entrySet()){
             entry.getKey().remove();
         }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-        map.setMyLocationEnabled(true);
-        map.setOnInfoWindowClickListener(this);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 9));
-
-        if(null == searchVM.usersOnMap.getValue()){
-            initalSearch(); //Initialize anew
-        }else{
-            showUsersOnMap(searchVM.usersOnMap.getValue()); //show last state
-        }
-    }
-
-    @Override
-    public void onInfoWindowClick(final Marker marker) {
-        final String username = marker.getTitle();
-        new Handler().postDelayed(new Runnable() {
-            //Maps Bug UI Hang while replacing fragment
-            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
-            @Override
-            public void run() {
-                //@TODO differ between users and venues
-                fragNavController().pushFragment(UserProfileFragment.newInstance(username));
-            }
-        }, 100);
     }
 }
 
