@@ -8,9 +8,12 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,7 +25,8 @@ import retrofit2.Response;
 public class UserProfileViewModel extends ViewModel {
     private MutableLiveData<User> user = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
     private UserService userService;
-    private MarkerOptions userMarker;
+    public MutableLiveData<Resource> resource = new MutableLiveData<>();
+
 
 
     public void initUser(final String username){
@@ -32,7 +36,7 @@ public class UserProfileViewModel extends ViewModel {
             Log.d(this.toString(),"a user is already initialized");
             return;
         }
-        userService = ServiceGenerator.createService(UserService.class, "");
+        userService = ServiceGenerator.createService(UserService.class, SzUtils.getToken());
         userService.getUser(username).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -54,12 +58,32 @@ public class UserProfileViewModel extends ViewModel {
         return user;
     }
 
-    public MarkerOptions getMarkerOptions(){
-       if(userMarker == null ){
-           userMarker = new MarkerOptions()
-                   .position(new LatLng(user.getValue().getLat(),user.getValue().getLng()))
-                   .title(user.getValue().getUsername());
-       }
-       return userMarker;
+    public void addFriend(String friendsUsername){
+        resource.setValue(Resource.loading(null));
+        userService.addFriend(friendsUsername).enqueue(new Callback<Object>(){
+            @Override
+            public void onResponse(Call<Object> call, Response<Object> response) {
+                if (response.isSuccessful()){
+                    resource.setValue(Resource.success(response.body()));
+                    initUser(user.getValue().getUsername());
+                }
+                else
+                    resource.setValue(Resource.error(NetworkUtils.parseError(response).getMessage(), null));
+            }
+            @Override
+            public void onFailure(Call<Object> call, Throwable t) {
+                resource.setValue(Resource.error(t.getCause().toString(),null));
+            }
+        });
+    }
+
+    public LatLng getLatLng(){
+        if(user.getValue().getLat() != null && user.getValue().getLng() != null)
+            return new LatLng(user.getValue().getLat(),user.getValue().getLng());
+        return null;
+    }
+
+    public String getUsername(){
+        return user.getValue().getUsername();
     }
 }
