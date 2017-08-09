@@ -30,6 +30,10 @@ public abstract class DataBindingFragment<Binding extends android.databinding.Vi
 
     protected abstract Binding initDataBinding(LayoutInflater inflater, @Nullable ViewGroup container);
 
+    protected void runOnUiThread(Runnable runnable) {
+        getActivity().runOnUiThread(runnable);
+    }
+
     protected void useDataBinding(Binding binding) {
     }
 

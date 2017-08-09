@@ -17,6 +17,7 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import java.util.List;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.ChatUser;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
@@ -27,9 +28,12 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.ChatService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.socket.ChatSocket;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.APIError;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import io.socket.emitter.Emitter;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -59,7 +63,10 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     private ImageLoader imageLoader = new ImageLoader() {
         @Override
         public void loadImage(ImageView imageView, String url) {
-            Picasso.with(getActivity()).load(url).into(imageView);
+            Picasso.with(getActivity()).load(url)
+                    .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
+                    .centerCrop().resize(40, 40)
+                    .transform(new CropCircleTransformation()).into(imageView);
         }
     };
 
@@ -120,13 +127,13 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
                                 @Override
                                 public void run() {
                                     binding.messagesInput.getInputEditText().setText(input);
-                                    Toast.makeText(getActivity(), args[0].toString(), Toast.LENGTH_SHORT).show();
+                                    APIError err = APIError.fromJson(args[0].toString());
+                                    Toast.makeText(getActivity(), err.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
 
                         }
                     });
-
             return true;
         }
     };
@@ -137,7 +144,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
             ensureUsersAreLoaded(new Runnable() {
                 @Override
                 public void run() {
-                    getActivity().runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             addUserToMessage(m);
@@ -152,7 +159,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
     @Override
     protected void useDataBinding(final FragmentMessageBinding binding) {
-        adapter = new MessagesListAdapter<>(username, imageLoader);
+        adapter = new MessagesListAdapter<>(SzUtils.getOwnername(), imageLoader);
         socket = new ChatSocket();
 
         adapter.setLoadMoreListener(loadMoreListener);
@@ -228,7 +235,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     }
 
     private void addUserToMessage(Message m) {
-        if (m.receiver.equals(username)) {
+        if (m.sender.equals(username)) {
             m.user = user;
         } else {
             m.user = owner;

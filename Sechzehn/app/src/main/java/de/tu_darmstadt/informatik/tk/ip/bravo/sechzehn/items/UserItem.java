@@ -22,6 +22,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
@@ -88,7 +89,7 @@ public class UserItem extends AbstractItem<UserItem, UserItem.ViewHolder> {
                     .load(profPic)
                     .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
                     .centerCrop().resize(40, 40)
-                    .transform(new RoundedCornersTransformation(20, 0))
+                    .transform(new CropCircleTransformation())
                     .into(viewHolder.profilePicture);
         }
         viewHolder.message.setOnClickListener(new View.OnClickListener() {

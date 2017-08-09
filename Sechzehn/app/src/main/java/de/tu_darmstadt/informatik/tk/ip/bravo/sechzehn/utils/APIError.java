@@ -22,6 +22,10 @@ public class APIError {
     public APIError() {
     }
 
+    public static APIError fromJson(String json) {
+        return SzUtils.gson.fromJson(json, APIError.class);
+    }
+
     public String getField() {
         return field;
     }
