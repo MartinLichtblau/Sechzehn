@@ -63,7 +63,7 @@ To host our server we use the Heroku Cloud Application Platform\cite{heroku}. He
 \subsection{AdonisJs}\label{sec:adonisjs}
 \cite{adonisjs}
 \subsection{PostgreSQL}
-PostgreSQL\cite{postgresql} is an open-source relational database management system. It is possible to add new data types and functions in PostgreSQl. Amongst other things we implemented a function to compute the Great-circle distance\cite{greatcircledist}. The Great-circle distance is necessary to compute distances on spheres and therefore to compute distances on the earth.
+PostgreSQL\cite{postgresql} is an open-source relational database management system. It is possible to add new data types and functions in PostgreSQL. Amongst other things we implemented a function to compute the Great-circle distance\cite{greatcircledist}. The Great-circle distance is necessary to compute distances on spheres and therefore to compute distances on the earth. Moreover native programming interfaces exist for many languages. Since Heroku also has a PostgreSQL plugin, that was our way to go.
 \subsection{JSON Web Tokens}\label{sec:json_web_tokens}
 The Authentication in our project is done with JSON Web Tokens(JWTs)\cite{jwt}.
 
@@ -85,6 +85,8 @@ The Authentication in our project is done with JSON Web Tokens(JWTs)\cite{jwt}.
 
 
 \chapter{Feature Explanation}\label{ch:feature_explanation}
+
+
 \section{System Requirements}
 minSDK 23 \\
 compileSDK 25 \\
@@ -93,6 +95,19 @@ Permissions and justification why they are necessary
 Explain how to download and install the APK
 \section{App Flow}
 % system requirements, get started, functionalities, features, app flow, ...
+When a user starts the app for the first time he enters the login screen. On this screen the user has three options:
+\begin{enumerate}
+\item he can login with his email and password.
+\item if he has no account yet, he can enter the register screen and create one.
+\item if he has forgotten his password he can request a password reset link to your email address.
+\end{enumerate}
+We further assume that the user is logged in. he now sees a bottom naigation bar with three navigation options.
+\begin{enumerate}
+\item the first one shows the map with venues and users
+\item the second one shows a list with friends and messages
+\item the third one is the users profile and its settings
+\end{enumerate}
+% Diagramm einfuegen?
 
 \chapter{Feature List}\label{ch:feature_list}
 % ! 1 page !
