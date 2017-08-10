@@ -61,7 +61,6 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
         return builder.create();
     }
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         customizeFragment();

@@ -56,7 +56,7 @@ public class User {
         @SerializedName("SELF") SELF,
         @SerializedName("CONFIRMED") CONFIRMED,
         @SerializedName("RELATED_CONFIRMED") RELATED_CONFIRMED,
-        @SerializedName("RELATED_CONFIRMED") RELATING_CONFIRMED,
+        @SerializedName("RELATING_CONFIRMED") RELATING_CONFIRMED,
         UNKNOWN
     }
 

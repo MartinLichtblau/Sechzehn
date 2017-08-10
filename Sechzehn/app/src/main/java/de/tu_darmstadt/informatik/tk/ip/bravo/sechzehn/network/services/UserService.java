@@ -11,6 +11,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
@@ -98,7 +99,18 @@ public interface UserService {
     );
 
     @POST("users/{username}/friends")
-    Call<Object> addFriend(
+    Call<Object> requestFriendship(
+            @Path("username") @NonNull String username
+    );
+
+    @PATCH("users/{username}/friends")
+    Call<Object> answerFriendship(
+            @Path("username") @NonNull String username,
+            @Body RequestBody body
+    );
+
+    @DELETE("users/{username}/friends")
+    Call<Object> deleteFriendship(
             @Path("username") @NonNull String username
     );
 

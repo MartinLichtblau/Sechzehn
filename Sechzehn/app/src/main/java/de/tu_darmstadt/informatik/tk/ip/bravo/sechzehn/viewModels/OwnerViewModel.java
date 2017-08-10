@@ -45,7 +45,7 @@ public class OwnerViewModel extends ViewModel {
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
                     owner.setValue(response.body());
-                    resource.setValue(Resource.success(response.body()));
+                    resource.setValue(Resource.success(response.body(),null));
                 } else
                     resource.setValue(Resource.error(NetworkUtils.parseError(response).getMessage(), null));
             }
