@@ -51,13 +51,14 @@ public class SearchViewModel extends ViewModel {
             @Override
             public void onResponse(Call<Pagination<User>> call, Response<Pagination<User>> response) {
                 if (response.isSuccessful())
-                    searchResultUsers.setValue(Resource.success(response.body()));
+                    searchResultUsers.setValue(Resource.success(response.body(),null));
                 else
                     searchResultUsers.setValue(Resource.error(NetworkUtils.parseError(response).getMessage(), null));
             }
             @Override
             public void onFailure(Call<Pagination<User>> call, Throwable t) {
-                searchResultUsers.setValue(Resource.error(t.getCause().toString(),null));
+                if(null != t.getCause())
+                    searchResultUsers.setValue(Resource.error(t.getCause().toString(),null));
             }
         });
     }

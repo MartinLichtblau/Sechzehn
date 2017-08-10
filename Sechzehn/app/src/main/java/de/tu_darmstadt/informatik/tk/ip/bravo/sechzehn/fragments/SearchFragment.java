@@ -97,13 +97,14 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         map = googleMap;
         map.setMyLocationEnabled(true);
         map.setOnInfoWindowClickListener(this);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 10));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
 
-        if(null == searchVM.usersOnMap.getValue()){
+        initalSearch(); //Initialize anew
+        /*if(null == searchVM.usersOnMap.getValue()){
             initalSearch(); //Initialize anew
         }else{
             showUsersOnMap(searchVM.usersOnMap.getValue()); //show last state
-        }
+        }*/
     }
 
     @Override

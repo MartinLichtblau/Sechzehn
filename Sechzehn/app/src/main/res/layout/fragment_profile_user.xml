@@ -46,23 +46,14 @@
                 android:background="@color/colorPrimary"
                 android:paddingBottom="@dimen/dim_normal">
 
-                <ImageView
+                <Button android:theme="@style/PrimaryFlatButton"
                     android:id="@+id/userprofile_friendship_status"
-                    android:layout_width="@dimen/dim_large"
-                    android:layout_height="@dimen/dim_large"
-                    android:layout_marginLeft="@dimen/dim_normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="@dimen/dim_normal"
                     android:layout_marginTop="@dimen/dim_normal"
-                    android:layout_toLeftOf="@+id/userprofile_options"
-                    android:onClick="@{frag::addFriend}" />
-
-                <ImageView
-                    android:id="@+id/userprofile_options"
-                    android:layout_width="@dimen/dim_large"
-                    android:layout_height="@dimen/dim_large"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="@dimen/dim_normal"
-                    android:layout_marginTop="@dimen/dim_normal"
-                    android:src="@drawable/ic_vertical_options" />
+                    android:onClick="@{frag::friendship}" />
 
                 <TextView
                     android:id="@+id/user_username"

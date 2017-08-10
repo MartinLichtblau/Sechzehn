@@ -10,6 +10,7 @@
     <dimen name="dim_small">8dp</dimen>
     <dimen name="dim_normal">16dp</dimen>
     <dimen name="dim_large">32dp</dimen>
+    <dimen name="dim_xl">64dp</dimen>
 
     <dimen name="txt_small">8sp</dimen>
     <dimen name="txt_normal">16sp</dimen>

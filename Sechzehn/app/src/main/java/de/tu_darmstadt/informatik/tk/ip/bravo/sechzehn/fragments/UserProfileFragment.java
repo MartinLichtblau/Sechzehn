@@ -1,10 +1,15 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.lifecycle.ViewModelStore;
+import android.arch.lifecycle.ViewModelStores;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +28,7 @@ import com.squareup.picasso.Picasso;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentProfileUserBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
@@ -56,7 +62,6 @@ public class UserProfileFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile_user, container, false);
         binding.setFrag(this);
-
         userProfileVM.getUser().observe(this, new Observer<User>() {
             @Override
             public void onChanged(@Nullable User u) {
@@ -64,26 +69,29 @@ public class UserProfileFragment extends BaseFragment {
                 binding.setUser(user);
 
                 Picasso.with(getActivity())
-                        .load(user.getProfilePicture()) //Picasso needs "http://" or "https://" url
-                        .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
+                        .load(user.getProfilePicture())
+                        .placeholder(R.drawable.ic_owner)
                         .error(R.drawable.ic_owner)
-                        //.centerCrop().resize(256,256) not neccessary since we do that for each uploaded img by default
                         .transform(new CropCircleTransformation())
                         .into(binding.userprofilePicture);
 
-                ;
                 switch(user.getFriendshipStatus()){
                     case NONE:
-                        binding.userprofileFriendshipStatus.setImageResource(R.drawable.ic_user_add);
+                        binding.userprofileFriendshipStatus.setText("Add");
+                        binding.userprofileFriendshipStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_user_add,0,0,0);
                         break;
                     case RELATED_CONFIRMED:
-                        binding.userprofileFriendshipStatus.setImageResource(R.drawable.ic_outgoing_request);
+                        binding.userprofileFriendshipStatus.setText("Abort");
+                        binding.userprofileFriendshipStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_outgoing_request,0,0,0);
                         break;
                     case RELATING_CONFIRMED:
-                        binding.userprofileFriendshipStatus.setImageResource(R.drawable.ic_incoming_request);
+                        binding.userprofileFriendshipStatus.setText("Answer");
+                        binding.userprofileFriendshipStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_incoming_request,0,0,0);
                         break;
                     case CONFIRMED:
-                        binding.userprofileFriendshipStatus.setImageResource(R.drawable.ic_checkdone);
+                        //binding.userprofileFriendshipStatus.setText("Unfriend");
+                        binding.userprofileFriendshipStatus.setText("");
+                        binding.userprofileFriendshipStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_heart,0,0,0);
                         break;
                     default:
                         break;
@@ -126,8 +134,8 @@ public class UserProfileFragment extends BaseFragment {
             return  null;
     }
 
-    public void addFriend(View view){
-        userProfileVM.addFriend(userProfileVM.getUsername());
+    public void friendship(View view){
+        fragNavController().showDialogFragment(FriendshipDiafrag.newInstance());
     }
 }
 

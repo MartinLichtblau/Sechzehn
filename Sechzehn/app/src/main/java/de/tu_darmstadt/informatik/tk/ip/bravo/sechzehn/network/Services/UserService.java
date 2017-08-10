@@ -99,7 +99,18 @@ public interface UserService {
     );
 
     @POST("users/{username}/friends")
-    Call<Object> addFriend(
+    Call<Object> requestFriendship(
+            @Path("username") @NonNull String username
+    );
+
+    @PATCH("users/{username}/friends")
+    Call<Object> answerFriendship(
+            @Path("username") @NonNull String username,
+            @Body RequestBody body
+    );
+
+    @DELETE("users/{username}/friends")
+    Call<Object> deleteFriendship(
             @Path("username") @NonNull String username
     );
 
