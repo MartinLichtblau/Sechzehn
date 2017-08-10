@@ -13,6 +13,10 @@ public class ChatUser implements IUser {
 
     private User user;
 
+    public User getUser() {
+        return user;
+    }
+
     @Override
     public String getId() {
         return user.getUsername();

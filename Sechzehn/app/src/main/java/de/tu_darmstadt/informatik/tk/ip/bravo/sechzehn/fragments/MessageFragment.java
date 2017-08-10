@@ -1,8 +1,8 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,9 +15,9 @@ import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.ChatUser;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
@@ -27,14 +27,17 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentMessa
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.ChatService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.socket.ChatSocket;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.APIError;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
-import io.socket.client.Ack;
-import io.socket.client.IO;
-import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 import retrofit2.Call;
 import retrofit2.Response;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,23 +48,39 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "username";
+    public static final ChatService CHAT_SERVICE = ServiceGenerator.createService(ChatService.class);
 
-    private Socket socket;
+    private ChatSocket socket;
 
     private String username;
 
-    private User user;
+    private ChatUser user;
+    private final ChatUser owner = new ChatUser(BottomTabsActivity.getOwnerViewModel().getOwner().getValue());
 
     private int totalItemCountServer;
+    private MessagesListAdapter<Message> adapter;
 
     private ImageLoader imageLoader = new ImageLoader() {
         @Override
         public void loadImage(ImageView imageView, String url) {
-            Picasso.with(getActivity()).load(url).into(imageView);
+            Picasso.with(getActivity()).load(url)
+                    .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
+                    .centerCrop().resize(40, 40)
+                    .transform(new CropCircleTransformation()).into(imageView);
         }
     };
 
-    private MessagesListAdapter<Message> adapter;
+
+    private MessagesListAdapter.OnLoadMoreListener loadMoreListener = new MessagesListAdapter.OnLoadMoreListener() {
+        @Override
+        public void onLoadMore(int page, int totalItemsCount) {
+            Log.d("ChatLoad", page + " " + totalItemsCount);
+            if (totalItemsCount < totalItemCountServer) {
+                loadMessages(page + 1, 10);
+            }
+        }
+    };
+
 
     public MessageFragment() {
         // Required empty public constructor
@@ -99,92 +118,127 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
     private MessageInput.InputListener inputListener = new MessageInput.InputListener() {
         @Override
-        public boolean onSubmit(CharSequence input) {
-            socket.emit("message", new Object[]{new Message(SzUtils.getOwnername(), username, input.toString())}, new Ack() {
-                @Override
-                public void call(Object... args) {
-                    if (args.length == 1) {
-                        Message m = SzUtils.gson.fromJson(args[0].toString(), Message.class);
-                        adapter.addToStart(m, true);
-                    }
-                }
-            }).on("warning", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    Toast.makeText(getActivity(), args[0].toString(), Toast.LENGTH_SHORT).show();
+        public boolean onSubmit(final CharSequence input) {
+            socket.sendMessage(new Message(SzUtils.getOwnername(), username, input.toString()))
+                    .on(ChatSocket.EVENT_WARNING, new Emitter.Listener() {
+                        @Override
+                        public void call(final Object... args) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    binding.messagesInput.getInputEditText().setText(input);
+                                    APIError err = APIError.fromJson(args[0].toString());
+                                    Toast.makeText(getActivity(), err.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
 
-                }
-            });
+                        }
+                    });
             return true;
         }
     };
 
-    @Override
-    protected void useDataBinding(FragmentMessageBinding binding) {
-        adapter = new MessagesListAdapter<>(username, imageLoader);
-        IO.Options options = new IO.Options();
-        options.query = "token=" + SzUtils.getToken();
-        try {
-            socket = IO.socket("https://iptk.herokuapp.com/socket.io/messages", options);
-            socket.on("error", new Emitter.Listener() {
+    ChatSocket.Listener messagesListener = new ChatSocket.Listener() {
+        @Override
+        public void call(final Message m) {
+            ensureUsersAreLoaded(new Runnable() {
                 @Override
-                public void call(Object... args) {
-                    throw new RuntimeException(args[0].toString());
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addUserToMessage(m);
+                            adapter.addToStart(m, true);
+                        }
+                    });
                 }
             });
 
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
         }
+    };
 
-        adapter.setLoadMoreListener(new MessagesListAdapter.OnLoadMoreListener() {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
+    @Override
+    protected void useDataBinding(final FragmentMessageBinding binding) {
+        adapter = new MessagesListAdapter<>(SzUtils.getOwnername(), imageLoader);
+        socket = new ChatSocket();
 
-                Log.d("ChatLoad", page + " " + totalItemsCount);
-                if (totalItemsCount < totalItemCountServer) {
-                    loadMessages(page + 1, 10);
-                }
-            }
-        });
+        adapter.setLoadMoreListener(loadMoreListener);
+        socket.setOnMessageListener(messagesListener);
+
         binding.messagesList.setAdapter(adapter);
         binding.messagesInput.setInputListener(inputListener);
         loadMessages(1, 10);
 
-
+        ensureUsersAreLoaded(new Runnable() {
+            @Override
+            public void run() {
+                binding.messageToolbar.setTitle(user.getUser().getOptionalRealName());
+                binding.messageToolbar.setSubtitle(user.getUser().getUsername());
+            }
+        });
     }
 
 
-    private void loadMessages(final int page, final int totalItemsCount) {
+    private void ensureUsersAreLoaded(final Runnable runnable) {
+        if (user != null) {
+            runnable.run();
+            return;
+        }
         ServiceGenerator.createService(UserService.class)
                 .getUser(username)
                 .enqueue(new DefaultCallback<User>(getActivity()) {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
-                        user = response.body();
-                        ServiceGenerator.createService(ChatService.class)
-                                .getMessages(username, page, totalItemsCount)
-                                .enqueue(new DefaultCallback<Pagination<Message>>(getActivity()) {
-                                             @Override
-                                             public void onResponse(Call<Pagination<Message>> call, Response<Pagination<Message>> response) {
-                                                 ChatUser owner = new ChatUser(BottomTabsActivity.getOwnerViewModel().getOwner().getValue());
-                                                 totalItemCountServer = response.body().total;
-                                                 List<Message> messages = response.body().data;
-                                                 if (messages.isEmpty()) {
-                                                     return;
-                                                 }
-                                                 for (Message m : messages) {
-                                                     if (m.receiver.equals(username)) {
-                                                         m.user = new ChatUser(user);
-                                                     } else {
-                                                         m.user = owner;
-                                                     }
-                                                 }
-                                                 adapter.addToEnd(messages, false);
-                                             }
-                                         }
-                                );
+                        if (!response.isSuccessful()) {
+                            Log.w(TAG, "MessageFragment: User not loaded.");
+                            return;
+                        }
+                        user = new ChatUser(response.body());
+                        runnable.run();
                     }
                 });
+    }
+
+    private void loadMessages(final int page, final int per_page) {
+        ensureUsersAreLoaded(new Runnable() {
+            @Override
+            public void run() {
+                CHAT_SERVICE.getMessages(username, page, per_page)
+                        .enqueue(new DefaultCallback<Pagination<Message>>(getActivity()) {
+                            @Override
+                            public void onResponse(Call<Pagination<Message>> call, Response<Pagination<Message>> response) {
+                                if (!response.isSuccessful()) {
+                                    Log.w(TAG, "MessageFragment: loadMessages: Messages not loaded.");
+                                    return;
+                                }
+
+                                processNewMessages(response);
+                            }
+                        });
+            }
+        });
+    }
+
+    private void processNewMessages(Response<Pagination<Message>> response) {
+
+
+        totalItemCountServer = response.body().total;
+        List<Message> messages = response.body().data;
+
+        if (messages.isEmpty()) {
+            return;
+        }
+        for (Message m : messages) {
+            addUserToMessage(m);
+        }
+        adapter.addToEnd(messages, false);
+    }
+
+    private void addUserToMessage(Message m) {
+        if (m.sender.equals(username)) {
+            m.user = user;
+        } else {
+            m.user = owner;
+        }
     }
 }

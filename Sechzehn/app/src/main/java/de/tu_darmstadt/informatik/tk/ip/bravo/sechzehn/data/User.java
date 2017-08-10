@@ -7,7 +7,7 @@ import com.stfalcon.chatkit.commons.models.IUser;
 
 import java.security.PublicKey;
 
-public class User{
+public class User {
 
 
     @SerializedName("id")
@@ -110,6 +110,10 @@ public class User{
 
     public String getRealName() {
         return realName;
+    }
+
+    public String getOptionalRealName() {
+        return realName != null ? realName : username;
     }
 
     public void setRealName(String realName) {
