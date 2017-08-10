@@ -3,4 +3,5 @@
 
     <item name="class_user_item" type="id" />
     <item name="class_header_item" type="id" />
+    <item name="class_friendship_item" type="id" />
 </resources>

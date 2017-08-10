@@ -4,7 +4,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
  * Created by marti on 08.07.2017.
  */
 
-public class APIError {
+public class ApiMessage {
 
     private String field;
     private String validation;
@@ -12,18 +12,18 @@ public class APIError {
 
     @Override
     public String toString() {
-        return "APIError{" +
+        return "ApiMessage{" +
                 "field='" + field + '\'' +
                 ", validation='" + validation + '\'' +
                 ", message='" + message + '\'' +
                 '}';
     }
 
-    public APIError() {
+    public ApiMessage() {
     }
 
-    public static APIError fromJson(String json) {
-        return SzUtils.gson.fromJson(json, APIError.class);
+    public static ApiMessage fromJson(String json) {
+        return SzUtils.gson.fromJson(json, ApiMessage.class);
     }
 
     public String getField() {

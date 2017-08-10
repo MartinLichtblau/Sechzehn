@@ -28,10 +28,10 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentMessageBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.OutcomingMessageViewHolder;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.socket.ChatSocket;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.APIError;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.ChatNotificationService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -48,6 +48,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
 
     private static final String ARG_PARAM1 = "username";
+
     private final ChatUser owner = new ChatUser(BottomTabsActivity.getOwnerViewModel().getOwner().getValue());
     private ChatSocket socket;
     private String username;
@@ -108,6 +109,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
                         public void run() {
                             if (userOrOwnerMatch(m)) {
                                 adapter.addToStart(m, true);
+                                sendRead(m);
                             }
                         }
                     });
@@ -120,7 +122,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
      */
     private ChatSocket.WarningListener warningListener = new ChatSocket.WarningListener() {
         @Override
-        public void call(final APIError err) {
+        public void call(final ApiMessage err) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -143,7 +145,8 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (m.sender.equals(ownername)) {
+                            if (m.sender.equals(ownername)){
+                                m.senderUser = owner;
                                 adapter.update(m);
                             }
                         }
@@ -169,7 +172,6 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
      * @param username Username of the chat partner.
      * @return A new instance of fragment MessageFragment.
      */
-
     public static MessageFragment newInstance(String username) {
         MessageFragment fragment = new MessageFragment();
         Bundle args = new Bundle();
@@ -177,6 +179,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -196,16 +199,22 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         MessageHolders holders = new MessageHolders();
         holders.setOutcomingTextHolder(OutcomingMessageViewHolder.class);
         adapter = new MessagesListAdapter<>(SzUtils.getOwnername(), holders, imageLoader);
-        socket = new ChatSocket();
-
         adapter.setLoadMoreListener(loadMoreListener);
-        socket.addOnMessageListener(messagesListener);
-        socket.addOnWarningListener(warningListener);
-        socket.addOnReadListener(readListener);
+
+        if (socket == null) {
+            socket = new ChatSocket();
+            socket.addOnMessageListener(messagesListener);
+            socket.addOnWarningListener(warningListener);
+            socket.addOnReadListener(readListener);
+        }
+        socket.connect();
+
+        ChatNotificationService.blockUser(username);
 
         binding.messagesList.setAdapter(adapter);
         binding.messagesInput.setInputListener(inputListener);
         loadMessages(1, 10);
+
 
         ensureUsersAreLoaded(new Runnable() {
             @Override
@@ -289,7 +298,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     }
 
     private void sendRead(Message m) {
-        if (m.receiver.equals(owner)) {
+        if (!m.isRead && m.receiver.equals(ownername)) {
             socket.sendMessageRead(m);
         }
     }
@@ -307,4 +316,10 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        socket.disconnect();
+        ChatNotificationService.unblockUser(username);
+    }
 }

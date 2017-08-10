@@ -14,6 +14,9 @@ import android.support.v4.app.NotificationCompat;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.HashSet;
+import java.util.List;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.ChatUser;
@@ -39,16 +42,20 @@ public class ChatNotificationService extends Service {
 
     private final static int MESSAGE_NOTIFICATION_OFFSET = (1 << 16);
 
+
     private ChatSocket socket;
 
     private ChatNotificationService self = this;
+
+    private static HashSet<String> blockedUsers = new HashSet<>();
 
     private NotificationManager notificationManager;
 
     private final ChatSocket.Listener messageListener = new ChatSocket.Listener() {
         @Override
         public void call(final Message msg) {
-            if (msg.receiver.equals(SzUtils.getOwnername())) {
+            if (msg.receiver.equals(SzUtils.getOwnername())
+                    && !blockedUsers.contains(msg.sender)) {
                 UserService.getUser(msg.sender).enqueue(new IgnoreErrorCallback<User>() {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
@@ -61,6 +68,16 @@ public class ChatNotificationService extends Service {
             }
         }
     };
+
+    public static void blockUser(String username) {
+        blockedUsers.add(username);
+    }
+
+    public static void unblockUser(String username) {
+        if (blockedUsers.contains(username)) {
+            blockedUsers.remove(username);
+        }
+    }
 
     public void notify(User user, final Message msg) {
         msg.senderUser = new ChatUser(user);
@@ -93,7 +110,6 @@ public class ChatNotificationService extends Service {
     public PendingIntent createContentIntent(Message msg) {
         Intent intent = new Intent(self, BottomTabsActivity.class)
                 .putExtra(Intent.EXTRA_INTENT, BottomTabsActivity.EXTRA_INTENT_SHOW_MESSAGE)
-                .putExtra(Intent.EXTRA_UID, msg.id)
                 .putExtra(Intent.EXTRA_USER, msg.sender);
 
         return PendingIntent.getActivity(self, 0, intent, 0);
@@ -133,7 +149,7 @@ public class ChatNotificationService extends Service {
     /**
      * The Service is not bindable.
      *
-     * @param intent
+     * @param intent Intent
      * @return Always null.
      */
     @Nullable

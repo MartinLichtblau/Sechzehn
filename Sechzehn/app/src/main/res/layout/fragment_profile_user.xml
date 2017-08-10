@@ -7,7 +7,7 @@
 
     <data>
         <import type="android.view.View"/>
-        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User"/>
+        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Friendship"/>
         <variable name="user" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
         <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.UserProfileFragment" />
     </data>
@@ -115,7 +115,7 @@
                             android:id="@+id/user_age_header"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="@{user.friendshipStatus == User.FriendshipStatus.CONFIRMED ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
                             android:text="Age"
                             android:layout_marginLeft="16dp"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -125,7 +125,7 @@
                             android:id="@+id/user_age"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="@{user.friendshipStatus == User.FriendshipStatus.CONFIRMED ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
                             android:text="@{frag.getAge(user.dateOfBirth),default=99}"
                             android:layout_marginLeft="16dp"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -138,7 +138,7 @@
                             android:id="@+id/user_birthday_header"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="@{user.friendshipStatus == User.FriendshipStatus.CONFIRMED ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
                             android:text="Birthday"
                             app:layout_constraintLeft_toRightOf="@+id/user_age_header"
                             android:layout_marginLeft="16dp"
@@ -148,7 +148,7 @@
                             android:id="@+id/user_birthday"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="@{user.friendshipStatus == User.FriendshipStatus.CONFIRMED ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
                             android:text="@{user.dateOfBirth,default=`31.12.1999`}"
                             android:layout_marginStart="16dp"
                             app:layout_constraintLeft_toRightOf="@+id/user_age"

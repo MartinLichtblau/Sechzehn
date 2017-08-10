@@ -3,9 +3,6 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.stfalcon.chatkit.commons.models.IUser;
-
-import java.security.PublicKey;
 
 public class User {
 
@@ -48,17 +45,7 @@ public class User {
 
     @SerializedName("friendship_status")
     @Expose
-    private FriendshipStatus friendshipStatus;
-
-    //Ref > http://blog.jensdriller.com/simple-deserialization-of-java-enums-using-google-gson-annotations/
-    public enum FriendshipStatus {
-        @SerializedName("NONE") NONE,
-        @SerializedName("SELF") SELF,
-        @SerializedName("CONFIRMED") CONFIRMED,
-        @SerializedName("RELATED_CONFIRMED") RELATED_CONFIRMED,
-        @SerializedName("RELATING_CONFIRMED") RELATING_CONFIRMED,
-        UNKNOWN
-    }
+    private Friendship.Status friendshipStatus;
 
     public boolean isIncognito() {
         return incognito;
@@ -160,11 +147,11 @@ public class User {
         this.lng = lng;
     }
 
-    public FriendshipStatus getFriendshipStatus() {
+    public Friendship.Status getFriendshipStatus() {
         return friendshipStatus;
     }
 
-    public void setFriendshipStatus(FriendshipStatus friendshipStatus) {
+    public void setFriendshipStatus(Friendship.Status friendshipStatus) {
         this.friendshipStatus = friendshipStatus;
     }
 

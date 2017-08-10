@@ -2,11 +2,12 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services;
 
 import android.support.annotation.NonNull;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Friendship;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -93,6 +94,13 @@ public interface UserService {
     /*Friendships >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
     @GET("users/{username}/friends")
     Call<Pagination<User>> getFriends(
+            @Path("username") @NonNull String username,
+            @Query("page") Integer page,
+            @Query("per_page") Integer per_page
+    );
+
+    @GET("users/{username}/friends/requests")
+    Call<Object> getFriendshipRequests(
             @Path("username") @NonNull String username,
             @Query("page") Integer page,
             @Query("per_page") Integer per_page

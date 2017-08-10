@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.APIError;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -119,7 +119,7 @@ public class ChatSocket {
 
     private void executeWarningListener(Object[] args, WarningListener listener) {
         if (args.length == 1) {
-            APIError err = SzUtils.gson.fromJson(args[0].toString(), APIError.class);
+            ApiMessage err = SzUtils.gson.fromJson(args[0].toString(), ApiMessage.class);
             listener.call(err);
         } else {
             throw new ChatSocketException("Listener must have exact one object passed in the args array.");
@@ -260,7 +260,7 @@ public class ChatSocket {
      * Interface for warning listeners
      */
     public interface WarningListener extends BaseListener {
-        public void call(APIError err);
+        public void call(ApiMessage err);
     }
 
 

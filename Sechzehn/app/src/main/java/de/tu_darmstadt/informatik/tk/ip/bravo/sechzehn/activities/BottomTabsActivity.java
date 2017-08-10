@@ -29,6 +29,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment;
@@ -50,7 +51,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 @RuntimePermissions
 public class BottomTabsActivity extends LifecycleActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
 
-    public static final int EXTRA_INTENT_SHOW_MESSAGE=1;
+    public static final int EXTRA_INTENT_SHOW_MESSAGE = 1;
 
     //Better convention to properly realname the indices what they are in your app
     private final int INDEX_SEARCH = FragNavController.TAB1;
@@ -311,6 +312,14 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                 Toast.makeText(BottomTabsActivity.this, s, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.getIntExtra(Intent.EXTRA_INTENT, 0) == EXTRA_INTENT_SHOW_MESSAGE) {
+            mNavController.pushFragment(MessageFragment.newInstance(intent.getStringExtra(Intent.EXTRA_USER)));
+        }
     }
 
     //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

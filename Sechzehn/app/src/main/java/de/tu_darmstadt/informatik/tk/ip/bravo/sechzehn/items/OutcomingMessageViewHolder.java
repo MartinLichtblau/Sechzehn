@@ -22,7 +22,7 @@ public class OutcomingMessageViewHolder
     public void onBind(Message message) {
         super.onBind(message);
         if (message.isRead) {
-            time.setText("Read " + time.getText());
+            time.setText(time.getText()+" Seen");
         }
 
     }

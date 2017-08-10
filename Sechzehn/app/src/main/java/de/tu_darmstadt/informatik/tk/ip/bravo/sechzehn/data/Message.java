@@ -6,6 +6,7 @@ import com.stfalcon.chatkit.commons.models.IUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -116,7 +117,8 @@ public class Message implements IMessage {
      */
     public Date getUpdatedAt() {
         try {
-            return parser.parse(updated);
+            return  parser.parse(updated);
+
         } catch (ParseException e) {
             return null;
         }

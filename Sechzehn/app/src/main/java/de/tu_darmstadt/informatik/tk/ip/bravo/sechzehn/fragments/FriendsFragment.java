@@ -18,16 +18,21 @@ import com.mikepenz.fastadapter_extensions.items.ProgressItem;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Friendship;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.HeaderItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.UserItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentFriendsBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.FriendshipService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
 import retrofit2.Response;
+
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.FriendshipService.FriendshipService;
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService.UserService;
 
 
 /**
@@ -35,14 +40,20 @@ import retrofit2.Response;
  */
 public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding> implements SearchView.OnQueryTextListener, FastAdapter.OnClickListener<IItem> {
 
+    private static final List<User> EMPTY_USERS = new LinkedList<User>();
+    private static final List<Friendship> EMPTY_FRIENDSHIP_REQUESTS = new LinkedList<>();
     //save our FastAdapter
     FastItemAdapter<IItem> fastAdapter = new FastItemAdapter<>();
     // Head is a model class for your header
     private HeaderAdapter<HeaderItem> headerAdapter = new HeaderAdapter<>();
-
-
     private FooterAdapter<ProgressItem> footerAdapter = new FooterAdapter<>();
-
+    private List<User> users = null;
+    private List<User> friends = null;
+    private List<Friendship> friendshipRequests = null;
+    private final Object sync = new Object();
+    private List<User> friendsInList = new LinkedList<>();
+    private List<User> usersInList = new LinkedList<>();
+    private List<Friendship> friendshipRequestsInList = new LinkedList<>();
 
     public static FriendsFragment newInstance() {
         FriendsFragment fragment = new FriendsFragment();
@@ -72,18 +83,15 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
             }
         });
 
-        onQueryTextChange(binding.friendsSearch.getQuery().toString());
+        // onQueryTextChange(binding.friendsSearch.getQuery().toString());
 
     }
-
-    private static final List<User> EMPTY_USERS = new LinkedList<User>();
 
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        UserService userService = UserService.UserService;
         if (newText.isEmpty()) {
-            userService.getFriends(SzUtils.getOwnername(), 1, 10)
+            UserService.getFriends(SzUtils.getOwnername(), 1, 10)
                     .enqueue(new DefaultCallback<Pagination<User>>(getActivity()) {
                         @Override
                         public void onResponse(Call<Pagination<User>> call, Response<Pagination<User>> response) {
@@ -94,24 +102,37 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
                             }
                         }
                     });
+            FriendshipService.getFriendshipRequests(SzUtils.getOwnername(), 1, 10)
+                    .enqueue(new DefaultCallback<Pagination<Friendship>>(getActivity()) {
+                        @Override
+                        public void onResponse(Call<Pagination<Friendship>> call, Response<Pagination<Friendship>> response) {
+                            if (response.isSuccessful()) {
+                                friendshipRequests = response.body().data;
+                                users = EMPTY_USERS;
+                                updateUserList();
+                            }
+                        }
+                    });
 
-        }else {
-            userService.getUsers(1, 10, null, null, null, false, newText)
+        } else {
+            UserService.getUsers(1, 10, null, null, null, false, newText)
                     .enqueue(new DefaultCallback<Pagination<User>>(getActivity()) {
                         @Override
                         public void onResponse(Call<Pagination<User>> call, Response<Pagination<User>> response) {
                             if (response.isSuccessful()) {
                                 users = response.body().data;
+                                friendshipRequests = EMPTY_FRIENDSHIP_REQUESTS;
                                 updateUserList();
                             }
                         }
                     });
-            userService.getUsers(1, 10, null, null, null, true, newText)
+            UserService.getUsers(1, 10, null, null, null, true, newText)
                     .enqueue(new DefaultCallback<Pagination<User>>(getActivity()) {
                                  @Override
                                  public void onResponse(Call<Pagination<User>> call, Response<Pagination<User>> response) {
                                      if (response.isSuccessful()) {
                                          friends = response.body().data;
+                                         friendshipRequests = EMPTY_FRIENDSHIP_REQUESTS;
                                          updateUserList();
                                      }
                                  }
@@ -121,21 +142,21 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
         return true;
     }
 
-    private List<User> users = null;
-    private List<User> friends = null;
-    private Object sync = new Object();
-    private List<User> friendsInList = new LinkedList<>();
-    private List<User> usersInList = new LinkedList<>();
-
     private void updateUserList() {
         synchronized (sync) {
-            if (users == null || friends == null) {
+            if (users == null || friends == null || friendshipRequests == null) {
                 return;
             }
         }
-        boolean changed = !friendsInList.equals(friends) || !usersInList.equals(users);
+        boolean changed = !friendsInList.equals(friends) || !usersInList.equals(users) || !friendshipRequestsInList.equals(friendshipRequests);
         if (changed) {
             fastAdapter.clear();
+            if (!friendshipRequests.isEmpty()) {
+                fastAdapter.add(new HeaderItem("Friendship Requests"));
+                for (Friendship f : friendshipRequests) {
+                    fastAdapter.add(UserItem.create(f.relatedUser, fragNavController()));
+                }
+            }
             if (!friends.isEmpty()) {
                 fastAdapter.add(new HeaderItem("Friends"));
                 for (User u : friends) {
@@ -148,12 +169,15 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
                     fastAdapter.add(UserItem.create(u, fragNavController()));
                 }
             }
+            friendshipRequestsInList = friendshipRequests;
             friendsInList = friends;
             usersInList = users;
+
         }
         synchronized (sync) {
             friends = null;
             users = null;
+            friendshipRequests = null;
         }
     }
 
