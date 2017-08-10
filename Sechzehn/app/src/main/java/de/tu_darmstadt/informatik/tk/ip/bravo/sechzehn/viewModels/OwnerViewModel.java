@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -14,7 +13,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.GenericBody;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;

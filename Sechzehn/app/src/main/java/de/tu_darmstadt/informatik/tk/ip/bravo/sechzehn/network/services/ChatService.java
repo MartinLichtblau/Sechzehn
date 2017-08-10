@@ -1,18 +1,18 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.Url;
 
 /**
- * Created by Alexander Geiß on 03.08.2017.
+ * @author Alexander Geiß on 03.08.2017.
  */
 
 public interface ChatService {
@@ -22,4 +22,6 @@ public interface ChatService {
             @Nullable @Query("page") Integer page,
             @Nullable @Query("per_page") Integer perPage
     );
+
+    public static ChatService ChatService = ServiceGenerator.createService(ChatService.class);
 }

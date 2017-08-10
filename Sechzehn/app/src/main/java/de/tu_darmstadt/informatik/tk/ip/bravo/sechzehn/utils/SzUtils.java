@@ -40,6 +40,7 @@ import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils.Thum
  */
 
 public final class SzUtils {
+    public static final CropCircleTransformation CROP_CIRCLE_TRANSFORMATION = new CropCircleTransformation();
     private static SharedPreferences sharedPreferences; //SharedPreferences are null when app is not running
     private static String ownername;
     private static String token;
@@ -160,7 +161,7 @@ public final class SzUtils {
         Picasso.with(context)
                 .load(url)
                 .centerCrop().resize(100, 100)
-                .transform(new CropCircleTransformation())
+                .transform(CROP_CIRCLE_TRANSFORMATION)
                 .into(target);
 
         return scaledImg;

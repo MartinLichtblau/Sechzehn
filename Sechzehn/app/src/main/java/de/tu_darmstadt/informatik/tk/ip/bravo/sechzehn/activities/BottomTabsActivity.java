@@ -1,12 +1,9 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
-import  android.Manifest;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleActivity;
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;
-import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -20,12 +17,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
-
-
 
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,6 +32,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.ChatNotificationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
@@ -55,6 +49,9 @@ import com.roughike.bottombar.OnTabSelectListener;
 
 @RuntimePermissions
 public class BottomTabsActivity extends LifecycleActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
+
+    public static final int EXTRA_INTENT_SHOW_MESSAGE=1;
+
     //Better convention to properly realname the indices what they are in your app
     private final int INDEX_SEARCH = FragNavController.TAB1;
     private final int INDEX_FRIENDS = FragNavController.TAB2;
@@ -71,21 +68,21 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         checkRequirements().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean requirementsOK) {
-                if(requirementsOK){
+                if (requirementsOK) {
                     runApp(savedInstanceState);
                 }
             }
         });
     }
 
-    private void runApp(Bundle savedInstanceState){
+    private void runApp(Bundle savedInstanceState) {
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
         mNavController = new AnimatedFragNavController(
                 FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.container)
-                .transactionListener(this)
-                .rootFragmentListener(this, 3)
-                .build());
+                        .transactionListener(this)
+                        .rootFragmentListener(this, 3)
+                        .build());
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
@@ -111,7 +108,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         postOwnerToasts();
     }
 
-    public MutableLiveData<Boolean> checkRequirements(){
+    public MutableLiveData<Boolean> checkRequirements() {
         final MutableLiveData<Boolean> requirementsOK = new MutableLiveData<>();
         requirementsOK.setValue(false);
         checkStages.setValue(0);
@@ -119,9 +116,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         checkStages.observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer stage) {
-                switch (stage){
+                switch (stage) {
                     case 0:
-                        //0.Check if user is logged in
+                        //0.Check if senderUser is logged in
                         checkLoggedIn();
                         break;
                     case 1:
@@ -135,6 +132,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                     case 3:
                         //3. Start/Check LocationService, Initialize/Check owner profile and location
                         startService(new Intent(BottomTabsActivity.this, LocationService.class));
+                        startService(new Intent(BottomTabsActivity.this, ChatNotificationService.class));
                         checkProfile();
                         break;
                     case 4:
@@ -150,10 +148,10 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     public void checkLoggedIn() {
         SzUtils.initialize(getBaseContext());
-        if(TextUtils.isEmpty(SzUtils.getToken()) || TextUtils.isEmpty(SzUtils.getOwnername())){
+        if (TextUtils.isEmpty(SzUtils.getToken()) || TextUtils.isEmpty(SzUtils.getOwnername())) {
             factoryReset();
-        }else{
-            checkStages.setValue(checkStages.getValue()+1);
+        } else {
+            checkStages.setValue(checkStages.getValue() + 1);
         }
     }
 
@@ -171,10 +169,10 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
             }
             checkStages.setValue(checkStages.getValue());
         }
-        checkStages.setValue(checkStages.getValue()+1);
+        checkStages.setValue(checkStages.getValue() + 1);
     }
 
-    public void checkProfile(){
+    public void checkProfile() {
         ownerVM = ViewModelProviders.of(this).get(OwnerViewModel.class);
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -184,9 +182,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         ownerVM.initOwner(SzUtils.getOwnername()).observeForever(new Observer<Resource>() {
             @Override
             public void onChanged(@Nullable Resource resource) {
-                if (resource.status == Resource.Status.LOADING){
+                if (resource.status == Resource.Status.LOADING) {
                     progressDialog.setMessage("LOADING....");
-                }else if (resource.status == Resource.Status.ERROR) {
+                } else if (resource.status == Resource.Status.ERROR) {
                     progressDialog.setMessage("ERROR: " + resource.message);
                     new Handler().postDelayed(new Runnable() { //Test every 3 second again
                         public void run() {
@@ -194,16 +192,16 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                         }
                     }, 3000);
                 } else if (resource.status == Resource.Status.SUCCESS) {
-                    if(ownerVM.getLatLng() == null){
+                    if (ownerVM.getLatLng() == null) {
                         progressDialog.setMessage("Waiting for your GPS-Location");
                         new Handler().postDelayed(new Runnable() { //Test every 3 second again
                             public void run() {
                                 BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
                             }
                         }, 3000);
-                    }else{
+                    } else {
                         progressDialog.dismiss();
-                        checkStages.setValue(checkStages.getValue()+1);
+                        checkStages.setValue(checkStages.getValue() + 1);
                     }
                 }
             }
@@ -215,7 +213,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION})
     public void checkPermissions() {
-        checkStages.setValue(checkStages.getValue()+1);
+        checkStages.setValue(checkStages.getValue() + 1);
     }
 
     @OnShowRationale({
@@ -292,18 +290,21 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         return ownerVM;
     }
 
-    public void factoryReset(){
+    public void factoryReset() {
         getSharedPreferences("Sechzehn", 0).edit().clear().apply();
+        SzUtils.initialize(this);
         ownerVM = null;
         Intent locationServiceIntent = new Intent(this, LocationService.class);
         stopService(locationServiceIntent);
+        Intent chatServiceIntent = new Intent(this, ChatNotificationService.class);
+        stopService(chatServiceIntent);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         this.finish(); //Finish BottomTabs
         return;
     }
 
-    private void postOwnerToasts(){
+    private void postOwnerToasts() {
         ownerVM.receiveToast().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
@@ -314,7 +315,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    public AnimatedFragNavController getNavController(){
+    public AnimatedFragNavController getNavController() {
         return mNavController;
     }
 
@@ -329,7 +330,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     }
 
     //To switch tab fragment, and at the same time, select the according tab in bottom bar
-    public void switchTabAndBar(int tabId){
+    public void switchTabAndBar(int tabId) {
         mBottomBar.selectTabAtPosition(tabId);
         mNavController.switchTab(tabId);
     }

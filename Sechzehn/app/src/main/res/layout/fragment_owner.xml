@@ -135,7 +135,7 @@
                             android:layout_marginTop="16dp"
                             app:layout_constraintTop_toBottomOf="@+id/owner_realname_header"
                             android:layout_marginStart="16dp" />
-                        <!--android:text="@{user.dateOfBirth != null ? frag.getAge() : 99}"-->
+                        <!--android:text="@{senderUser.dateOfBirth != null ? frag.getAge() : 99}"-->
 
                         <TextView style="@style/TextAppearance.AppCompat.Caption"
                             android:id="@+id/owner_birthday_header"

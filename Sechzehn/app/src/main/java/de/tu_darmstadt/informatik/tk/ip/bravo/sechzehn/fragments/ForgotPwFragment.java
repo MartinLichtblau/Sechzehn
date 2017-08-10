@@ -4,6 +4,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +14,12 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentForgotPwBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.LoginService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,7 +53,7 @@ public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBindin
     }
 
     public void confirmReset(View view) {
-        ServiceGenerator.createService(LoginService.class).resetPassword(user).enqueue(new Callback<Object>() {
+        LoginService.resetPassword(user).enqueue(new Callback<Object>() {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if (response.isSuccessful()) {

@@ -6,12 +6,11 @@ import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
@@ -33,7 +32,7 @@ public class UserProfileViewModel extends ViewModel {
         if(user.getValue() != null){
             // ViewModel is created per Fragment so
             // we know the userId won't change
-            Log.d(this.toString(),"a user is already initialized");
+            Log.d(this.toString(),"a senderUser is already initialized");
             return;
         }
         userService = ServiceGenerator.createService(UserService.class, SzUtils.getToken());

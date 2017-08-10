@@ -5,10 +5,11 @@ import android.support.annotation.Nullable;
 
 
 /**
+ * a generic class that describes a data with a status
  * Created by marti on 20.07.2017.
  */
 
-//a generic class that describes a data with a status
+//
 //Ref > https://developer.android.com/topic/libraries/architecture/guide.html#addendum
 public class Resource<T> {
     public enum Status {SUCCESS, ERROR, LOADING}

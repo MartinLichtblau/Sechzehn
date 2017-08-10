@@ -13,7 +13,7 @@ import java.util.List;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 
 /**
- * Created by Alexander Geiß on 20.07.2017.
+ * @author Alexander Geiß on 20.07.2017.
  */
 
 public class HeaderItem extends AbstractItem<HeaderItem, HeaderItem.ViewHolder> {

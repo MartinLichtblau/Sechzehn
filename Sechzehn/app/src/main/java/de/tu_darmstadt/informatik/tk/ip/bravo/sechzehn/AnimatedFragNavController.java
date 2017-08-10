@@ -14,7 +14,7 @@ import com.ncapdevi.fragnav.FragNavTransactionOptions;
 import java.util.Stack;
 
 /**
- * Created by Alexander Geiß on 20.07.2017.
+ * @author Alexander Geiß on 20.07.2017.
  */
 
 public class AnimatedFragNavController {

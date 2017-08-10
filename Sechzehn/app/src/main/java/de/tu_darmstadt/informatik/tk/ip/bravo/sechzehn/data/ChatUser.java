@@ -3,16 +3,25 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
 import com.stfalcon.chatkit.commons.models.IUser;
 
 /**
- * Created by Alexander Geiß on 03.08.2017.
+ * Wraps a User object for usage with ChatKit
+ * @author Alexander Geiß on 03.08.2017.
  */
 
 public class ChatUser implements IUser {
+    /**
+     * Creates a new ChatUser fom User
+     * @param user User object which will bew wrapped
+     */
     public ChatUser(User user) {
         this.user = user;
     }
 
     private User user;
 
+    /**
+     *
+     * @return Internal User object
+     */
     public User getUser() {
         return user;
     }

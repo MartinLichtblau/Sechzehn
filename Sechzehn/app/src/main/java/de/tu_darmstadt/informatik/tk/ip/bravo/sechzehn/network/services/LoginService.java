@@ -1,9 +1,11 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services;
 
-import java.util.Objects;
+import java.security.acl.LastOwnerException;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -27,5 +29,6 @@ public interface LoginService {
     @GET("/confirm/{token}")
     Call<Object> confirmEmail(@Path("token") String token);
 
+    public static LoginService LoginService = ServiceGenerator.createService(LoginService.class);
 
 }

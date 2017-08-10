@@ -1,10 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
-import android.transition.Transition;
 import android.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,25 +14,20 @@ import com.mikepenz.fastadapter.adapters.FooterAdapter;
 import com.mikepenz.fastadapter.adapters.HeaderAdapter;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 import com.mikepenz.fastadapter_extensions.items.ProgressItem;
-import com.ncapdevi.fragnav.FragNavTransactionOptions;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.HeaderItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.UserItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentFriendsBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
 import retrofit2.Response;
-
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.UserItem.create;
 
 
 /**
@@ -89,7 +81,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        UserService userService = ServiceGenerator.createService(UserService.class, SzUtils.getToken());
+        UserService userService = UserService.UserService;
         if (newText.isEmpty()) {
             userService.getFriends(SzUtils.getOwnername(), 1, 10)
                     .enqueue(new DefaultCallback<Pagination<User>>(getActivity()) {

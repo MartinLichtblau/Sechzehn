@@ -1,7 +1,5 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network;
 
-import android.text.TextUtils;
-
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -15,48 +13,34 @@ public class ServiceGenerator {
 
     private static final String BASE_URL = "https://iptk.herokuapp.com/api/";
 
-    private static Retrofit.Builder builder =
-            new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create());
 
-    private static Retrofit retrofit = builder.build();
+    private static final HttpLoggingInterceptor logging = new HttpLoggingInterceptor()
+            .setLevel(HttpLoggingInterceptor.Level.BODY);
 
-    public static Retrofit getRetrofit(){ return retrofit;}
+    public static final AuthenticationInterceptor authentication = new AuthenticationInterceptor();
 
-    private static HttpLoggingInterceptor logging =
-            new HttpLoggingInterceptor()
-                    .setLevel(HttpLoggingInterceptor.Level.BODY);
+    private static final OkHttpClient httpClient = new OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .addInterceptor(authentication)
+            .build();
 
-    private static OkHttpClient.Builder httpClient =
-            new OkHttpClient.Builder().addInterceptor(logging);
+    private static Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient)
+            .build();
+
+    public static Retrofit getRetrofit() {
+        return retrofit;
+    }
 
     public static <S> S createService(
             Class<S> serviceClass) {
-        return createService(serviceClass, "");
+        return retrofit.create(serviceClass);
     }
 
     public static <S> S createService(
             Class<S> serviceClass, final String authToken) {
-
-/*        if (!httpClient.interceptors().contains(logging)) {
-            httpClient.addInterceptor(logging);
-            builder.client(httpClient.build());
-            retrofit = builder.build();
-        }*/
-
-        if (!TextUtils.isEmpty(authToken)) {
-            AuthenticationInterceptor interceptor =
-                    new AuthenticationInterceptor(authToken);
-
-            if (!httpClient.interceptors().contains(interceptor)) {
-                httpClient.addInterceptor(interceptor);
-
-                builder.client(httpClient.build());
-                retrofit = builder.build();
-            }
-        }
-
         return retrofit.create(serviceClass);
     }
 }

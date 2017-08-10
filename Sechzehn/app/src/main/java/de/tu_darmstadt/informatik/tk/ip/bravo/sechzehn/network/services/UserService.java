@@ -1,17 +1,16 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.Services;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services;
 
 import android.support.annotation.NonNull;
-
-import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
@@ -102,5 +101,8 @@ public interface UserService {
     Call<Object> addFriend(
             @Path("username") @NonNull String username
     );
+
+    public UserService UserService = ServiceGenerator.createService(UserService.class);
+
 
 }
