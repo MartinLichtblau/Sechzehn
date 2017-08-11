@@ -24,6 +24,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -52,14 +53,17 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 import static android.databinding.DataBindingUtil.inflate;
 
-public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback {
+public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback{
     private final String TAG = "SearchFragment";
     private FragmentSearchBinding binding;
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
     private MapView mapView;
     public GoogleMap map;
+
     public Boolean userToggle;
+    public CameraPosition cameraPosition;
+    public Marker infoWindowOpen;
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -126,12 +130,10 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     }
 
     public void addUsers(List<User> userList){
-        //1.create MarkerOptions
         createUserMarkerOptions(userList).observe(this, new Observer<List<MarkerOptions>>() {
             @Override
             public void onChanged(@Nullable List<MarkerOptions> markerOptionsList) {
-                //2. Add Markers on Map
-                addUserMarkersOptionsOnMap(markerOptionsList);
+                addUserMarkersOnMap(markerOptionsList);
             }
         });
         /*showUsersOnList(userList);*/
@@ -162,64 +164,66 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         return liveMarkerOList;
     }
 
-    public HashMap<Marker,MarkerOptions> addUserMarkersOptionsOnMap(List<MarkerOptions> markerOptionsList){
+    public void addUserMarkersOnMap(List<MarkerOptions> markerOptionsList){
+        //Add markers through markerOptions and save them
+        searchVM.usersOnMap.setValue(addMarkersOnMap(markerOptionsList));
+    }
+
+    public HashMap<Marker,MarkerOptions> addMarkersOnMap(List<MarkerOptions> markerOptionsList){
         HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
         for (MarkerOptions mo :  markerOptionsList) {
             Marker marker = map.addMarker(mo);
             markersOnMap.put(marker, mo);
         }
-        //3. and save them
-        searchVM.usersOnMap.setValue(markersOnMap);
         return markersOnMap;
     }
 
-    public Double getVisibleRange(GoogleMap map){
-        VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
-        return SphericalUtil.computeDistanceBetween(
-                visibleRegion.farLeft, map.getCameraPosition().target) / 1000;
-    }
-
     public void toggleUsers(View view){
-        if(userToggle)
-            hideUsersOnMap();
-        else
-            showUsersOnMap();
-    }
-
-    private void showUsersOnMap() {
-        userToggle = true;
-        HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
-        for (Map.Entry<Marker, MarkerOptions> entry : searchVM.usersOnMap.getValue().entrySet()) {
-            entry.getKey().setVisible(true);
-            entry.getValue().visible(true);
-            markersOnMap.put(entry.getKey(),entry.getValue());
+        if(userToggle){
+            userToggle = false;
+            hideMarkersOnMap(searchVM.usersOnMap.getValue());
         }
-        searchVM.usersOnMap.setValue(markersOnMap);
+        else{
+            userToggle = true;
+            showMarkersOnMap(searchVM.usersOnMap.getValue());
+        }
     }
 
-    private void hideUsersOnMap() {
-        userToggle = false;
-        HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
-        for (Map.Entry<Marker, MarkerOptions> entry : searchVM.usersOnMap.getValue().entrySet()) {
+    private void showMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
+        for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
+            entry.getKey().setVisible(true); //Set Marker visibility
+            entry.getValue().visible(true); //persist visibility also in markeroptions
+        }
+    }
+
+    private void hideMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
+        for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
             entry.getKey().setVisible(false);
             entry.getValue().visible(false);
-            markersOnMap.put(entry.getKey(),entry.getValue());
         }
-        searchVM.usersOnMap.setValue(markersOnMap);
     }
 
     public void saveCurrentState(){
         Toast.makeText(getActivity(), "saveCurrentState", Toast.LENGTH_SHORT).show();
+        cameraPosition = map.getCameraPosition();
     }
 
     public void restoreLastState(){
         Toast.makeText(getActivity(), "restoreLastState", Toast.LENGTH_SHORT).show();
+
+        //restore User Data
         List<MarkerOptions> markerOptionsList = new ArrayList<>(searchVM.usersOnMap.getValue().values());
-        addUserMarkersOptionsOnMap(markerOptionsList);
+        addUserMarkersOnMap(markerOptionsList);
+        //restore Venue Data
+        //.......
+
+        //restore Camera
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override
     public void onInfoWindowClick(final Marker marker) {
+        infoWindowOpen = marker;
         final String username = marker.getTitle();
         new Handler().postDelayed(new Runnable() {
             //Maps Bug UI Hang while replacing fragment
@@ -230,6 +234,12 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                 fragNavController().pushFragment(UserProfileFragment.newInstance(username));
             }
         }, 100);
+    }
+
+    public Double getVisibleRange(GoogleMap map){
+        VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
+        return SphericalUtil.computeDistanceBetween(
+                visibleRegion.farLeft, map.getCameraPosition().target) / 1000;
     }
 
     //>>>>>>>>>>>>Forward Lifecycle for googlemaps MapView
