@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.app.ProgressDialog;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -32,6 +34,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -50,11 +53,13 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import static android.databinding.DataBindingUtil.inflate;
 
 public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback {
+    private final String TAG = "SearchFragment";
     private FragmentSearchBinding binding;
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
-    private SupportMapFragment mapFragment;
+    private MapView mapView;
     public GoogleMap map;
+    public Boolean userToggle;
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -65,31 +70,18 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         super.onCreate(savedInstanceState);
         searchVM = ViewModelProviders.of(this).get(SearchViewModel.class);
         ownerVM = BottomTabsActivity.getOwnerViewModel();
-
         observeSearchResults();
+        userToggle = true;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
-        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        binding.setFrag(this);
+        mapView = binding.mapview;
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
         return binding.getRoot();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //Important or map may crash app
-        getChildFragmentManager().beginTransaction()
-                .remove(mapFragment)
-                .commit();
-        map = null;
     }
 
     @Override
@@ -98,27 +90,11 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         map.setMyLocationEnabled(true);
         map.setOnInfoWindowClickListener(this);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
-
-        initalSearch(); //Initialize anew
-        /*if(null == searchVM.usersOnMap.getValue()){
+        if(null == searchVM.usersOnMap.getValue()){
             initalSearch(); //Initialize anew
         }else{
-            showUsersOnMap(searchVM.usersOnMap.getValue()); //show last state
-        }*/
-    }
-
-    @Override
-    public void onInfoWindowClick(final Marker marker) {
-        final String username = marker.getTitle();
-        new Handler().postDelayed(new Runnable() {
-            //Maps Bug UI Hang while replacing fragment
-            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
-            @Override
-            public void run() {
-                //@TODO differ between users and venues
-                fragNavController().pushFragment(UserProfileFragment.newInstance(username));
-            }
-        }, 100);
+            restoreLastState(); //show last state
+        }
     }
 
     private void initalSearch(){
@@ -141,25 +117,31 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                     case SUCCESS:
                         Pagination<User> usersPage = (Pagination<User>) resource.data;
                         Toast.makeText(getContext(), "Found"+usersPage.total+" users", Toast.LENGTH_SHORT).show();
-                        showUsers(usersPage.data);
+                        addUsers(usersPage.data);
                         break;
                 }
             }
         });
-
         //Observe Venue search result changes
     }
 
-    public void showUsers(List<User> userList){
-        drawUsersOnMap(userList);
+    public void addUsers(List<User> userList){
+        //1.create MarkerOptions
+        createUserMarkerOptions(userList).observe(this, new Observer<List<MarkerOptions>>() {
+            @Override
+            public void onChanged(@Nullable List<MarkerOptions> markerOptionsList) {
+                //2. Add Markers on Map
+                addUserMarkersOptionsOnMap(markerOptionsList);
+            }
+        });
         /*showUsersOnList(userList);*/
     }
 
-    private void drawUsersOnMap(List<User> userList) {
-        final HashMap<Marker,MarkerOptions> usersOnMap = new HashMap<>();
+    private MutableLiveData<List<MarkerOptions>> createUserMarkerOptions(final List<User> userList) {
+        final MutableLiveData<List<MarkerOptions>> liveMarkerOList = new MutableLiveData<>();
+        final List<MarkerOptions> tempMarkerOList= new ArrayList<>();
         for (final User user :  userList) {
-            if (!TextUtils.equals(user.getUsername(), ownerVM.getOwnername())) {
-                //Filter our owner
+            if (!TextUtils.equals(user.getUsername(), SzUtils.getOwnername())) {
                 SzUtils.createThumb(SzUtils.ThumbType.USER, user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
                     @Override
                     public void onChanged(@Nullable Bitmap bitmap) {
@@ -167,15 +149,28 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                                 .position(new LatLng(user.getLat(), user.getLng()))
                                 .title(user.getUsername())
                                 .snippet("Open Profile")
+                                .visible(userToggle) //adheres to usertoggle visibility
                                 .infoWindowAnchor(0.5f, 0.5f)
                                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                        Marker marker = map.addMarker(markerOptions);
-                        usersOnMap.put(marker, markerOptions);
+                        tempMarkerOList.add(markerOptions);
+                        if (tempMarkerOList.size() >= (userList.size() - 1))
+                            liveMarkerOList.setValue(tempMarkerOList);
                     }
                 });
             }
         }
-        searchVM.usersOnMap.setValue(usersOnMap);
+        return liveMarkerOList;
+    }
+
+    public HashMap<Marker,MarkerOptions> addUserMarkersOptionsOnMap(List<MarkerOptions> markerOptionsList){
+        HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
+        for (MarkerOptions mo :  markerOptionsList) {
+            Marker marker = map.addMarker(mo);
+            markersOnMap.put(marker, mo);
+        }
+        //3. and save them
+        searchVM.usersOnMap.setValue(markersOnMap);
+        return markersOnMap;
     }
 
     public Double getVisibleRange(GoogleMap map){
@@ -184,16 +179,105 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                 visibleRegion.farLeft, map.getCameraPosition().target) / 1000;
     }
 
-    private void showUsersOnMap(HashMap<Marker,MarkerOptions> userMap) {
-        for(Map.Entry<Marker,MarkerOptions> entry : userMap.entrySet()){
-            map.addMarker(entry.getValue());
+    public void toggleUsers(View view){
+        if(userToggle)
+            hideUsersOnMap();
+        else
+            showUsersOnMap();
+    }
+
+    private void showUsersOnMap() {
+        userToggle = true;
+        HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
+        for (Map.Entry<Marker, MarkerOptions> entry : searchVM.usersOnMap.getValue().entrySet()) {
+            entry.getKey().setVisible(true);
+            entry.getValue().visible(true);
+            markersOnMap.put(entry.getKey(),entry.getValue());
+        }
+        searchVM.usersOnMap.setValue(markersOnMap);
+    }
+
+    private void hideUsersOnMap() {
+        userToggle = false;
+        HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
+        for (Map.Entry<Marker, MarkerOptions> entry : searchVM.usersOnMap.getValue().entrySet()) {
+            entry.getKey().setVisible(false);
+            entry.getValue().visible(false);
+            markersOnMap.put(entry.getKey(),entry.getValue());
+        }
+        searchVM.usersOnMap.setValue(markersOnMap);
+    }
+
+    public void saveCurrentState(){
+        Toast.makeText(getActivity(), "saveCurrentState", Toast.LENGTH_SHORT).show();
+    }
+
+    public void restoreLastState(){
+        Toast.makeText(getActivity(), "restoreLastState", Toast.LENGTH_SHORT).show();
+        List<MarkerOptions> markerOptionsList = new ArrayList<>(searchVM.usersOnMap.getValue().values());
+        addUserMarkersOptionsOnMap(markerOptionsList);
+    }
+
+    @Override
+    public void onInfoWindowClick(final Marker marker) {
+        final String username = marker.getTitle();
+        new Handler().postDelayed(new Runnable() {
+            //Maps Bug UI Hang while replacing fragment
+            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
+            @Override
+            public void run() {
+                //@TODO differ between users and venues
+                fragNavController().pushFragment(UserProfileFragment.newInstance(username));
+            }
+        }, 100);
+    }
+
+    //>>>>>>>>>>>>Forward Lifecycle for googlemaps MapView
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mapView != null) {
+            mapView.onResume();
         }
     }
 
-    private void hideUsersOnMap(HashMap<Marker,MarkerOptions> userMap) {
-        for(Map.Entry<Marker,MarkerOptions> entry : userMap.entrySet()){
-            entry.getKey().remove();
+    @Override
+    public void onPause() {
+        if (mapView != null) {
+            saveCurrentState();
+            mapView.onPause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mapView != null) {
+            try {
+                mapView.onDestroy();
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Error while attempting MapView.onDestroy(), ignoring exception", e);
+            }
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (mapView != null) {
+            mapView.onLowMemory();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mapView != null) {
+            mapView.onSaveInstanceState(outState);
         }
     }
 }
+
 

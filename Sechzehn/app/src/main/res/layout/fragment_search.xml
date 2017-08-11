@@ -5,9 +5,7 @@
     tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity">
 
     <data>
-        <variable
-            name="frag"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment" />
+        <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment" />
     </data>
 
     <LinearLayout
@@ -15,39 +13,78 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            map:uiCompass="false"
-            map:uiRotateGestures="false"
-            map:uiTiltGestures="false"/>
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/search_toolbar"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/md_grey_300"
-            android:elevation="3dp"
-            android:minHeight="?attr/actionBarSize"
-            android:paddingLeft="0dp"
-            android:paddingRight="16dp"
-            android:theme="?attr/actionBarTheme">
+            android:layout_weight="0.7">
 
-            <SearchView
-                android:id="@+id/search_searchbar"
+            <com.google.android.gms.maps.MapView
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/mapview"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                map:uiCompass="false"
+                map:uiRotateGestures="false"
+                map:uiTiltGestures="false"/>
+
+            <android.support.v7.widget.ToggleGroup
+                android:id="@+id/groupTextAlignment"
+                style="@style/Widget.Material.ToggleGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="@dimen/dim_xl"
+                app:divider="@drawable/toggle_divider"
+                app:orientation="vertical"
+                app:exclusive="false"
+                app:allowUnselected="true">
+
+                <android.support.v7.widget.ToggleButton
+                    android:id="@+id/user_toggle"
+                    style="@style/Widget.Material.ToggleButton"
+                    android:button="@drawable/ic_person"
+                    android:checked='@{frag.userToggle}'
+                    android:onClick="@{frag::toggleUsers}"/>
+
+                <android.support.v7.widget.ToggleButton
+                    android:id="@+id/venue_toggle"
+                    style="@style/Widget.Material.ToggleButton"
+                    android:button="@drawable/ic_venue_icon"
+                    android:checked="true"/>
+            </android.support.v7.widget.ToggleGroup>
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground">
-            </SearchView>
-        </android.support.v7.widget.Toolbar>
+                android:background="@color/md_grey_300"
+                android:elevation="3dp"
+                android:minHeight="?attr/actionBarSize"
+                android:paddingLeft="0dp"
+                android:paddingRight="16dp"
+                android:theme="?attr/actionBarTheme">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/search_resultlist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foregroundTint="@android:color/white" />
+                <android.support.v7.widget.SearchView
+                    android:id="@+id/friendsSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    app:iconifiedByDefault="false"/>
+            </android.support.v7.widget.Toolbar>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/friendsList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:foregroundTint="@android:color/white" />
+        </LinearLayout>
     </LinearLayout>
 </layout>
