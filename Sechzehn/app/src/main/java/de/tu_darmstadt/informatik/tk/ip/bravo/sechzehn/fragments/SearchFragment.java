@@ -155,16 +155,18 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
 
     @Override
     public void onInfoWindowClick(final Marker marker) {
-        final String username = marker.getTitle();
-        new Handler().postDelayed(new Runnable() {
-            //Maps Bug UI Hang while replacing fragment
-            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
-            @Override
-            public void run() {
-                //@TODO differ between users and venues
-                fragNavController().pushFragment(UserProfileFragment.newInstance(username));
-            }
-        }, 100);
+        if(marker.getTag().getClass().equals(User.class)) {
+            new Handler().postDelayed(new Runnable() {
+                //Maps Bug UI Hang while replacing fragment
+                // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
+                @Override
+                public void run() {
+                    fragNavController().pushFragment(UserProfileFragment.newInstance(marker.getTitle()));
+                }
+            }, 100);
+        }else {
+            //@ venues
+        }
     }
 
     //>>>>>>>>>>>>Forward Lifecycle for googlemaps MapView
