@@ -40,6 +40,8 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Email"
+                android:imeOptions="actionDone"
+                android:maxLines="1"
                 android:inputType="textEmailAddress"
                 android:text="@={user.email}" />
         </android.support.design.widget.TextInputLayout>

@@ -1,110 +1,115 @@
 <layout>
+
     <data>
+
         <variable
             name="self"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment"/>
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment" />
+
         <variable
             name="user"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User"/>
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
     </data>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
-    <LinearLayout
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:weightSum="1">
+        tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment">
 
-        <ImageView
-            android:id="@+id/imageView"
+        <!-- TODO: Update blank fragment layout -->
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginBottom="16dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             android:padding="16dp"
-            android:src="@drawable/ic_logo" />
+            android:weightSum="1">
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="16dp"
+                android:padding="16dp"
+                android:src="@drawable/ic_logo" />
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/registerUsername"
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/registerUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Username"
+                    android:text="@={user.username}" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/registerEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:text="@={user.email}" />
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/registerPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:text="@={user.password}" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/registerPasswordConfirmation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Password Confirmation"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:maxLines="1" />
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/registerButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Username"
-                android:text="@={user.username}"
-                 />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:onClick="@{self::register}"
+                android:text="Register" />
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/registerEmail"
+            <TextView
+                android:id="@+id/registerToLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Email"
-                android:text="@={user.email}"
-                android:inputType="textEmailAddress" />
-        </android.support.design.widget.TextInputLayout>
+                android:clickable="true"
+                android:onClick="@{self::backToLogin}"
+                android:padding="16dp"
+                android:text="Already have an account? Login here"
+                android:textAlignment="center" />
 
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/registerPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Password"
-                android:text="@={user.password}"
-                android:inputType="textPassword" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/registerPasswordConfirmation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Password Confirmation"
-                android:inputType="textPassword" />
-        </android.support.design.widget.TextInputLayout>
-
-        <Button
-            android:id="@+id/registerButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Register"
-            android:onClick="@{self::register}"/>
-
-        <TextView
-            android:id="@+id/registerToLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:padding="16dp"
-            android:text="Already have an account? Login here"
-            android:textAlignment="center"
-            android:onClick="@{self::backToLogin}"/>
-
-    </LinearLayout>
-</FrameLayout>
+        </LinearLayout>
+    </FrameLayout>
 </layout>

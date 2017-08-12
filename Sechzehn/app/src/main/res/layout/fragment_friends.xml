@@ -11,23 +11,26 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/md_grey_300"
+            android:layout_height="?attr/actionBarSize"
+            android:height="?attr/actionBarSize"
+            android:background="@color/primary"
             android:elevation="3dp"
-            android:minHeight="?attr/actionBarSize"
-            android:paddingLeft="0dp"
-            android:paddingRight="16dp"
-            android:theme="?attr/actionBarTheme">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            >
 
             <SearchView
                 android:id="@+id/friendsSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground">
 
 
-            </SearchView>
+                android:background="?attr/selectableItemBackground"
+                android:iconifiedByDefault="false"
+                android:queryHint="Search People" />
         </android.support.v7.widget.Toolbar>
+
+
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/friendsList"

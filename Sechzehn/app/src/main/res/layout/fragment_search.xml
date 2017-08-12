@@ -32,14 +32,13 @@
             android:background="@color/md_grey_300"
             android:elevation="3dp"
             android:minHeight="?attr/actionBarSize"
-            android:paddingLeft="0dp"
-            android:paddingRight="16dp"
             android:theme="?attr/actionBarTheme">
 
             <SearchView
                 android:id="@+id/search_searchbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:iconifiedByDefault="false"
                 android:background="?attr/selectableItemBackground">
             </SearchView>
         </android.support.v7.widget.Toolbar>

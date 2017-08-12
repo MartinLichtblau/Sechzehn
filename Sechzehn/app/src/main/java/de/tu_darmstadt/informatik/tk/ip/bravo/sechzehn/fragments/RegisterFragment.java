@@ -3,9 +3,11 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentRegis
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,6 +67,12 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
     @Override
     protected void useDataBinding(FragmentRegisterBinding binding) {
         binding.setUser(user);
+        binding.registerPasswordConfirmation.setOnEditorActionListener(new ActionDoneListener() {
+            @Override
+            public void onActionDone(TextView v, int actionId, KeyEvent event) {
+                register(v);
+            }
+        });
     }
 
     public void register(View v) {

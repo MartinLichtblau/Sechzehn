@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
@@ -16,9 +19,11 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentLoginBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.LoginService;
 
 /**
@@ -54,16 +59,24 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
     @Override
     protected void useDataBinding(FragmentLoginBinding binding) {
         binding.setUser(user);
+        binding.loginPassword.setOnEditorActionListener(new ActionDoneListener() {
+            @Override
+            public void onActionDone(TextView v, int actionId, KeyEvent event) {
+                login(v);
+            }
+        });
     }
-    public void toRegister(View view){
 
-       FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
+    public void toRegister(View view) {
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.loginContainer, RegisterFragment.newInstance());
         transaction.commit();
     }
-    public void toForgotpassword(View view){
-        FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.loginContainer,ForgotPwFragment.newInstance());
+
+    public void toForgotpassword(View view) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.loginContainer, ForgotPwFragment.newInstance());
         transaction.commit();
     }
 
@@ -72,7 +85,7 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
             @Override
             public void onResponse(Call<UserToken> call, Response<UserToken> response) {
                 if (response.isSuccessful()) {
-                    getActivity().getSharedPreferences("Sechzehn",0).edit()
+                    getActivity().getSharedPreferences("Sechzehn", 0).edit()
                             .putString("JWT", response.body().token)
                             .putString("ownername", response.body().user.getUsername()).apply(); // > https://stackoverflow.com/questions/28096876/how-to-store-multiple-key-value-pairs-in-shared-preferences
                     Intent intent = new Intent(getActivity(), BottomTabsActivity.class);

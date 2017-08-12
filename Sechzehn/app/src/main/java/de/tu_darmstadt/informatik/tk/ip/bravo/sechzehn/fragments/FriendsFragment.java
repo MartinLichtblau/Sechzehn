@@ -1,5 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.widget.SearchView;
@@ -76,15 +77,16 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
                 headerAdapter.wrap(fastAdapter));
 
         binding.friendsSearch.setOnQueryTextListener(this);
-        binding.friendsSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.friendsSearch.setIconified(false);
-            }
-        });
-
         // onQueryTextChange(binding.friendsSearch.getQuery().toString());
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(binding.friendsSearch.getQuery().toString().isEmpty()){
+            onQueryTextChange("");
+        }
     }
 
     @Override

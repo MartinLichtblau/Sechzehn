@@ -1,45 +1,70 @@
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="self"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment" />
+
         <variable
             name="user"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
     </data>
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/messageToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:subtitleTextColor="@android:color/white"
-        app:titleTextColor="@android:color/white" />
-
-    <com.stfalcon.chatkit.messages.MessagesList
-        android:id="@+id/messagesList"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/messagesInput"
-        android:layout_below="@+id/messageToolbar" />
+        android:background="@color/md_grey_200"
+        android:orientation="vertical">
 
-    <com.stfalcon.chatkit.messages.MessageInput
-        android:id="@+id/messagesInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="bottom"
-        app:inputHint="Enter a message"
-      />
-</RelativeLayout>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/messageToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:elevation="3dp"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:subtitleTextColor="@android:color/white"
+            app:titleTextColor="@android:color/white" />
+
+        <com.stfalcon.chatkit.messages.MessagesList
+            android:id="@+id/messagesList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/messagesInput"
+            android:layout_below="@+id/messageToolbar"
+            app:incomingTextColor="@color/md_dark_primary_text"
+            app:incomingDefaultBubbleColor="@color/colorPrimary"
+            app:incomingDefaultBubblePressedColor="@color/primary_dark"
+            app:incomingTimeTextColor="@color/md_dark_secondary"
+            app:incomingTextLinkColor="@color/accent"
+            app:outcomingDefaultBubbleColor="@color/white"
+            app:outcomingDefaultBubblePressedColor="@color/md_grey_100"
+            app:outcomingTimeTextColor="@color/md_light_secondary"
+            app:outcomingTextColor="@color/md_light_primary_text"
+            app:outcomingTextLinkColor="@color/accent"
+            />
+
+        <com.stfalcon.chatkit.messages.MessageInput
+            android:id="@+id/messagesInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:elevation="3dp"
+
+
+            android:gravity="bottom"
+
+            app:inputBackground="@drawable/sh_message_input"
+            app:inputButtonBackground="@drawable/sh_message_send_button"
+            app:inputButtonDefaultIconColor="@color/white"
+            app:inputButtonDefaultIconDisabledColor="@color/white"
+            app:inputButtonDefaultIconPressedColor="@color/white"
+            app:inputButtonHeight="40dp"
+            app:inputButtonWidth="40dp"
+            app:inputHint="Enter a message" />
+    </RelativeLayout>
 </layout>

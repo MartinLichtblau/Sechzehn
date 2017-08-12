@@ -2,18 +2,21 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.os.Bundle;
 import android.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
@@ -49,7 +52,6 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
      *
      * @return A new UserService of fragment ResetPasswordFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ResetPasswordFragment newInstance(String token) {
         ResetPasswordFragment fragment = new ResetPasswordFragment();
         Bundle args = new Bundle();
@@ -75,6 +77,12 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
     protected void useDataBinding(FragmentResetPasswordBinding binding) {
         binding.setUser(user);
         binding.setSelf(this);
+        binding.resetPasswordPasswordConfirmation.setOnEditorActionListener(new ActionDoneListener() {
+            @Override
+            public void onActionDone(TextView v, int actionId, KeyEvent event) {
+                confirm(v);
+            }
+        });
     }
 
     public void confirm(View view) {

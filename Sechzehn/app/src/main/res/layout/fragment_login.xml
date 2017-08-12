@@ -5,9 +5,10 @@
         <variable
             name="user"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
+
         <variable
             name="self"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment"/>
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment" />
     </data>
 
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
@@ -50,9 +51,10 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Password"
+                android:imeOptions="actionDone"
                 android:inputType="textPassword"
-                android:text="@={user.password}"
-                />
+                android:maxLines="1"
+                android:text="@={user.password}" />
         </android.support.design.widget.TextInputLayout>
 
         <Button
@@ -60,8 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Login"
-            android:onClick="@{self::login}"/>
+            android:onClick="@{self::login}"
+            android:text="Login" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,10 +76,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:onClick="@{self::toRegister}"
                 android:padding="16dp"
                 android:text="Not registered?"
-                android:textAlignment="center"
-                android:onClick="@{self::toRegister}"/>
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/loginToForgotpassword"
@@ -85,10 +87,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:onClick="@{self::toForgotpassword}"
                 android:padding="16dp"
                 android:text="Forgot password?"
-                android:textAlignment="center"
-                android:onClick="@{self::toForgotpassword}"/>
+                android:textAlignment="center" />
         </LinearLayout>
 
     </LinearLayout>
