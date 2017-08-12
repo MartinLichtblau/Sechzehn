@@ -6,6 +6,7 @@
 
     <data>
         <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment" />
+        <variable name="searchVM" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel" />
     </data>
 
     <LinearLayout
@@ -44,8 +45,8 @@
                     android:id="@+id/user_toggle"
                     style="@style/Widget.Material.ToggleButton"
                     android:button="@drawable/ic_person"
-                    android:checked='@{frag.userToggle}'
-                    android:onClick="@{frag::toggleUsers}"/>
+                    android:checked='@{safeUnbox(searchVM.userToggle)}'
+                    android:onClick="@{searchVM::toggleUsers}"/>
 
                 <android.support.v7.widget.ToggleButton
                     android:id="@+id/venue_toggle"

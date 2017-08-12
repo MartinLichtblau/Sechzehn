@@ -59,11 +59,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
     private MapView mapView;
-    public GoogleMap map;
-
-    public Boolean userToggle;
-    public CameraPosition cameraPosition;
-    public Marker infoWindowOpen;
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -75,13 +70,13 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         searchVM = ViewModelProviders.of(this).get(SearchViewModel.class);
         ownerVM = BottomTabsActivity.getOwnerViewModel();
         observeSearchResults();
-        userToggle = true;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         binding.setFrag(this);
+        binding.setSearchVM(searchVM);
         mapView = binding.mapview;
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -90,20 +85,20 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-        map.setMyLocationEnabled(true);
-        map.setOnInfoWindowClickListener(this);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
-        if(null == searchVM.usersOnMap.getValue()){
-            initalSearch(); //Initialize anew
+        searchVM.map = googleMap;
+        searchVM.map.setMyLocationEnabled(true);
+        searchVM.map.setOnInfoWindowClickListener(this);
+        if(searchVM.lastStateSaved){
+            searchVM.restoreLastState(); //show last state
         }else{
-            restoreLastState(); //show last state
+            searchVM.map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
+            initalSearch(); //Initialize anew
         }
     }
 
-    private void initalSearch(){
+    public void initalSearch(){
         //Show only nearby users and venues
-        searchVM.searchXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, getVisibleRange(map));
+        searchVM.searchXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleMapRange());
         /*searchVM.searchXVenuesNearby(...*/
     }
 
@@ -113,7 +108,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
             public void onChanged(@Nullable Resource resource) {
                 switch (resource.status){
                     case LOADING:
-                        Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
                         break;
                     case ERROR:
                         Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
@@ -130,18 +125,12 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     }
 
     public void addUsers(List<User> userList){
-        createUserMarkerOptions(userList).observe(this, new Observer<List<MarkerOptions>>() {
-            @Override
-            public void onChanged(@Nullable List<MarkerOptions> markerOptionsList) {
-                addUserMarkersOnMap(markerOptionsList);
-            }
-        });
+        createAddUserMarkers(userList);
         /*showUsersOnList(userList);*/
     }
 
-    private MutableLiveData<List<MarkerOptions>> createUserMarkerOptions(final List<User> userList) {
-        final MutableLiveData<List<MarkerOptions>> liveMarkerOList = new MutableLiveData<>();
-        final List<MarkerOptions> tempMarkerOList= new ArrayList<>();
+    private void createAddUserMarkers(final List<User> userList) {
+        final HashMap<Marker,MarkerOptions> tempMarkerMap = new HashMap<>();
         for (final User user :  userList) {
             if (!TextUtils.equals(user.getUsername(), SzUtils.getOwnername())) {
                 SzUtils.createThumb(SzUtils.ThumbType.USER, user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
@@ -151,79 +140,21 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                                 .position(new LatLng(user.getLat(), user.getLng()))
                                 .title(user.getUsername())
                                 .snippet("Open Profile")
-                                .visible(userToggle) //adheres to usertoggle visibility
                                 .infoWindowAnchor(0.5f, 0.5f)
                                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                        tempMarkerOList.add(markerOptions);
-                        if (tempMarkerOList.size() >= (userList.size() - 1))
-                            liveMarkerOList.setValue(tempMarkerOList);
+                        Marker marker = searchVM.map.addMarker(markerOptions);
+                        marker.setTag(user);
+                        tempMarkerMap.put(marker, markerOptions);
+                        if (tempMarkerMap.size() >= (userList.size() - 1))
+                            searchVM.usersOnMap.setValue(tempMarkerMap);
                     }
                 });
             }
         }
-        return liveMarkerOList;
-    }
-
-    public void addUserMarkersOnMap(List<MarkerOptions> markerOptionsList){
-        //Add markers through markerOptions and save them
-        searchVM.usersOnMap.setValue(addMarkersOnMap(markerOptionsList));
-    }
-
-    public HashMap<Marker,MarkerOptions> addMarkersOnMap(List<MarkerOptions> markerOptionsList){
-        HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
-        for (MarkerOptions mo :  markerOptionsList) {
-            Marker marker = map.addMarker(mo);
-            markersOnMap.put(marker, mo);
-        }
-        return markersOnMap;
-    }
-
-    public void toggleUsers(View view){
-        if(userToggle){
-            userToggle = false;
-            hideMarkersOnMap(searchVM.usersOnMap.getValue());
-        }
-        else{
-            userToggle = true;
-            showMarkersOnMap(searchVM.usersOnMap.getValue());
-        }
-    }
-
-    private void showMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
-        for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
-            entry.getKey().setVisible(true); //Set Marker visibility
-            entry.getValue().visible(true); //persist visibility also in markeroptions
-        }
-    }
-
-    private void hideMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
-        for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
-            entry.getKey().setVisible(false);
-            entry.getValue().visible(false);
-        }
-    }
-
-    public void saveCurrentState(){
-        Toast.makeText(getActivity(), "saveCurrentState", Toast.LENGTH_SHORT).show();
-        cameraPosition = map.getCameraPosition();
-    }
-
-    public void restoreLastState(){
-        Toast.makeText(getActivity(), "restoreLastState", Toast.LENGTH_SHORT).show();
-
-        //restore User Data
-        List<MarkerOptions> markerOptionsList = new ArrayList<>(searchVM.usersOnMap.getValue().values());
-        addUserMarkersOnMap(markerOptionsList);
-        //restore Venue Data
-        //.......
-
-        //restore Camera
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override
     public void onInfoWindowClick(final Marker marker) {
-        infoWindowOpen = marker;
         final String username = marker.getTitle();
         new Handler().postDelayed(new Runnable() {
             //Maps Bug UI Hang while replacing fragment
@@ -234,12 +165,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                 fragNavController().pushFragment(UserProfileFragment.newInstance(username));
             }
         }, 100);
-    }
-
-    public Double getVisibleRange(GoogleMap map){
-        VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
-        return SphericalUtil.computeDistanceBetween(
-                visibleRegion.farLeft, map.getCameraPosition().target) / 1000;
     }
 
     //>>>>>>>>>>>>Forward Lifecycle for googlemaps MapView
@@ -255,7 +180,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     @Override
     public void onPause() {
         if (mapView != null) {
-            saveCurrentState();
+            searchVM.saveCurrentState();
             mapView.onPause();
         }
         super.onPause();
