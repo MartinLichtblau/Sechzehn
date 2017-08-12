@@ -28,21 +28,12 @@ import retrofit2.Response;
 
 public class UserProfileViewModel extends ViewModel {
     private MutableLiveData<User> user = new MutableLiveData<User>(); //Needs a new MutableLiveData<User>(), otherwise the Observer initially observes a null obj
-    private UserService userService;
+    private UserService userService = ServiceGenerator.createService(UserService.class, SzUtils.getToken());
     public MutableLiveData<Resource> resource = new MutableLiveData<>();
 
 
 
     public void initUser(final String username){
-
-        if(user.getValue() != null){
-            // ViewModel is created per Fragment so
-            // we know the userId won't change
-            Log.d(this.toString(),"a senderUser is already initialized");
-            return;
-        }
-
-        userService = ServiceGenerator.createService(UserService.class, SzUtils.getToken());
         userService.getUser(username).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
