@@ -142,8 +142,16 @@ public class ChatNotificationService extends Service {
 
     @Override
     public void onDestroy() {
-        socket.disconnect();
-        socket = null;
+        if (socket != null) {
+            socket.disconnect();
+            socket = null;
+        }
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        onDestroy();
     }
 
     /**

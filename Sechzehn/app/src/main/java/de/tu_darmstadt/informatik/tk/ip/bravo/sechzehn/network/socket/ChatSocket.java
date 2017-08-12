@@ -55,7 +55,8 @@ public class ChatSocket {
                 .on(Socket.EVENT_ERROR, new Emitter.Listener() {
                     @Override
                     public void call(Object... args) {
-                        throw new ChatSocketException("Error Event", new ChatSocketException(args));
+                        Log.e("ChatSocket", "Error Event: " + argsToString(args));
+                        //throw new ChatSocketException("Error Event", new ChatSocketException(args));
                     }
                 })
                 .on(Socket.EVENT_CONNECT, new Emitter.Listener() {
@@ -67,7 +68,7 @@ public class ChatSocket {
                 .on(ChatSocket.EVENT_WARNING, new Emitter.Listener() {
                     @Override
                     public void call(final Object... args) {
-                        Log.d("ChatSocket", EVENT_WARNING + ": " + argsToString(args));
+                        Log.w("ChatSocket", EVENT_WARNING + ": " + argsToString(args));
                     }
                 })
                 .on(ChatSocket.EVENT_MESSAGE, new Emitter.Listener() {
