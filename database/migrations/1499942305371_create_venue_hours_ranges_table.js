@@ -6,14 +6,14 @@ class VenueHoursRangesTableSchema extends Schema {
   up () {
     this.create('venue_hours_ranges', (table) => {
       table.increments()
-      table.string('venue', 60).notNullable()
+      table.string('venue_id', 60).notNullable()
       table.specificType('hours', 'tsrange')
-      table.foreign('venue').references('venues.id')
+      table.foreign('venue_id').references('venues.id')
     })
 
     this.raw('CREATE EXTENSION IF NOT EXISTS btree_gist')
 
-    this.raw('ALTER TABLE venue_hours_ranges ADD CONSTRAINT hours_no_overlap EXCLUDE USING gist (venue with =, hours WITH &&)')
+    this.raw('ALTER TABLE venue_hours_ranges ADD CONSTRAINT hours_no_overlap EXCLUDE USING gist (venue_id with =, hours WITH &&)')
     this.raw('ALTER TABLE venue_hours_ranges ADD CONSTRAINT hours_bounds_inclusive CHECK (lower_inc(hours) AND upper_inc(hours))')
     this.raw('ALTER TABLE venue_hours_ranges ADD CONSTRAINT hours_standard_week CHECK (hours <@ tsrange \'[1996-01-01 0:0, 1996-01-08 0:0]\')')
 

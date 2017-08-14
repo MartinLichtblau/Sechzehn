@@ -20,12 +20,13 @@ class VenuesTableSchema extends Schema {
       table.float('lng', 10, 6)
       table.text('address')
       table.text('url')
+      table.string('phone')
       table.specificType('price', 'smallint')
       table.float('foursquare_rating', 4, 2)
       table.integer('foursquare_rating_count')
       table.boolean('details_fetched').defaultTo(false)
-      table.string('category', 60)
-      table.foreign('category').references('venue_categories.id')
+      table.string('category_id', 60)
+      table.foreign('category_id').references('venue_categories.id')
     })
   }
 

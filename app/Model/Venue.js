@@ -26,17 +26,46 @@ class Venue extends Lucid {
    */
   static get visible () {
     return [
+      'id',
       'name',
       'lat',
       'lng',
       'price',
-      'category',
       'foursquare_rating'
     ]
   }
 
+  static get detailed () {
+    return [
+      'id',
+      'name',
+      'lat',
+      'lng',
+      'price',
+      'foursquare_rating',
+      'url',
+      'phone',
+      'address',
+      'description'
+    ]
+  }
+
+  detailView () {
+    return {
+      id: this.id,
+      name: this.name,
+      lat: this.lat,
+      lng: this.lng,
+      price: this.price,
+      url: this.url,
+      phone: this.phone,
+      address: this.address,
+      description: this.description
+    }
+  }
+
   category () {
-    return this.belongsTo('App/Model/VenueCategory', 'category', 'id')
+    return this.belongsTo('App/Model/VenueCategory', 'id', 'category_id')
   }
 }
 

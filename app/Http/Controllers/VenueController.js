@@ -12,6 +12,7 @@ class VenueController {
     const lng = request.input('lng')
     const radius = request.input('radius', 10)
     const searchQuery = request.input('query')
+    const time = request.input('time')
 
     yield VenueRetriever.retrieve(lat, lng, radius)
 
@@ -70,7 +71,17 @@ class VenueController {
   }
 
   * show (request, response) {
-    //
+    const venue = yield Venue.findOrFail(request.param('id'))
+
+    if (!venue.details_fetched) {
+      yield VenueRetriever.retrieveDetails(venue)
+    }
+
+    // ugly workaround the restrictions of the framwork
+    const data = venue.detailView()
+    data.category = yield venue.category().fetch()
+
+    response.ok(data)
   }
 }
 
