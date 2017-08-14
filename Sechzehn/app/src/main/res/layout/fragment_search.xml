@@ -9,21 +9,20 @@
         <variable name="searchVM" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel" />
     </data>
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <FrameLayout
+            android:id="@+id/mapFrame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.7">
+            android:layout_height="match_parent">
 
             <com.google.android.gms.maps.MapView
                 xmlns:map="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/mapview"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 map:uiCompass="false"
                 map:uiRotateGestures="false"
                 map:uiTiltGestures="false"/>
@@ -33,59 +32,63 @@
                 style="@style/Widget.Material.ToggleGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="6dp"
-                android:layout_marginTop="@dimen/dim_xl"
+                android:layout_gravity="bottom|start"
+                android:layout_marginBottom="@dimen/dim_normal"
+                android:layout_marginStart="@dimen/dim_normal"
                 app:divider="@drawable/toggle_divider"
                 app:orientation="vertical"
                 app:exclusive="false"
                 app:allowUnselected="true">
-
                 <android.support.v7.widget.ToggleButton
                     android:id="@+id/user_toggle"
                     style="@style/Widget.Material.ToggleButton"
                     android:button="@drawable/ic_person"
                     android:checked='@{safeUnbox(searchVM.userToggle)}'
                     android:onClick="@{searchVM::toggleUsers}"/>
-
                 <android.support.v7.widget.ToggleButton
                     android:id="@+id/venue_toggle"
                     style="@style/Widget.Material.ToggleButton"
                     android:button="@drawable/ic_venue_icon"
                     android:checked="true"/>
             </android.support.v7.widget.ToggleGroup>
-        </RelativeLayout>
+        </FrameLayout>
 
 
         <LinearLayout
+            android:id="@+id/bottom_sheet"
             android:layout_width="match_parent"
-            android:layout_height="34dp"
-            android:orientation="vertical">
+            android:layout_height="256dp"
+            android:background="@android:color/darker_gray"
+            android:orientation="vertical"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="@dimen/dim_xl"
+            app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar4"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/md_grey_300"
-                android:elevation="3dp"
-                android:minHeight="?attr/actionBarSize"
-                android:paddingLeft="0dp"
-                android:paddingRight="16dp"
-                android:theme="?attr/actionBarTheme">
+                android:layout_height="80dp"
+                android:background="@color/colorAccent"
+                android:gravity="center"
+                android:text="gdgfdg"
+                android:textColor="@android:color/white" />
 
-                <android.support.v7.widget.SearchView
-                    android:id="@+id/friendsSearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    app:iconifiedByDefault="false"/>
-            </android.support.v7.widget.Toolbar>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/friendsList"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:foregroundTint="@android:color/white" />
+                android:gravity="center"
+                android:text="gdfgdfg"
+                android:textColor="@android:color/white" />
+
         </LinearLayout>
-    </LinearLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@android:drawable/ic_dialog_email"
+            app:layout_anchor="@id/bottom_sheet"
+            app:layout_anchorGravity="top|right|end"
+            android:onClick="@{frag::fab}"/>
+    </android.support.design.widget.CoordinatorLayout>
 </layout>

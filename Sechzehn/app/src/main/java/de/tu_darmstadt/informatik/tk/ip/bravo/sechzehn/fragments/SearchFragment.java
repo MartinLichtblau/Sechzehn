@@ -5,17 +5,22 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -59,6 +64,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
     private MapView mapView;
+    private Integer maxMapHeight;
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -77,23 +83,102 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         binding.setFrag(this);
         binding.setSearchVM(searchVM);
+
         mapView = binding.mapview;
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        // get the bottom sheet view
+        LinearLayout llBottomSheet = binding.bottomSheet;
+        // init the bottom sheet behavior
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        // set callback for changes
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        shrinkMapFrameHeight(1);
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        shrinkMapFrameHeight(Math.round(convertDpToPx(getContext(),(float) 256)));
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        shrinkMapFrameHeight(Math.round(convertDpToPx(getContext(),(float) 80)));
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                //mapView.setPadding(0,0,0, 100);
+                LatLng pos = searchVM.map.getCameraPosition().target;
+                LatLng newPos = new LatLng(pos.latitude - 0.0003, pos.longitude);
+                CameraPosition cameraPos = new CameraPosition.Builder().target(newPos)
+                        .zoom(searchVM.map.getCameraPosition().zoom)
+                        .build();
+                searchVM.map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
+            }
+        });
+
         return binding.getRoot();
+    }
+
+    private void shrinkMapFrameHeight(Integer sub){
+        //Max size is in my case 1573
+        ViewGroup.LayoutParams params = binding.mapFrame.getLayoutParams();
+        params.height = (maxMapHeight - sub);
+        Toast.makeText(getActivity(), String.valueOf(maxMapHeight), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), String.valueOf(params.height), Toast.LENGTH_SHORT).show();
+        binding.mapFrame.setLayoutParams(params);
+    }
+
+    public float convertDpToPx(Context context, float dp) {
+        return dp * context.getResources().getDisplayMetrics().density;
+    }
+
+    public float convertPxToDp(Context context, float px) {
+        return px / context.getResources().getDisplayMetrics().density;
+    }
+
+    public void fab(View view){
+       BottomSheetBehavior.from(binding.bottomSheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        maxMapHeight = mapView.getHeight();
         searchVM.map = googleMap;
         searchVM.map.setMyLocationEnabled(true);
         searchVM.map.setOnInfoWindowClickListener(this);
+
+        //Adapt default visuals
+/*        positionLocationButton();*/
+
         if(searchVM.lastStateSaved){
             searchVM.restoreLastState(); //show last state
         }else{
             searchVM.map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
             initalSearch(); //Initialize anew
         }
+    }
+
+
+    private void positionLocationButton(){
+        View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        // position on right bottom
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.setMargins(0, 0, 30, 30);
+
+        //Change Button view
+        /*ImageView locationButton = (ImageView) mapView.findViewById(2);*/
     }
 
     public void initalSearch(){
@@ -161,7 +246,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                 // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
                 @Override
                 public void run() {
-                    fragNavController().pushFragment(UserProfileFragment.newInstance(marker.getTitle()));
+                    fragNavController().pushFragment(UserProfileFragment.newInstance(((User) marker.getTag()).getUsername()));
                 }
             }, 100);
         }else {
