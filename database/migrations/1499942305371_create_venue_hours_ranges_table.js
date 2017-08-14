@@ -22,7 +22,7 @@ class VenueHoursRangesTableSchema extends Schema {
       `CREATE OR REPLACE FUNCTION f_normalize_time(timestamptz)
       RETURNS timestamp AS
       $func$
-      SELECT date '1996-01-01' + ($1 AT TIME ZONE 'UTC' - date_trunc('week', $1 AT TIME ZONE 'UTC'))
+      SELECT date '1996-01-01' + ($1 - date_trunc('week', $1))
       $func$  LANGUAGE sql IMMUTABLE;`
     )
 

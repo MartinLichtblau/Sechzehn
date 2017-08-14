@@ -31,7 +31,6 @@ class VenueController {
 
     if (time.isValid()) {
       const formattedTime = time.format('YYYY-MM-DD HH:mm')
-      console.log(formattedTime)
 
       currentPageQuery.innerJoin('venue_hours_ranges', 'venues.id', 'venue_hours_ranges.venue_id')
         .whereRaw('hours @> f_normalize_time(:time)', {time: formattedTime})
