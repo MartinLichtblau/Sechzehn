@@ -5,6 +5,7 @@ const Database = use('Database')
 const Validator = use('Validator')
 const VenueRetriever = use('App/Utils/VenueRetriever')
 const Pagination = require('./Helper/Pagination')
+const Moment = require('moment')
 
 class VenueController {
   * index (request, response) {
@@ -12,31 +13,45 @@ class VenueController {
     const lng = request.input('lng')
     const radius = request.input('radius', 10)
     const searchQuery = request.input('query')
-    const time = request.input('time')
+    const time = Moment(request.input('time'))
 
     yield VenueRetriever.retrieve(lat, lng, radius)
 
     const pagination = new Pagination(request)
 
+    const cols = Venue.visible
+
+    cols[0] = 'venues.id'
+
     // The main query
-    const currentPageQuery = Venue.query().column(Venue.visible)
+    const currentPageQuery = Venue.query().column(cols)
 
     // The query for calculation the total count
     const totalQuery = Venue.query()
 
-    if (searchQuery !== null) {
+    if (time.isValid()) {
+      const formattedTime = time.format('YYYY-MM-DD HH:mm')
+      console.log(formattedTime)
+
+      currentPageQuery.innerJoin('venue_hours_ranges', 'venues.id', 'venue_hours_ranges.venue_id')
+        .whereRaw('hours @> f_normalize_time(:time)', {time: formattedTime})
+
+      totalQuery.innerJoin('venue_hours_ranges', 'venues.id', 'venue_hours_ranges.venue_id').whereRaw('hours @> f_normalize_time(:time)', {time: formattedTime})
+    }
+
+    if (searchQuery) {
       // The part of the query that is responsible for defining the similarity
-      const similarityQueryString = 'similarity(name, :searchQuery)'
+      const similarityQueryString = 'similarity(name, :searchQuery) > :threshold'
       const queryParams = {
         searchQuery: searchQuery,
         threshold: 0
       }
 
       currentPageQuery.select(Database.raw(similarityQueryString + ' as similarity', {searchQuery: searchQuery}))
-        .whereRaw(similarityQueryString + ' > :threshold', queryParams)
+        .whereRaw(similarityQueryString, queryParams)
         .orderBy('similarity', 'DESC')
 
-      totalQuery.whereRaw(similarityQueryString + ' > :threshold', queryParams)
+      totalQuery.whereRaw(similarityQueryString, queryParams)
     }
 
     if (lat !== null && lng !== null) {
