@@ -4,6 +4,22 @@ const Lucid = use('Lucid')
 
 class Venue extends Lucid {
   /**
+   * Disable createTimestamp.
+   * @returns {null}
+   */
+  static get createTimestamp () {
+    return null
+  }
+
+  /**
+   * Disable updateTimestamp.
+   * @returns {null}
+   */
+  static get updateTimestamp () {
+    return null
+  }
+
+  /**
    * The fields which are visible per default for this Model (i.e for JSON serialization).
    *
    * @returns {string[]}
@@ -14,7 +30,8 @@ class Venue extends Lucid {
       'lat',
       'lng',
       'price',
-      'category'
+      'category',
+      'foursquare_rating'
     ]
   }
 

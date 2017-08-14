@@ -9,7 +9,7 @@ class VenueRetrievalsTableSchema extends Schema {
       table.timestamps()
       table.float('lat', 10, 6)
       table.float('lng', 10, 6)
-      table.float('radius', 10, 6)
+      table.integer('radius').unsigned()
     })
   }
 

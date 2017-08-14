@@ -5,7 +5,7 @@ const Schema = use('Schema')
 class VenuesTableSchema extends Schema {
   up () {
     this.create('venue_categories', (table) => {
-      table.increments()
+      table.string('id', 60).primary()
       table.string('name')
       table.string('plural_name')
       table.string('short_name')
@@ -13,7 +13,7 @@ class VenuesTableSchema extends Schema {
     })
 
     this.create('venues', (table) => {
-      table.increments()
+      table.string('id', 60).primary()
       table.string('name')
       table.text('description')
       table.float('lat', 10, 6)
@@ -21,7 +21,10 @@ class VenuesTableSchema extends Schema {
       table.text('address')
       table.text('url')
       table.specificType('price', 'smallint')
-      table.integer('category').unsigned()
+      table.float('foursquare_rating', 4, 2)
+      table.integer('foursquare_rating_count')
+      table.boolean('details_fetched').defaultTo(false)
+      table.string('category', 60)
       table.foreign('category').references('venue_categories.id')
     })
   }

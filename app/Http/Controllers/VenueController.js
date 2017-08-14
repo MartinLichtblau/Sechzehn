@@ -18,7 +18,7 @@ class VenueController {
     const pagination = new Pagination(request)
 
     // The main query
-    const query = Venue.query()
+    const currentPageQuery = Venue.query().column(Venue.visible)
 
     // The query for calculation the total count
     const totalQuery = Venue.query()
@@ -31,7 +31,7 @@ class VenueController {
         threshold: 0
       }
 
-      query.select(Database.raw(similarityQueryString + ' as similarity', {searchQuery: searchQuery}))
+      currentPageQuery.select(Database.raw(similarityQueryString + ' as similarity', {searchQuery: searchQuery}))
         .whereRaw(similarityQueryString + ' > :threshold', queryParams)
         .orderBy('similarity', 'DESC')
 
@@ -51,19 +51,20 @@ class VenueController {
       }
 
       // Calculate the distance between the search point and the venues's position
-      query.select(Database.raw('(earth_distance(ll_to_earth(lat, lng), ll_to_earth(?, ?)) / 1000) as distance', [lat, lng]))
+      currentPageQuery.select(Database.raw('(earth_distance(ll_to_earth(lat, lng), ll_to_earth(?, ?)) / 1000) as distance', [lat, lng]))
 
       // Check if location of the venue is in the circle around the search point
       // See https://www.postgresql.org/docs/8.3/static/earthdistance.html
       const inRadiusQuery = 'earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
-      query.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
-      query.orderBy('distance', 'asc')
+      currentPageQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
+      currentPageQuery.orderBy('distance', 'asc')
 
       totalQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
     }
     // Fetch the actual data and complete the Pagination object
     const totalResult = yield totalQuery.count().first()
-    pagination.data = yield query.forPage(pagination.page, pagination.perPage)
+    pagination.data = yield currentPageQuery.forPage(pagination.page, pagination.perPage)
+
     pagination.total = Number(totalResult.count)
     response.ok(pagination)
   }

@@ -6,7 +6,7 @@ class VenueHoursRangesTableSchema extends Schema {
   up () {
     this.create('venue_hours_ranges', (table) => {
       table.increments()
-      table.integer('venue').unsigned().notNullable()
+      table.string('venue', 60).notNullable()
       table.specificType('hours', 'tsrange')
       table.foreign('venue').references('venues.id')
     })

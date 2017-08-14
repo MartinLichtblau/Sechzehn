@@ -3,29 +3,33 @@
 const Url = require('url')
 const Database = use('Database')
 const Venue = use('App/Model/Venue')
+const VenueCategory = use('App/Model/VenueCategory')
 const VenueRetrieval = use('App/Model/VenueRetrieval')
-const Route = use('Route')
 const Config = use('Config')
-const Http = require('http')
+const Request = require('request-promise-native')
 
 class VenueRetriever {
   * retrieve (lat, lng, radius) {
-    const roundedLat = Math.round(lat * 10) / 10
-    const roundedLng = Math.round(lng * 10) / 10
+    if (lat === null || lng === null || radius === null) {
+      return
+    }
 
-    const roundedRadius = this.roundRadius(radius)
+    // Round the paramters to get "cache hits"
+    lat = Math.round(lat * 10) / 10
+    lng = Math.round(lng * 10) / 10
+    radius = this.roundRadius(radius)
 
-    const oldRetrievalCount = yield VenueRetrieval.query().where('lat', roundedLat).where('lng', roundedLng).where('radius', roundedRadius).count()
+    const oldRetrievalCountResult = yield VenueRetrieval.query().where('lat', lat).where('lng', lng).where('radius', radius).count()
+    if (Number(oldRetrievalCountResult[0].count) > 0) {
+      return
+    }
 
-    /*
-        yield VenueRetrieval.create({
-          lat: roundedLat,
-          lng: roundedLng,
-          radius: roundedRadius
-        })
-    */
+    const response = yield this.requestFoursquare(lat, lng, radius)
+    yield this.processFoursquareData(response)
 
-    console.log(roundedRadius)
+    yield VenueRetrieval.create({
+      lat, lng, radius
+    })
   }
 
   /**
@@ -35,27 +39,66 @@ class VenueRetriever {
    */
   roundRadius (radius) {
     let exp = Math.ceil(Math.log2(radius))
-    return Math.pow(2, exp)
+    // The greatest radius that Foursquare supports is 100km
+    return Math.min(Math.pow(2, exp), 100)
   }
 
   * requestFoursquare (lat, lng, radius) {
-    return Http.get({
-      host: 'https://api.foursquare.com',
-      path: '/v2/venues/search'
-    }, function (response) {
-      // Continuously update stream with data
-      let body = ''
-      response.on('data', d => {
-        body += d
+    const options = {
+      method: 'GET',
+      uri: 'https://api.foursquare.com/v2/venues/explore',
+      json: true,
+      qs: {
+        client_id: Config.get('external.foursquare.id'),
+        client_secret: Config.get('external.foursquare.secret'),
+        v: '20170809',
+        m: 'foursquare',
+        locale: 'en',
+        ll: lat + ',' + lng,
+        radius: radius * 1000
+      }
+    }
+    return Request(options)
+      .then(response => {
+        return response
       })
-      response.on('end', () => {
-        this.processFoursquareData(JSON.parse(body))
+      .catch(error => {
+        console.warn(error)
       })
-    })
   }
 
   * processFoursquareData (data) {
-    console.log(data)
+    const venues = data.response.groups.reduce((acc, group) => acc.concat(group.items.map(item => item.venue)), [])
+
+    for (let venue of venues) {
+      let category = venue.categories.find(cat => cat.primary)
+
+      if (category) {
+        category = yield VenueCategory.findOrCreate({
+          id: category.id
+        }, {
+          id: category.id,
+          plural_name: category.pluralName,
+          short_name: category.shortName,
+          name: category.name,
+          icon: category.icon.prefix + '64' + category.icon.suffix
+        })
+      }
+
+      yield Venue.findOrCreate({
+        id: venue.id
+      }, {
+        id: venue.id,
+        name: venue.name,
+        lat: venue.location.lat,
+        lng: venue.location.lng,
+        address: venue.location.formattedAddress.join('; '),
+        url: venue.url,
+        foursquare_rating: venue.rating,
+        foursquare_rating_count: venue.ratingSignals,
+        category: category.id
+      })
+    }
   }
 }
 
