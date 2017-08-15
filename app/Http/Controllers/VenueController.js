@@ -6,6 +6,7 @@ const Validator = use('Validator')
 const VenueRetriever = use('App/Utils/VenueRetriever')
 const Pagination = require('./Helper/Pagination')
 const Moment = require('moment')
+const Exceptions = require('adonis-lucid/src/Exceptions')
 
 class VenueController {
   * index (request, response) {
@@ -19,7 +20,7 @@ class VenueController {
 
     const pagination = new Pagination(request)
 
-    const cols = Venue.visible
+    const cols = Venue.visibleList
 
     cols[0] = 'venues.id'
 
@@ -85,17 +86,24 @@ class VenueController {
   }
 
   * show (request, response) {
-    const venue = yield Venue.findOrFail(request.param('id'))
+    const venue = yield Venue
+      .query()
+      .where('id', request.param('id'))
+      .with('category', 'hours')
+      .scope('hours', (builder) => {
+        builder.orderBy('hours', 'asc')
+      })
+      .first()
+
+    if (!venue) {
+      throw new Exceptions.ModelNotFoundException()
+    }
 
     if (!venue.details_fetched) {
       yield VenueRetriever.retrieveDetails(venue)
     }
 
-    // ugly workaround the restrictions of the framwork
-    const data = venue.detailView()
-    data.category = yield venue.category().fetch()
-
-    response.ok(data)
+    response.ok(venue)
   }
 }
 

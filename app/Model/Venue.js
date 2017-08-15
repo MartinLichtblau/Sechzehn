@@ -24,7 +24,7 @@ class Venue extends Lucid {
    *
    * @returns {string[]}
    */
-  static get visible () {
+  static get visibleList () {
     return [
       'id',
       'name',
@@ -35,7 +35,12 @@ class Venue extends Lucid {
     ]
   }
 
-  static get detailed () {
+  /**
+   * The fields which are visible per default for this Model (i.e for JSON serialization).
+   *
+   * @returns {string[]}
+   */
+  static get visible () {
     return [
       'id',
       'name',
@@ -64,8 +69,16 @@ class Venue extends Lucid {
     }
   }
 
+  /**
+   * The related Category.
+   * @returns {Category}
+   */
   category () {
     return this.belongsTo('App/Model/VenueCategory', 'id', 'category_id')
+  }
+
+  hours () {
+    return this.hasMany('App/Model/VenueHoursRange')
   }
 }
 

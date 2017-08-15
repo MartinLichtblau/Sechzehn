@@ -18,6 +18,10 @@ class VenueCategory extends Lucid {
   static get updateTimestamp () {
     return null
   }
+
+  venues () {
+    return this.hasMany('App/Model/Venue')
+  }
 }
 
 module.exports = VenueCategory
