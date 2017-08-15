@@ -11,7 +11,8 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <FrameLayout
             android:id="@+id/mapFrame"
@@ -28,12 +29,11 @@
                 map:uiTiltGestures="false"/>
 
             <android.support.v7.widget.ToggleGroup
-                android:id="@+id/groupTextAlignment"
                 style="@style/Widget.Material.ToggleGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|start"
-                android:layout_marginBottom="@dimen/dim_normal"
+                android:layout_gravity="start"
+                android:layout_marginTop="@dimen/dim_normal"
                 android:layout_marginStart="@dimen/dim_normal"
                 app:divider="@drawable/toggle_divider"
                 app:orientation="vertical"
@@ -41,54 +41,125 @@
                 app:allowUnselected="true">
                 <android.support.v7.widget.ToggleButton
                     android:id="@+id/user_toggle"
+                    android:layout_height="40dp"
+                    android:layout_width="40dp"
+                    android:gravity="center"
                     style="@style/Widget.Material.ToggleButton"
                     android:button="@drawable/ic_person"
                     android:checked='@{safeUnbox(searchVM.userToggle)}'
                     android:onClick="@{searchVM::toggleUsers}"/>
                 <android.support.v7.widget.ToggleButton
                     android:id="@+id/venue_toggle"
+                    android:layout_height="40dp"
+                    android:layout_width="40dp"
+                    android:gravity="center"
                     style="@style/Widget.Material.ToggleButton"
                     android:button="@drawable/ic_venue_icon"
                     android:checked="true"/>
             </android.support.v7.widget.ToggleGroup>
         </FrameLayout>
 
-
-        <LinearLayout
-            android:id="@+id/bottom_sheet"
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/search_bottomsheet"
             android:layout_width="match_parent"
-            android:layout_height="256dp"
-            android:background="@android:color/darker_gray"
-            android:orientation="vertical"
-            app:behavior_hideable="true"
-            app:behavior_peekHeight="@dimen/dim_xl"
-            app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+            android:layout_height="@dimen/search_bottomsheet_expanded"
+            app:behavior_peekHeight="@dimen/search_bottomsheet_collapsed"
+            app:behavior_hideable="false"
+            android:clipToPadding="false"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            android:background="@color/md_grey_100"
+            android:elevation="16dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:background="@color/colorAccent"
-                android:gravity="center"
-                android:text="gdgfdg"
-                android:textColor="@android:color/white" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="gdfgdfg"
-                android:textColor="@android:color/white" />
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <android.support.v7.widget.ToggleGroup
+                    android:id="@+id/search_bottomsheet_header"
+                    style="@style/Widget.Material.ToggleGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    app:orientation="horizontal"
+                    app:exclusive="true"
+                    app:allowUnselected="true">
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/search_bottomsheet_header_venuetype1"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_person"/>
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/search_bottomsheet_header_venuetype2"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_venue_icon"
+                        android:checked="false"/>
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/search_bottomsheet_header_venuetype3"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_edit"
+                        android:checked="false"/>
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/search_bottomsheet_header_venuetype4"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_favorite_heart"
+                        android:checked="false"/>
+                </android.support.v7.widget.ToggleGroup>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:padding="@dimen/dim_normal"
+                    android:background="@color/white">
+                    <android.support.v7.widget.Toolbar
+                        android:id="@+id/searchbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/md_grey_100"
+                        android:elevation="3dp"
+                        android:minHeight="?attr/actionBarSize"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="16dp"
+                        android:theme="?attr/actionBarTheme">
+
+                        <SearchView
+                            android:id="@+id/venues_search"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            style="@style/Widget.AppCompat.SearchView.ActionBar"/>
+                    </android.support.v7.widget.Toolbar>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:padding="@dimen/dim_normal"
+                    android:background="@color/white">
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/venues_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:foregroundTint="@android:color/white" />
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_dialog_email"
-            app:layout_anchor="@id/bottom_sheet"
-            app:layout_anchorGravity="top|right|end"
-            android:onClick="@{frag::fab}"/>
+            app:layout_anchor="@id/search_bottomsheet"
+            app:layout_anchorGravity="top|end"
+            android:paddingBottom="48dp"
+            android:elevation="16dp">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/search_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:src="@android:drawable/ic_menu_search"
+                android:elevation="16dp"
+                android:onClick="@{frag::fab}"/>
+        </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>
 </layout>

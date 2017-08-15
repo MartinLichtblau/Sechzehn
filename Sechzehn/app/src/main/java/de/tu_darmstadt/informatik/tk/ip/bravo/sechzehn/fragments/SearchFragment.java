@@ -1,8 +1,5 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
-import android.app.ProgressDialog;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -13,7 +10,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.CoordinatorLayout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,23 +25,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.VisibleRegion;
-import com.google.maps.android.SphericalUtil;
-import com.ncapdevi.fragnav.FragNavController;
-import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
@@ -54,11 +42,8 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentSearc
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel;
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
-import static android.databinding.DataBindingUtil.inflate;
-
-public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback{
+public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, GoogleMap.OnMapClickListener {
     private final String TAG = "SearchFragment";
     private FragmentSearchBinding binding;
     private SearchViewModel searchVM;
@@ -88,24 +73,29 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        // get the bottom sheet view
-        LinearLayout llBottomSheet = binding.bottomSheet;
-        // init the bottom sheet behavior
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(binding.searchBottomsheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         // set callback for changes
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            CameraPosition cameraPos;
+            LatLng oldPos;
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
-                        shrinkMapFrameHeight(1);
+                        //does not exist , hideable =false
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        shrinkMapFrameHeight(Math.round(convertDpToPx(getContext(),(float) 256)));
+                       /* oldPos = searchVM.map.getCameraPosition().target;*/
+                        /*searchVM.map.setPadding(0,0,0,Math.round(convertDpToPx(getContext(),(float) R.dimen.search_bottomsheet_expanded)));
+                        *//*cameraPos = new CameraPosition.Builder().target(oldPos)
+                                .zoom(searchVM.map.getCameraPosition().zoom)
+                                .build();
+                        searchVM.map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPos));*/
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
-                        shrinkMapFrameHeight(Math.round(convertDpToPx(getContext(),(float) 80)));
+                       /* oldPos = searchVM.map.getCameraPosition().target;
+                        searchVM.map.setPadding(0,0,0,Math.round(convertDpToPx(getContext(),(float) R.dimen.search_bottomsheet_collapsed)));*/
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
                         break;
@@ -116,38 +106,42 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+  /*              Double dif;
+                if(slideOffset > 0)
+                    dif = 0.0003;
+                else
+                    dif = -0.0003;
+
                 //mapView.setPadding(0,0,0, 100);
                 LatLng pos = searchVM.map.getCameraPosition().target;
-                LatLng newPos = new LatLng(pos.latitude - 0.0003, pos.longitude);
+                LatLng newPos = new LatLng((pos.latitude - dif), pos.longitude);
                 CameraPosition cameraPos = new CameraPosition.Builder().target(newPos)
                         .zoom(searchVM.map.getCameraPosition().zoom)
                         .build();
-                searchVM.map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
+                searchVM.map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPos));*/
             }
         });
-
         return binding.getRoot();
     }
 
-    private void shrinkMapFrameHeight(Integer sub){
+/*    private void shrinkMapFrameHeight(Integer sub){
         //Max size is in my case 1573
         ViewGroup.LayoutParams params = binding.mapFrame.getLayoutParams();
         params.height = (maxMapHeight - sub);
         Toast.makeText(getActivity(), String.valueOf(maxMapHeight), Toast.LENGTH_SHORT).show();
         Toast.makeText(getActivity(), String.valueOf(params.height), Toast.LENGTH_SHORT).show();
         binding.mapFrame.setLayoutParams(params);
-    }
+    }*/
 
     public float convertDpToPx(Context context, float dp) {
         return dp * context.getResources().getDisplayMetrics().density;
     }
-
     public float convertPxToDp(Context context, float px) {
         return px / context.getResources().getDisplayMetrics().density;
     }
 
     public void fab(View view){
-       BottomSheetBehavior.from(binding.bottomSheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
+       BottomSheetBehavior.from(binding.searchBottomsheet).setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override
@@ -156,9 +150,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         searchVM.map = googleMap;
         searchVM.map.setMyLocationEnabled(true);
         searchVM.map.setOnInfoWindowClickListener(this);
-
-        //Adapt default visuals
-/*        positionLocationButton();*/
+        searchVM.map.setOnMapClickListener(this);
 
         if(searchVM.lastStateSaved){
             searchVM.restoreLastState(); //show last state
@@ -167,7 +159,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
             initalSearch(); //Initialize anew
         }
     }
-
 
     private void positionLocationButton(){
         View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
@@ -252,6 +243,11 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         }else {
             //@ venues
         }
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        BottomSheetBehavior.from(binding.searchBottomsheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     //>>>>>>>>>>>>Forward Lifecycle for googlemaps MapView
