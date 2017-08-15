@@ -5,48 +5,161 @@
     tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity">
 
     <data>
-        <variable
-            name="frag"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment" />
+        <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment" />
+        <variable name="searchVM" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel" />
     </data>
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-        <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+        <FrameLayout
+            android:id="@+id/mapFrame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            map:uiCompass="false"
-            map:uiRotateGestures="false"
-            map:uiTiltGestures="false"/>
+            android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/search_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/md_grey_300"
-            android:elevation="3dp"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme">
-
-            <SearchView
-                android:id="@+id/search_searchbar"
+            <com.google.android.gms.maps.MapView
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/mapview"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:iconifiedByDefault="false"
-                android:background="?attr/selectableItemBackground">
-            </SearchView>
-        </android.support.v7.widget.Toolbar>
+                android:layout_height="match_parent"
+                map:uiCompass="false"
+                map:uiRotateGestures="false"
+                map:uiTiltGestures="false"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/search_resultlist"
+            <android.support.v7.widget.ToggleGroup
+                style="@style/Widget.Material.ToggleGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="@dimen/dim_normal"
+                android:layout_marginStart="@dimen/dim_normal"
+                app:divider="@drawable/toggle_divider"
+                app:orientation="vertical"
+                app:exclusive="false"
+                app:allowUnselected="true">
+                <android.support.v7.widget.ToggleButton
+                    android:id="@+id/user_toggle"
+                    android:layout_height="40dp"
+                    android:layout_width="40dp"
+                    android:gravity="center"
+                    style="@style/Widget.Material.ToggleButton"
+                    android:button="@drawable/ic_person"
+                    android:checked='@{safeUnbox(searchVM.userToggle)}'
+                    android:onClick="@{searchVM::toggleUsers}"/>
+                <android.support.v7.widget.ToggleButton
+                    android:id="@+id/venue_toggle"
+                    android:layout_height="40dp"
+                    android:layout_width="40dp"
+                    android:gravity="center"
+                    style="@style/Widget.Material.ToggleButton"
+                    android:button="@drawable/ic_venue_icon"
+                    android:checked="true"/>
+            </android.support.v7.widget.ToggleGroup>
+        </FrameLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/search_bottomsheet"
             android:layout_width="match_parent"
+            android:layout_height="@dimen/search_bottomsheet_expanded"
+            app:behavior_peekHeight="@dimen/search_bottomsheet_collapsed"
+            app:behavior_hideable="false"
+            android:clipToPadding="false"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            android:background="@color/md_grey_100"
+            android:elevation="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.ToggleGroup
+                    android:id="@+id/search_bottomsheet_header"
+                    style="@style/Widget.Material.ToggleGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    app:orientation="horizontal"
+                    app:exclusive="true"
+                    app:allowUnselected="true">
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/search_bottomsheet_header_venuetype1"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_person"/>
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/search_bottomsheet_header_venuetype2"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_venue_icon"
+                        android:checked="false"/>
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/search_bottomsheet_header_venuetype3"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_edit"
+                        android:checked="false"/>
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/search_bottomsheet_header_venuetype4"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_favorite_heart"
+                        android:checked="false"/>
+                </android.support.v7.widget.ToggleGroup>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:padding="@dimen/dim_normal"
+                    android:background="@color/white">
+                    <android.support.v7.widget.Toolbar
+                        android:id="@+id/searchbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/md_grey_100"
+                        android:elevation="3dp"
+                        android:minHeight="?attr/actionBarSize"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="16dp"
+                        android:theme="?attr/actionBarTheme">
+
+                        <SearchView
+                            android:id="@+id/venues_search"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            style="@style/Widget.AppCompat.SearchView.ActionBar"/>
+                    </android.support.v7.widget.Toolbar>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:padding="@dimen/dim_normal"
+                    android:background="@color/white">
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/venues_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:foregroundTint="@android:color/white" />
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:foregroundTint="@android:color/white" />
-    </LinearLayout>
+            app:layout_anchor="@id/search_bottomsheet"
+            app:layout_anchorGravity="top|end"
+            android:paddingBottom="48dp"
+            android:elevation="16dp">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/search_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:src="@android:drawable/ic_menu_search"
+                android:elevation="16dp"
+                android:onClick="@{frag::fab}"/>
+        </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </layout>

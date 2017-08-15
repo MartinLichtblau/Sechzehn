@@ -117,9 +117,11 @@ public class FriendshipDiafrag extends DialogFragment implements LifecycleRegist
     }
 
     private void feedback(Resource resource){
-        userProfileVM.refreshUser();
-        //Toast.makeText(getActivity(), resource.message, Toast.LENGTH_SHORT).show();
-        dismiss();
+        if(resource.status == Resource.Status.SUCCESS){
+            userProfileVM.refreshUser();
+            //Toast.makeText(getActivity(), resource.message, Toast.LENGTH_SHORT).show();
+            dismiss();
+        }
     }
 
     @Override
