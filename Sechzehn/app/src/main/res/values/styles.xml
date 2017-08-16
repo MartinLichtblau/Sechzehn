@@ -25,4 +25,8 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="PinkToggle" parent="Widget.Material.ToggleButton">
+        <item name="android:background">@drawable/selector_pink_on_white</item>
+    </style>
+
 </resources>

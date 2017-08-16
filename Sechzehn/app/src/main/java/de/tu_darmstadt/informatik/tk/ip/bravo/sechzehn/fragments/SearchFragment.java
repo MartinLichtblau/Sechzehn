@@ -83,6 +83,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                         //does not exist , hideable =false
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
+                        binding.searchFab.setVisibility(View.INVISIBLE);
                         oldPos = searchVM.map.getCameraPosition().target;
                         searchVM.map.setPadding(0,0,0, Math.round(getActivity().getResources().getDimension(R.dimen.search_bottomsheet_expanded)));
                         /*searchVM.map.animateCamera(CameraUpdateFactory.zoomTo(11f), 1000, null);*/
@@ -93,6 +94,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                         searchVM.map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
+                        binding.searchFab.setVisibility(View.VISIBLE);
                         oldPos = searchVM.map.getCameraPosition().target;
                         searchVM.map.setPadding(0,0,0, Math.round(getActivity().getResources().getDimension(R.dimen.search_bottomsheet_collapsed)));
                         /*searchVM.map.animateCamera(CameraUpdateFactory.zoomTo(11f), 1000, null);*/
