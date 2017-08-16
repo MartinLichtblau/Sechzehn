@@ -28,6 +28,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.HashMap;
@@ -151,6 +152,9 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         searchVM.map.setMyLocationEnabled(true);
         searchVM.map.setOnInfoWindowClickListener(this);
         searchVM.map.setOnMapClickListener(this);
+        searchVM.map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                        getContext(), R.raw.search_map_style));
 
         if(searchVM.lastStateSaved){
             searchVM.restoreLastState(); //show last state
