@@ -12,11 +12,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -87,16 +89,24 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                         //does not exist , hideable =false
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
-                       /* oldPos = searchVM.map.getCameraPosition().target;*/
-                        /*searchVM.map.setPadding(0,0,0,Math.round(convertDpToPx(getContext(),(float) R.dimen.search_bottomsheet_expanded)));
-                        *//*cameraPos = new CameraPosition.Builder().target(oldPos)
-                                .zoom(searchVM.map.getCameraPosition().zoom)
+                        oldPos = searchVM.map.getCameraPosition().target;
+                        searchVM.map.setPadding(0,0,0, Math.round(getActivity().getResources().getDimension(R.dimen.search_bottomsheet_expanded)));
+                        /*searchVM.map.animateCamera(CameraUpdateFactory.zoomTo(11f), 1000, null);*/
+                        cameraPos = new CameraPosition.Builder()
+                                .target(oldPos)
+                                .zoom(10)
                                 .build();
-                        searchVM.map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPos));*/
+                        searchVM.map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
-                       /* oldPos = searchVM.map.getCameraPosition().target;
-                        searchVM.map.setPadding(0,0,0,Math.round(convertDpToPx(getContext(),(float) R.dimen.search_bottomsheet_collapsed)));*/
+                        oldPos = searchVM.map.getCameraPosition().target;
+                        searchVM.map.setPadding(0,0,0, Math.round(getActivity().getResources().getDimension(R.dimen.search_bottomsheet_collapsed)));
+                        /*searchVM.map.animateCamera(CameraUpdateFactory.zoomTo(11f), 1000, null);*/
+                        cameraPos = new CameraPosition.Builder()
+                                .target(oldPos)
+                                .zoom(12)
+                                .build();
+                        searchVM.map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
                         break;
@@ -142,7 +152,17 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     }
 
     public void fab(View view){
-       BottomSheetBehavior.from(binding.searchBottomsheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+        BottomSheetBehavior.from(binding.searchBottomsheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+        focusSearchView();
+    }
+
+    private void focusSearchView(){
+        final SearchView searchView = binding.searchSearchbarView;
+        searchView.setIconifiedByDefault(false);
+        searchView.requestFocus();
+        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).
+                toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     @Override
