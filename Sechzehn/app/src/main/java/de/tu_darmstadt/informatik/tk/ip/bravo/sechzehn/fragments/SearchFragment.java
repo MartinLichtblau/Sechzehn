@@ -10,23 +10,18 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -51,8 +46,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     private FragmentSearchBinding binding;
     private SearchViewModel searchVM;
     private OwnerViewModel ownerVM;
-    private MapView mapView;
-    private Integer maxMapHeight;
+    private SupportMapFragment mapFrag;
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -72,9 +66,9 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         binding.setFrag(this);
         binding.setSearchVM(searchVM);
 
-        mapView = binding.mapview;
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+        mapFrag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFrag);
+        mapFrag.onCreate(savedInstanceState);
+        mapFrag.getMapAsync(this);
 
         BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(binding.searchBottomsheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -167,7 +161,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        maxMapHeight = mapView.getHeight();
         searchVM.map = googleMap;
         searchVM.map.setMyLocationEnabled(true);
         searchVM.map.setOnInfoWindowClickListener(this);
@@ -184,7 +177,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         }
     }
 
-    private void positionLocationButton(){
+/*    private void positionLocationButton(){
         View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
         RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
         // position on right bottom
@@ -193,8 +186,8 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         rlp.setMargins(0, 0, 30, 30);
 
         //Change Button view
-        /*ImageView locationButton = (ImageView) mapView.findViewById(2);*/
-    }
+        *//*ImageView locationButton = (ImageView) mapView.findViewById(2);*//*
+    }*/
 
     public void initalSearch(){
         //Show only nearby users and venues
@@ -274,51 +267,14 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         BottomSheetBehavior.from(binding.searchBottomsheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    //>>>>>>>>>>>>Forward Lifecycle for googlemaps MapView
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mapView != null) {
-            mapView.onResume();
-        }
-    }
-
     @Override
     public void onPause() {
-        if (mapView != null) {
-            searchVM.saveCurrentState();
-            mapView.onPause();
-        }
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mapView != null) {
-            try {
-                mapView.onDestroy();
-            } catch (NullPointerException e) {
-                Log.e(TAG, "Error while attempting MapView.onDestroy(), ignoring exception", e);
-            }
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        if (mapView != null) {
-            mapView.onLowMemory();
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mapView != null) {
-            mapView.onSaveInstanceState(outState);
-        }
+        searchVM.saveCurrentState();
+        //Important or map may crash app
+        getChildFragmentManager().beginTransaction()
+                .remove(mapFrag)
+                .commit();
     }
 }
 

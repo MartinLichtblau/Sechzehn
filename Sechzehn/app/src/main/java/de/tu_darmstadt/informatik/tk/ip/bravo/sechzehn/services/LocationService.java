@@ -77,7 +77,7 @@ public class LocationService extends Service implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, TAG+" onDestroy", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onDestroy");
     }
 
     @Override
