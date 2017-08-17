@@ -116,9 +116,11 @@ After registering the email has to be verified first. Without this verification,
 After resetting your password or registering a new account the user receives an email containing a link. Our app is able to handle this link on click. This means that no verification code must be entered and no external browser is necessary to do this.
 \item Resource-efficient location updating: \\
 To treat the users battery with care, we use the Google Location Services. If another app on the system requests the location via those location services, we use the new location if it is more accurate. If there hasn't been a request for more than two minutes our app self starts a request to the location services. More inaccurate locations are used after ten minutes without an more accurate position. Furthermore we only push our new location to the Sechzehn servers, when the user moved more than 100 meters. 
-\item provide an privacy option that disables that the user's position is shown
+\item Incognito-Mode: \\
+Within his settings the user can disable that other users of Sechzehn can see his position. This feature allows privacy without logging out.
+\item Live Chats: \\
+Our app not only gives you the opportunity to see friends on a map, you can also contact them via live chats. Those live chats also support read receipts.
 \item filter the results in the venue search by price and opening hours
-\item Live Chats
 \item JWT
 \end{enumerate}
 
