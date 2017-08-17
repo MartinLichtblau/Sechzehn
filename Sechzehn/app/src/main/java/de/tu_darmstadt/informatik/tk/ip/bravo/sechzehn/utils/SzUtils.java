@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -18,7 +16,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import java.io.ByteArrayOutputStream;
@@ -26,14 +23,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.IllegalFormatException;
 import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
-
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils.ThumbType.USER;
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils.ThumbType.VENUE;
 
 /**
  * Created by marti on 12.07.2017.
@@ -138,31 +131,35 @@ public final class SzUtils {
             default:
                 background = user_background;
         }
-        if(TextUtils.isEmpty(url))
-            scaledImg.setValue(background);
+        if(TextUtils.isEmpty(url)){
+            //User has no profile picture
+            Bitmap defaultPicture = Bitmap.createScaledBitmap(
+                    BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_default_user_pin), 120, 120, false);
+            scaledImg.setValue(defaultPicture);
+        }else{
+            final Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    strongReferenceTargetList.remove(this);
+                    scaledImg.setValue(mergeToPin(background, bitmap));
+                }
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    strongReferenceTargetList.add(this);
+                    scaledImg.setValue(background);
+                }
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            };
+            strongReferenceTargetList.add(target);
 
-        final Target target = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                strongReferenceTargetList.remove(this);
-                scaledImg.setValue(mergeToPin(background, bitmap));
-            }
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                strongReferenceTargetList.add(this);
-                scaledImg.setValue(background);
-            }
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        };
-        strongReferenceTargetList.add(target);
-
-        Picasso.with(context)
-                .load(url)
-                .centerCrop().resize(100, 100)
-                .transform(CROP_CIRCLE_TRANSFORMATION)
-                .into(target);
+            Picasso.with(context)
+                    .load(url)
+                    .centerCrop().resize(100, 100)
+                    .transform(CROP_CIRCLE_TRANSFORMATION)
+                    .into(target);
+        }
 
         return scaledImg;
     }
