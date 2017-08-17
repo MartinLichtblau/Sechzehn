@@ -74,11 +74,14 @@ class VenueRetriever {
         radius: radius * 1000,
         time: 'any',
         day: 'any',
-        section: section
+        section: section,
+        limit: 50,
+        venuePhotos: true
       }
     }
     return Request(options)
       .then(response => {
+        // console.log(response.response.groups[0].items[0].featuredPhotos)
         return response
       })
       .catch(error => {
@@ -124,13 +127,12 @@ class VenueRetriever {
         category_id: category.id
       })
 
-      if (!venueFromDb.details_fetched) {
-        yield this.retrieveDetails(venueFromDb)
-      }
-
       if (section) {
         // Save the venue -> section mapping
-        yield Database.raw(`INSERT INTO venue_section (venue_id, section) VALUES (:id, :section) ON CONFLICT DO NOTHING`, {id: venue.id, section})
+        yield Database.raw(`INSERT INTO venue_section (venue_id, section) VALUES (:id, :section) ON CONFLICT DO NOTHING`, {
+          id: venue.id,
+          section
+        })
       }
     }
   }

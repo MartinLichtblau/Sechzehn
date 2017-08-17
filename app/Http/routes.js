@@ -66,12 +66,7 @@ Route.group('api', function () {
   Route
     .resource('venues', 'VenueController')
     .only('index', 'show')
-    .middleware('auth')
-
-  /*  Route
-      .resource('venue-categories', 'VenueCategoryController')
-      .only('index', 'show')
-      .middleware('auth') */
+    .middleware({auth: ['show']})
 
   Route
     .resource('users', 'UserController')

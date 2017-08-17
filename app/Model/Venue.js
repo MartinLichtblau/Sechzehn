@@ -57,16 +57,6 @@ class Venue extends Lucid {
     ]
   }
 
-  getCategoryX () {
-    if (this.category_name) {
-      return {
-        name: this.category_name
-      }
-    } else {
-      return null
-    }
-  }
-
   /**
    * The related Category.
    * @returns {Category}

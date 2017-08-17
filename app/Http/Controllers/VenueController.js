@@ -16,7 +16,7 @@ class VenueController {
     const searchQuery = request.input('query')
     const time = Moment(request.input('time'))
     const section = request.input('section', '')
-    const price = request.input('price')
+    const price = Number(request.input('price'))
 
     const validation = yield Validator.validate({section, searchQuery, lat, lng, radius, price}, {
       section: 'string|in:food,drinks,coffee,shops,arts,outdoors,sights',
@@ -24,7 +24,7 @@ class VenueController {
       lat: 'range:-180,180',
       lng: 'range:-180,180',
       radius: 'range:0,6371',
-      price: 'integer|range:1,5'
+      price: 'integer|range:-1,6' // exclusive bounds
     })
 
     if (validation.fails()) {
@@ -41,7 +41,7 @@ class VenueController {
     const currentPageQuery = Venue.query().column(cols).leftOuterJoin('venue_categories', 'venues.category_id', 'venue_categories.id')
 
     // The query for calculation the total count
-    const totalQuery = Venue.query()
+    const totalQuery = Venue.query().leftOuterJoin('venue_categories', 'venues.category_id', 'venue_categories.id')
 
     if (time.isValid()) {
       const formattedTime = time.format('YYYY-MM-DD HH:mm')
@@ -54,20 +54,20 @@ class VenueController {
 
     if (searchQuery) {
       // The part of the query that is responsible for defining the similarity
-      const similarityQueryString = 'similarity(name, :searchQuery) > :threshold'
+      const similarityQueryString = 'GREATEST(similarity(venues.name, :searchQuery), similarity(venue_categories.name, :searchQuery))'
       const queryParams = {
         searchQuery: searchQuery,
         threshold: 0
       }
 
       currentPageQuery.select(Database.raw(similarityQueryString + ' as similarity', {searchQuery: searchQuery}))
-        .whereRaw(similarityQueryString, queryParams)
+        .whereRaw(similarityQueryString + ' > :threshold', queryParams)
         .orderBy('similarity', 'DESC')
 
-      totalQuery.whereRaw(similarityQueryString, queryParams)
+      totalQuery.whereRaw(similarityQueryString + ' > :threshold', queryParams)
     }
 
-    if (price) {
+    if (price && price !== 0) {
       currentPageQuery.where('price', price)
       totalQuery.where('price', price)
     }
