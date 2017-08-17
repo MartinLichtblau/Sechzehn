@@ -16,12 +16,12 @@
         <FrameLayout
             android:id="@+id/mapFrame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/search_bottomsheet_collapsed">
 
-            <fragment
+            <com.google.android.gms.maps.MapView
                 xmlns:map="http://schemas.android.com/apk/res-auto"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
-                android:id="@+id/mapFrag"
+                android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 map:uiCompass="false"
@@ -59,82 +59,17 @@
             </android.support.v7.widget.ToggleGroup>
         </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/search_bottomsheet"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/search_bottomsheet_expanded"
-            android:orientation="vertical"
-            android:background="@color/md_grey_100"
-            android:clickable="true"
             app:behavior_peekHeight="@dimen/search_bottomsheet_collapsed"
-            app:behavior_hideable="false"
             app:layout_behavior="@string/bottom_sheet_behavior"
+            app:behavior_hideable="false"
             android:elevation="16dp">
-
-            <android.support.v7.widget.ToggleGroup
-                android:id="@+id/search_bottomsheet_header"
-                style="@style/Widget.Material.ToggleGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                app:orientation="horizontal"
-                app:exclusive="true"
-                app:allowUnselected="true">
-                <android.support.v7.widget.ToggleButton
-                    android:id="@+id/toggle_food"
-                    style="@style/Widget.Material.ToggleButton"
-                    android:button="@drawable/ic_food"/>
-                <android.support.v7.widget.ToggleButton
-                    android:id="@+id/toggle_coffee"
-                    style="@style/Widget.Material.ToggleButton"
-                    android:button="@drawable/ic_coffee"
-                    android:checked="false"/>
-                <android.support.v7.widget.ToggleButton
-                    android:id="@+id/toggle_nightlife"
-                    style="@style/Widget.Material.ToggleButton"
-                    android:button="@drawable/ic_nightlife"
-                    android:checked="false"/>
-                <android.support.v7.widget.ToggleButton
-                    android:id="@+id/toggle_fun"
-                    style="@style/Widget.Material.ToggleButton"
-                    android:button="@drawable/ic_fun"
-                    android:checked="false"/>
-                <android.support.v7.widget.ToggleButton
-                    android:id="@+id/toggle_shopping"
-                    style="@style/Widget.Material.ToggleButton"
-                    android:button="@drawable/ic_shopping"
-                    android:checked="false"/>
-                <android.support.v7.widget.ToggleButton
-                    android:id="@+id/toggle_breakfast"
-                    style="@style/Widget.Material.ToggleButton"
-                    android:button="@drawable/ic_breakfast"
-                    android:checked="false"/>
-            </android.support.v7.widget.ToggleGroup>
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/search_searchbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/md_grey_100"
-                android:elevation="3dp"
-                android:minHeight="?attr/actionBarSize"
-                android:paddingLeft="0dp"
-                android:paddingRight="16dp"
-                android:theme="?attr/actionBarTheme">
-                <android.support.v7.widget.SearchView
-                    android:id="@+id/search_searchbar_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    style="@style/Widget.AppCompat.SearchView.ActionBar"/>
-            </android.support.v7.widget.Toolbar>
-
-            <android.support.v4.widget.NestedScrollView
-                android:id="@+id/search_venue_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:foregroundTint="@android:color/white" />
-        </LinearLayout>
+            <include
+                android:id="@+id/search_bottomsheet"
+                layout="@layout/bottomsheet_search"/>
+        </FrameLayout>
 
         <FrameLayout
             android:layout_width="wrap_content"
