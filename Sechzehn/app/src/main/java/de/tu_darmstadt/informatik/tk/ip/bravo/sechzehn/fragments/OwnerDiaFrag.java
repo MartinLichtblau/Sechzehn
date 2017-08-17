@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -114,11 +115,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             ((BottomTabsActivity)getActivity()).factoryReset();
 
         }else if(type == "changePassword") {
-            if (!binding.newPasswordEdit.getText().equals(binding.newPasswordConfirmEdit.getText())) {
-                binding.newPasswordEdit.setError("Passwords do not match.");
-                binding.newPasswordConfirmEdit.setError("Passwords do not match.");
-                return;
-            }else{
+            if (TextUtils.equals(binding.newPasswordEdit.getText(), binding.newPasswordConfirmEdit.getText())) {
                 binding.newPasswordEdit.setError(null);
                 binding.newPasswordConfirmEdit.setError(null);
                 ownerVM.changePassword(currentPassword, newPassword).observe(this, new Observer<Boolean>() {
@@ -127,6 +124,10 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
                         dismiss();
                     }
                 });
+            }else{
+                binding.newPasswordEdit.setError("Passwords do not match.");
+                binding.newPasswordConfirmEdit.setError("Passwords do not match.");
+                return;
             }
         }else if(type == "resetPassword") {
             ownerVM.resetPassword().observe(this, new Observer<Boolean>() {
