@@ -19,7 +19,7 @@
             app:contentScrim="@color/white">
 
             <LinearLayout
-                android:id="@+id/search_frame"
+                android:id="@+id/searchinterface"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
@@ -27,7 +27,7 @@
                 app:layout_collapseParallaxMultiplier="0.7">
 
                 <android.support.v7.widget.ToggleGroup
-                    android:id="@+id/search_bottomsheet_header"
+                    android:id="@+id/searchinterface_sections_group"
                     style="@style/Widget.Material.ToggleGroup"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/search_bottomsheet_collapsed"
@@ -41,29 +41,29 @@
                         style="@style/Widget.Material.ToggleButton"
                         android:button="@drawable/ic_food"/>
                     <android.support.v7.widget.ToggleButton
+                        android:id="@+id/toggle_drinks"
+                        style="@style/Widget.Material.ToggleButton"
+                        android:button="@drawable/ic_drinks"
+                        android:checked="false"/>
+                    <android.support.v7.widget.ToggleButton
                         android:id="@+id/toggle_coffee"
                         style="@style/Widget.Material.ToggleButton"
                         android:button="@drawable/ic_coffee"
                         android:checked="true"/>
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_nightlife"
+                        android:id="@+id/toggle_shops"
                         style="@style/Widget.Material.ToggleButton"
-                        android:button="@drawable/ic_nightlife"
+                        android:button="@drawable/ic_shops"
                         android:checked="false"/>
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_fun"
+                        android:id="@+id/toggle_arts"
                         style="@style/Widget.Material.ToggleButton"
-                        android:button="@drawable/ic_fun"
+                        android:button="@drawable/ic_arts"
                         android:checked="false"/>
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_shopping"
+                        android:id="@+id/toggle_outdoors"
                         style="@style/Widget.Material.ToggleButton"
-                        android:button="@drawable/ic_shopping"
-                        android:checked="false"/>
-                    <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_breakfast"
-                        style="@style/Widget.Material.ToggleButton"
-                        android:button="@drawable/ic_breakfast"
+                        android:button="@drawable/ic_outdoors"
                         android:checked="false"/>
                 </android.support.v7.widget.ToggleGroup>
 

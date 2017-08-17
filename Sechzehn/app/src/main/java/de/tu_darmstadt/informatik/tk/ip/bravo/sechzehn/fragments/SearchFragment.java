@@ -133,35 +133,19 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         return binding.getRoot();
     }
 
-/*    private void shrinkMapFrameHeight(Integer sub){
-        //Max size is in my case 1573
-        ViewGroup.LayoutParams params = binding.mapFrame.getLayoutParams();
-        params.height = (maxMapHeight - sub);
-        Toast.makeText(getActivity(), String.valueOf(maxMapHeight), Toast.LENGTH_SHORT).show();
-        Toast.makeText(getActivity(), String.valueOf(params.height), Toast.LENGTH_SHORT).show();
-        binding.mapFrame.setLayoutParams(params);
-    }*/
-
-    public float convertDpToPx(Context context, float dp) {
-        return dp * context.getResources().getDisplayMetrics().density;
-    }
-    public float convertPxToDp(Context context, float px) {
-        return px / context.getResources().getDisplayMetrics().density;
-    }
-
     public void fab(View view){
         BottomSheetBehavior.from(binding.searchBottomsheet).setState(BottomSheetBehavior.STATE_EXPANDED);
         //focusSearchView();
     }
 
-/*    private void focusSearchView(){
-        final SearchView searchView = binding.searchSearchbarView;
+    private void focusSearchView(){
+       /* final SearchView searchView = binding.searchSearchbarView;
         searchView.setIconifiedByDefault(false);
         searchView.requestFocus();
         ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).
                 toggleSoftInput(InputMethodManager.SHOW_FORCED,
-                InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }*/
+                InputMethodManager.HIDE_IMPLICIT_ONLY);*/
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -180,18 +164,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
             initalSearch(); //Initialize anew
         }
     }
-
-/*    private void positionLocationButton(){
-        View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
-        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
-        // position on right bottom
-        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        rlp.setMargins(0, 0, 30, 30);
-
-        //Change Button view
-        *//*ImageView locationButton = (ImageView) mapView.findViewById(2);*//*
-    }*/
 
     public void initalSearch(){
         //Show only nearby users and venues
