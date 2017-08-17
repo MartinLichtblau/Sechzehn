@@ -26,8 +26,8 @@ class Venue extends Lucid {
    */
   static get visibleList () {
     return [
-      'id',
-      'name',
+      'venues.id',
+      'venues.name',
       'lat',
       'lng',
       'price',
@@ -55,6 +55,16 @@ class Venue extends Lucid {
       'address',
       'description'
     ]
+  }
+
+  getCategoryX () {
+    if (this.category_name) {
+      return {
+        name: this.category_name
+      }
+    } else {
+      return null
+    }
   }
 
   /**

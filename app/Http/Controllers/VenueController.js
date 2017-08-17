@@ -15,7 +15,7 @@ class VenueController {
     const radius = request.input('radius', 10)
     const searchQuery = request.input('query')
     const time = Moment(request.input('time'))
-    const section = request.input('section')
+    const section = request.input('section', '')
     const price = request.input('price')
 
     const validation = yield Validator.validate({section, searchQuery, lat, lng, radius, price}, {
@@ -35,10 +35,10 @@ class VenueController {
     const pagination = new Pagination(request)
 
     const cols = Venue.visibleList
-    cols[0] = 'venues.id'
+    cols.push('venue_categories.name as category')
 
     // The main query
-    const currentPageQuery = Venue.query().column(cols)
+    const currentPageQuery = Venue.query().column(cols).leftOuterJoin('venue_categories', 'venues.category_id', 'venue_categories.id')
 
     // The query for calculation the total count
     const totalQuery = Venue.query()
@@ -67,6 +67,19 @@ class VenueController {
       totalQuery.whereRaw(similarityQueryString, queryParams)
     }
 
+    if (price) {
+      currentPageQuery.where('price', price)
+      totalQuery.where('price', price)
+    }
+
+    if (section && section !== '') {
+      currentPageQuery.innerJoin('venue_section', 'venues.id', 'venue_section.venue_id')
+      currentPageQuery.where('section', section)
+
+      totalQuery.innerJoin('venue_section', 'venues.id', 'venue_id')
+      totalQuery.where('section', section)
+    }
+
     if (lat !== null && lng !== null) {
       const validation = yield Validator.validate({lat, lng, radius}, {
         lat: 'required|range:-180,180',
@@ -89,13 +102,21 @@ class VenueController {
       // See https://www.postgresql.org/docs/8.3/static/earthdistance.html
       const inRadiusQuery = 'earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
       currentPageQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
-      currentPageQuery.orderBy('distance', 'asc')
 
       totalQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
     }
+
+    // TODO: Order by our rating
+    currentPageQuery.orderBy('foursquare_rating', 'desc')
+
     // Fetch the actual data and complete the Pagination object
     const totalResult = yield totalQuery.count().first()
     pagination.data = yield currentPageQuery.forPage(pagination.page, pagination.perPage)
+    pagination.data.map(item => {
+      item.category = {
+        name: item.category
+      }
+    })
 
     pagination.total = Number(totalResult.count)
     response.ok(pagination)

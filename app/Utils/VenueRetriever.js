@@ -23,8 +23,8 @@ class VenueRetriever {
     }
 
     // Round the paramters to get "cache hits"
-    lat = Math.round(lat * 10) / 10
-    lng = Math.round(lng * 10) / 10
+    lat = Math.round(lat * 100) / 100
+    lng = Math.round(lng * 100) / 100
     radius = this.roundRadius(radius)
 
     const oldRetrievalCountResult = yield VenueRetrieval.query().where('lat', lat).where('lng', lng).where('radius', radius).where('section', section).count()
@@ -130,7 +130,7 @@ class VenueRetriever {
 
       if (section) {
         // Save the venue -> section mapping
-        Database.insert({venue_id: venueFromDb.id, section}).into('venue_section')
+        yield Database.raw(`INSERT INTO venue_section (venue_id, section) VALUES (:id, :section) ON CONFLICT DO NOTHING`, {id: venue.id, section})
       }
     }
   }
@@ -151,11 +151,15 @@ class VenueRetriever {
       }, [])
 
       for (let item of hours) {
-        yield Database.raw('INSERT INTO venue_hours_ranges(venue_id, hours) SELECT :id, f_venue_hours(:start, :end)', {
-          id: venue.id,
-          start: item[0],
-          end: item[1]
-        })
+        try {
+          yield Database.raw('INSERT INTO venue_hours_ranges(venue_id, hours) SELECT :id, f_venue_hours(:start, :end)', {
+            id: venue.id,
+            start: item[0],
+            end: item[1]
+          })
+        } catch (e) {
+          console.warn(e)
+        }
       }
     }
 
@@ -237,7 +241,14 @@ class VenueRetriever {
           let endHour = timeRange[1].hours()
           let endMinute = timeRange[1].minutes()
 
-          result.push([addAndFormat(day, startHour, startMinute), addAndFormat(day, endHour, endMinute)])
+          // Catch the dammit entries like Mon-Tue 7:00 pm-1:00 am
+          if (endHour < startHour) {
+            const nextDay = Moment(day).add(1, 'days')
+            result.push([addAndFormat(day, startHour, startMinute), addAndFormat(day, 23, 59)])
+            result.push([addAndFormat(nextDay, 0, 0), addAndFormat(nextDay, endHour, endMinute)])
+          } else {
+            result.push([addAndFormat(day, startHour, startMinute), addAndFormat(day, endHour, endMinute)])
+          }
         }
       }
     }
