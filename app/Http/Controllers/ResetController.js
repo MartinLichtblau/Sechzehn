@@ -104,9 +104,7 @@ class ResetController {
     let status = 410
 
     if (Moment().diff(resetToken.created_at, 'hours') <= 1) {
-      // const user = yield resetToken.user().fetch()
       const user = yield User.findOrFail(resetToken.user)
-      console.log(user)
       user.password = yield Hash.make(passwords.password)
       yield user.save()
 
