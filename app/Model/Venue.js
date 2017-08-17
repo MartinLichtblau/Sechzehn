@@ -31,6 +31,7 @@ class Venue extends Lucid {
       'lat',
       'lng',
       'price',
+      // 'photo',
       'foursquare_rating'
     ]
   }
@@ -49,24 +50,11 @@ class Venue extends Lucid {
       'price',
       'foursquare_rating',
       'url',
+      // 'photo',
       'phone',
       'address',
       'description'
     ]
-  }
-
-  detailView () {
-    return {
-      id: this.id,
-      name: this.name,
-      lat: this.lat,
-      lng: this.lng,
-      price: this.price,
-      url: this.url,
-      phone: this.phone,
-      address: this.address,
-      description: this.description
-    }
   }
 
   /**

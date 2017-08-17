@@ -15,13 +15,26 @@ class VenueController {
     const radius = request.input('radius', 10)
     const searchQuery = request.input('query')
     const time = Moment(request.input('time'))
+    const section = request.input('section')
+    const price = request.input('price')
 
-    yield VenueRetriever.retrieve(lat, lng, radius)
+    const validation = yield Validator.validate({section, searchQuery, lat, lng, radius, price}, {
+      section: 'string|in:food,drinks,coffee,shops,arts,outdoors,sights',
+      searchQuery: 'string',
+      lat: 'range:-180,180',
+      lng: 'range:-180,180',
+      radius: 'range:0,6371',
+      price: 'integer|range:1,5'
+    })
+
+    if (validation.fails()) {
+      response.unprocessableEntity(validation.messages())
+      return
+    }
 
     const pagination = new Pagination(request)
 
     const cols = Venue.visibleList
-
     cols[0] = 'venues.id'
 
     // The main query
@@ -65,6 +78,9 @@ class VenueController {
         response.unprocessableEntity(validation.messages())
         return
       }
+
+      // Fetch the corresponding data from Foursquare
+      yield VenueRetriever.retrieve(lat, lng, radius, section)
 
       // Calculate the distance between the search point and the venues's position
       currentPageQuery.select(Database.raw('(earth_distance(ll_to_earth(lat, lng), ll_to_earth(?, ?)) / 1000) as distance', [lat, lng]))

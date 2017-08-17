@@ -1,5 +1,6 @@
 'use strict'
 
+const Database = use('Database')
 const Venue = use('App/Model/Venue')
 const VenueCategory = use('App/Model/VenueCategory')
 const VenueHoursRange = use('App/Model/VenueHoursRange')
@@ -16,7 +17,7 @@ class VenueRetriever {
    * @param lng the longitude
    * @param radius the radius in km
    */
-  * retrieve (lat, lng, radius) {
+  * retrieve (lat, lng, radius, section) {
     if (lat === null || lng === null || radius === null) {
       return
     }
@@ -26,16 +27,16 @@ class VenueRetriever {
     lng = Math.round(lng * 10) / 10
     radius = this.roundRadius(radius)
 
-    const oldRetrievalCountResult = yield VenueRetrieval.query().where('lat', lat).where('lng', lng).where('radius', radius).count()
+    const oldRetrievalCountResult = yield VenueRetrieval.query().where('lat', lat).where('lng', lng).where('radius', radius).where('section', section).count()
     if (Number(oldRetrievalCountResult[0].count) > 0) {
       return
     }
 
-    const response = yield this.requestFoursquare(lat, lng, radius)
-    yield this.processFoursquareData(response)
+    const response = yield this.requestFoursquare(lat, lng, radius, section)
+    yield this.processFoursquareData(response, section)
 
     yield VenueRetrieval.create({
-      lat, lng, radius
+      lat, lng, radius, section
     })
   }
 
@@ -58,7 +59,7 @@ class VenueRetriever {
    * @param radius the radius in km
    * @returns {Promise.<TResult>}
    */
-  * requestFoursquare (lat, lng, radius) {
+  * requestFoursquare (lat, lng, radius, section) {
     const options = {
       method: 'GET',
       uri: 'https://api.foursquare.com/v2/venues/explore',
@@ -72,7 +73,8 @@ class VenueRetriever {
         ll: lat + ',' + lng,
         radius: radius * 1000,
         time: 'any',
-        day: 'any'
+        day: 'any',
+        section: section
       }
     }
     return Request(options)
@@ -89,7 +91,7 @@ class VenueRetriever {
    *
    * @param data
    */
-  * processFoursquareData (data) {
+  * processFoursquareData (data, section) {
     const venues = data.response.groups.reduce((acc, group) => acc.concat(group.items.map(item => item.venue)), [])
 
     for (let venue of venues) {
@@ -125,6 +127,11 @@ class VenueRetriever {
       if (!venueFromDb.details_fetched) {
         yield this.retrieveDetails(venueFromDb)
       }
+
+      if (section) {
+        // Save the venue -> section mapping
+        Database.insert({venue_id: venueFromDb.id, section}).into('venue_section')
+      }
     }
   }
 
@@ -140,17 +147,16 @@ class VenueRetriever {
     // Save the opening hours
     if (details.hours && details.hours.timeframes) {
       const hours = details.hours.timeframes.reduce((acc, item) => {
-        return acc.concat(this.processTimeframe(item))
+        return acc.concat(this.parseTimeframe(item))
       }, [])
 
-      const hoursRanges = hours.map(item => {
-        return {
-          venue_id: venue.id,
-          hours: item
-        }
-      })
-
-      yield VenueHoursRange.createMany(hoursRanges)
+      for (let item of hours) {
+        yield Database.raw('INSERT INTO venue_hours_ranges(venue_id, hours) SELECT :id, f_venue_hours(:start, :end)', {
+          id: venue.id,
+          start: item[0],
+          end: item[1]
+        })
+      }
     }
 
     // TODO: save Comments and Photos
@@ -197,7 +203,7 @@ class VenueRetriever {
    * @param timeframe
    * @returns {Array}
    */
-  processTimeframe (timeframe) {
+  parseTimeframe (timeframe) {
     const result = []
 
     // Determine the day of the week of this timeframe
@@ -205,36 +211,33 @@ class VenueRetriever {
     const days = dayOffsets.map(offset => Moment('1996-01-01').add(offset, 'days'))
 
     // Determine the time ranges of this timeframe
-    const timeRanges = timeframe.open.map(item => {
-      return item.renderedTime.split('–').map(time => {
-        if (time.trim() === 'Midnight') {
-          time = '11:59 pm'
-        }
-        if (time.trim() === 'Noon') {
-          time = '12:00 pm'
-        }
-        return Moment(time, 'h:m a')
+    let timeRanges
+    if (timeframe.open[0].renderedTime.trim() === '24 Hours') {
+      timeRanges = result.push(['1996-01-01 00:00', '1996-01-07 23:59'])
+    } else {
+      timeRanges = timeframe.open.map(item => {
+        return item.renderedTime.split('–').map(time => {
+          if (time.trim() === 'Midnight') {
+            time = '11:59 pm'
+          }
+          if (time.trim() === 'Noon') {
+            time = '12:00 pm'
+          }
+          return Moment(time, 'h:m a')
+        })
       })
-    })
 
-    const addAndFormat = (day, hours, minutes) => Moment(day).add(hours, 'hours').add(minutes, 'minutes').format('YYYY-MM-DD HH:mm')
+      const addAndFormat = (day, hours, minutes) => Moment(day).add(hours, 'hours').add(minutes, 'minutes').format('YYYY-MM-DD HH:mm')
 
-    // Combine both
-    for (let day of days) {
-      for (let timeRange of timeRanges) {
-        let startHour = timeRange[0].hours()
-        let startMinute = timeRange[0].minutes()
-        let endHour = timeRange[1].hours()
-        let endMinute = timeRange[1].minutes()
+      // Combine both
+      for (let day of days) {
+        for (let timeRange of timeRanges) {
+          let startHour = timeRange[0].hours()
+          let startMinute = timeRange[0].minutes()
+          let endHour = timeRange[1].hours()
+          let endMinute = timeRange[1].minutes()
 
-        // Catch the day wrap
-        if (startHour > endHour) {
-          const nextDay = Moment('1996-01-01').add((day.day() + 1) % 7, 'days')
-
-          result.push('[' + addAndFormat(day, startHour, startMinute) + ',' + addAndFormat(day, 23, 59) + ']')
-          result.push('[' + addAndFormat(nextDay, 0, 0) + ',' + addAndFormat(nextDay, endHour, endMinute) + ']')
-        } else {
-          result.push('[' + addAndFormat(day, startHour, startMinute) + ',' + addAndFormat(day, endHour, endMinute) + ']')
+          result.push([addAndFormat(day, startHour, startMinute), addAndFormat(day, endHour, endMinute)])
         }
       }
     }
