@@ -208,7 +208,7 @@ class UserController {
     }
 
     try {
-      request.auth.validate(user.email, userData.old_password)
+      yield request.auth.validate(user.email, userData.old_password)
     } catch (e) {
       response.unprocessableEntity([
         {
