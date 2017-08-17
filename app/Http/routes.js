@@ -64,6 +64,11 @@ Route.group('api', function () {
   Route.patch('messages/:id/:message', 'MessageController.update').middleware('auth')
 
   Route
+    .resource('venues', 'VenueController')
+    .only('index', 'show')
+    .middleware({auth: ['show']})
+
+  Route
     .resource('users', 'UserController')
     .except('create', 'edit')
     .middleware({auth: ['index', 'show', 'update', 'destroy']})

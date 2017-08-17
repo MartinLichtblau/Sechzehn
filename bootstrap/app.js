@@ -35,7 +35,8 @@ const providers = [
   'adonis-validation-provider/providers/ValidatorProvider',
   'adonis-mail-provider/providers/MailProvider',
   path.join(__dirname, '../providers/TokenGeneratorProvider'),
-  path.join(__dirname, '../providers/StorageProvider')
+  path.join(__dirname, '../providers/StorageProvider'),
+  path.join(__dirname, '../providers/VenueRetrieverProvider')
 ]
 
 /*
@@ -85,8 +86,8 @@ const aliases = {
   Ws: 'Adonis/Addons/Ws',
   Validator: 'Adonis/Addons/Validator',
   Mail: 'Adonis/Addons/Mail',
-  TokenGenerator: 'Adonis/Custom/TokenGenerator',
-  Storage: 'Adonis/Custom/Storage'
+  TokenGenerator: 'App/Utils/TokenGenerator',
+  Storage: 'App/Utils/Storage'
 }
 
 /*
