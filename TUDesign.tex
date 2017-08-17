@@ -9,7 +9,7 @@
 \documentclass[11pt, accentcolor=tud1c]{tudreport}	
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath, enumitem, graphicx, hyperref, lipsum, listings, mathtools, parcolumns}
+\usepackage{amsmath, enumitem, graphicx, hyperref, lipsum, listings, mathtools, parcolumns, pdfpages}
 
 % https://scm.informatik.tu-darmstadt.de/news/129-technical-documentation-sample
 
@@ -53,7 +53,8 @@
 In this section we present the architecture we used and thereby how our components interact with each other. We then briefly describe which technologies we chose, and why we chose them.
 \section{Architecture}\label{sec:architecture}
 % components and their interaction
-\subsection{Diagram Interaction}
+\subsection{Interaction of Components}
+\includegraphics[scale=0.5]{./res/architecture.png}
 \subsection{ERM}
 \subsection{UML Diagram}
 \section{Server}\label{sec:server}
@@ -108,7 +109,7 @@ To install the app you have to download it from the app from our web page \cite{
 If your phone is allowed to install apps from third parties, the phone asks you to install the app. To do so tap on install. Now you have installed the app successfully. Have fun and enjoy the usage.
 
 \section{Features}
-Bonus Features:
+We only list the bonus features because the mandatory features have to be fullfilled.
 \begin{enumerate}
 \item account verification with an email: \\
 After registering the email has to be verified first. Without this verification, the user cannot use the app.
@@ -152,7 +153,6 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
 \item the first one shows the map with venues and users and offers a search for venues
 \item the second one shows a list with friends and messages
 \item the third one is the user's profile and its settings. Here you can select a profile picture from your gallery by tapping on the photo. To edit the name, birthday, city or to enter the incognito mode, you have to tap on the pencil in the profile section. In the account section, you can log out from the app, change the current password, reset the password if you are logged in and don't know your password, change the used email address, and delete your account.
-\end{enumerate}
 \end{enumerate}
 % Diagramm einfuegen?
 
