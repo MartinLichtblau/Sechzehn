@@ -84,8 +84,7 @@ The Authentication in our project is done with JSON Web Tokens(JWTs)\cite{jwt}.
 % pls explain the particular components, interfaces,..(e.g., app, database, API,..) in detail.
 
 
-\chapter{Feature Explanation}\label{ch:feature_explanation}
-
+\chapter{App and Feature Explanation}\label{ch:app_and_feature_explanation}
 
 \section{System Requirements}\label{sec:system_requirements}
 %minSDK 23 %% compileSDK 25 ??? %% Permissions and justification why they are necessary
@@ -96,6 +95,7 @@ In this section we briefly describe which permissions are requested by the app a
 \item permission to get access to pictures, media, and files on the device: Normally users use profile pictures for more than one app, what makes it necessary to load those pictures from the gallery. This permission is further needed to store the users login credentials on the phone.
 \item permission to have access to the location of the device: The whole concept of the app is based on the users location. The location is necessary to see users and venues in the surroundings. With an incognito switch however, the user can hide his account from the map.
 \end{enumerate}
+
 \section{Get Started}
 %%%download and install the APK%%%
 To install the app you have to download it from the app from our web page \cite{app}. After you downloaded it you have to install it. If your phone has not the permission to install apps from third parties, you have to allow your phone to install apps from third parties. This is described by the following steps (some phones will directly lead you to step 3):
@@ -106,9 +106,24 @@ To install the app you have to download it from the app from our web page \cite{
 \item allow the installation from unknown sources
 \end{enumerate} 
 If your phone is allowed to install apps from third parties, the phone asks you to install the app. To do so tap on install. Now you have installed the app successfully. Have fun and enjoy the usage.
+
+\section{Features}
+Bonus Features:
+\begin{enumerate}
+\item account verification with an email: \\
+After registering the email has to be verified first. Without this verification, the user cannot use the app.
+\item open the links from the emails: \\
+After resetting your password or registering a new account the user receives an email containing a link. Our app is able to handle this link on click. This means that no verification code must be entered and no external browser is necessary to do this.
+\item Resource-efficient location updating: \\
+To treat the users battery with care, we use the Google Location Services. If another app on the system requests the location via those location services, we use the new location if it is more accurate. If there hasn't been a request for more than two minutes our app self starts a request to the location services. More inaccurate locations are used after ten minutes without an more accurate position. Furthermore we only push our new location to the Sechzehn servers, when the user moved more than 100 meters. 
+\item provide an privacy option that disables that the user's position is shown
+\item filter the results in the venue search by price and opening hours
+\item Live Chats
+\item JWT
+\end{enumerate}
+
 \section{App Flow}
 % system requirements, get started, functionalities, features, app flow, ...
-
 %%%LOGIN SCREEN%%%
 When a user starts the app for the first time he enters the login screen. On this screen the user has three options:
 \begin{enumerate}
@@ -142,16 +157,7 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
 \chapter{Feature List}\label{ch:feature_list}
 % ! 1 page !
 % pls only list the most relevant implemented features
-Bonus Features:
-\begin{enumerate}
-\item account verification with an email
-\item open the links form the emails (verification and password reset) with the app
-\item update the position of the user every 100 meter
-\item provide an privacy option that disables that the user's position is shown
-\item filter the results in the venue search by price and opening hours
-\item Live Chats
-\item JWT
-\end{enumerate}
+
 % Bibliography
 \begin{thebibliography}{9}
 	\bibitem{heroku}
