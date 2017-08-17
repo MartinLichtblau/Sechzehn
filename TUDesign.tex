@@ -87,23 +87,52 @@ The Authentication in our project is done with JSON Web Tokens(JWTs)\cite{jwt}.
 \chapter{Feature Explanation}\label{ch:feature_explanation}
 
 
-\section{System Requirements}
-minSDK 23 \\
-compileSDK 25 \\
-Permissions and justification why they are necessary
+\section{System Requirements}\label{sec:system_requirements}
+%minSDK 23 %% compileSDK 25 ??? %% Permissions and justification why they are necessary
+To run the app with all features Android Marshmallow (APK 23) is needed. 
+In this section we briefly describe which permissions are requested by the app and why they are necessary.
+\begin{enumerate}
+\item permission to take pictures and videos: This permission allows us to take pictures and add them to venues.
+\item permission to get access to pictures, media, and files on the device: Normally users use profile pictures for more than one app, what makes it necessary to load those pictures from the gallery. This permission is further needed to store the users login credentials on the phone.
+\item permission to have access to the location of the device: The whole concept of the app is based on the users location. The location is necessary to see users and venues in the surroundings. With an incognito switch however, the user can hide his account from the map.
+\end{enumerate}
 \section{Get Started}
-Explain how to download and install the APK
+%%%download and install the APK%%%
+To install the app you have to download it from the app from our web page \cite{app}. After you downloaded it you have to install it. If your phone has not the permission to install apps from third parties, you have to allow your phone to install apps from third parties. This is described by the following steps (some phones will directly lead you to step 3):
+\begin{enumerate}
+\item go to Settings
+\item choose Security
+\item scroll to Unknown sources
+\item allow the installation from unknown sources
+\end{enumerate} 
+If your phone is allowed to install apps from third parties, the phone asks you to install the app. To do so tap on install. Now you have installed the app successfully. Have fun and enjoy the usage.
 \section{App Flow}
 % system requirements, get started, functionalities, features, app flow, ...
+
+%%%LOGIN SCREEN%%%
 When a user starts the app for the first time he enters the login screen. On this screen the user has three options:
 \begin{enumerate}
-\item he can login with his email and password.
-\item if he has no account yet, he can enter the register screen and create one.
-\item if he has forgotten his password he can request a password reset link to your email address.
+\item he can log in with his email and password. If the login was successful the app asks for some permissions (further information on why the app needs those permissions can be found in \ref{sec:system_requirements}.
+If the permissions are granted, the main screen is shown. The login information will be stored so that the user doesn't need to log in every time he uses the app. If he wants to log out he can do it in the options.
+\item if he has no account yet, he can enter the register screen.
+\item if he has forgotten his password he can request a password reset link to his email address.
 \end{enumerate}
-We further assume that the user is logged in. he now sees a bottom naigation bar with three navigation options.
+%%%REGISTRATION SCREEN%%%
+If he enters the register screen he has two options:   
 \begin{enumerate}
-\item the first one shows the map with venues and users
+\item he can enter a username, an email address, and a password (two times). By clicking the register button the inputs are checked If the passwords are equal, the email address and the username are not used yet a toast tell that the registration was successful. Otherwise, there will be an information why the registration failed (username already exists, passwords are not equal, ...) and he has to correct it. After a successful registration, the screen switches to the login screen and an email confirmation is sent. To confirm the account a the link in the email has to be clicked. The smartphone offers the possibility to open the link via a browser or the app 'Sechzehn'. If the link is opened with 'Sechzehn' the account will be activated and the login screen is shown.  
+\item if he has already an account, he can go back to the login screen.
+\end{enumerate}
+%%%FORGOTPW SCREEN%%%
+If he enters the forgot password screen he has two options:
+\begin{enumerate}
+\item he can enter the email address and click the send button. A password reset request will be sent to that email address. The link in the email could be opened with 'Sechzehn' or with any browser. If the link in the email is opened with 'Sechzehn' a screen is opened where you have to insert a new password (two times). By clicking the confirm button the passwords are checked and if they are equal the new password is set. The same procedure could be done on a website by opening the link 
+\item if he knows the password he can go back to the login screen.
+\end{enumerate}
+%%%MAIN SCREEN%%%
+We further assume that the user is logged in. Now he sees a bottom navigation bar with three navigation options:
+\begin{enumerate}
+\item the first one shows the map with venues and users and offers a search for venues
 \item the second one shows a list with friends and messages
 \item the third one is the users profile and its settings
 \end{enumerate}
@@ -112,7 +141,16 @@ We further assume that the user is logged in. he now sees a bottom naigation bar
 \chapter{Feature List}\label{ch:feature_list}
 % ! 1 page !
 % pls only list the most relevant implemented features
-Bonus Feature: Email Verficiation, JWT, Filterable Results, Live Update, Anonymity Button
+Bonus Features:
+\begin{enumerate}
+\item account verification with an email
+\item open the links form the emails (verification and password reset) with the app
+\item update the position of the user every 100 meter
+\item provide an privacy option that disables that the user's position is shown
+\item filter the results in the venue search by price and opening hours
+\item Live Chats
+\item JWT
+\end{enumerate}
 % Bibliography
 \begin{thebibliography}{9}
 	\bibitem{heroku}
@@ -159,5 +197,9 @@ Bonus Feature: Email Verficiation, JWT, Filterable Results, Live Update, Anonymi
 		\textit{ChatKit for Android}, 
 		Accessed: 2017-08-09, \\
 		\url{https://github.com/stfalcon-studio/ChatKit}
+	\bibitem{app}
+		\textit{download Sechzehn}, 
+		Accessed: 2017-08-15, \\
+		\url{https://iptk.herokuapp.com/downloads/Sechzehn.apk}	
 \end{thebibliography}
 \end{document}
