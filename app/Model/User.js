@@ -70,7 +70,7 @@ class User extends Lucid {
      * Hashing password before storing to the
      * database.
      */
-    this.addHook('beforeCreate', function * (next) {
+    this.addHook('beforeCreate', function* (next) {
       this.password = yield Hash.make(this.password)
       yield next
     })
@@ -151,6 +151,14 @@ class User extends Lucid {
    */
   friends () {
     return this.belongsToMany('App/Model/User', 'friendships', 'relating_user', 'related_user')
+  }
+
+  /**
+   * List all Check-Ins of the this User.
+   * @returns {Object}
+   */
+  checkIns () {
+    return this.hasMany('App/Model/CheckIn', 'username', 'username')
   }
 
   /**

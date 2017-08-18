@@ -81,17 +81,6 @@ class VenueController {
     }
 
     if (lat !== null && lng !== null) {
-      const validation = yield Validator.validate({lat, lng, radius}, {
-        lat: 'required|range:-180,180',
-        lng: 'required|range:-180,180',
-        radius: 'required|range:0,6371'
-      })
-
-      if (validation.fails()) {
-        response.unprocessableEntity(validation.messages())
-        return
-      }
-
       // Fetch the corresponding data from Foursquare
       yield VenueRetriever.retrieve(lat, lng, radius, section)
 
@@ -103,11 +92,13 @@ class VenueController {
       const inRadiusQuery = 'earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
       currentPageQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
 
+      currentPageQuery.orderBy('distance', 'asc')
+
       totalQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
     }
 
     // TODO: Order by our rating
-    currentPageQuery.orderBy('foursquare_rating', 'desc')
+    // currentPageQuery.orderBy('foursquare_rating', 'desc')
 
     // Fetch the actual data and complete the Pagination object
     const totalResult = yield totalQuery.count().first()
@@ -127,6 +118,7 @@ class VenueController {
       .query()
       .where('id', request.param('id'))
       .with('category', 'hours')
+      .withCount('checkIns')
       .scope('hours', (builder) => {
         builder.orderBy('hours', 'asc')
       })

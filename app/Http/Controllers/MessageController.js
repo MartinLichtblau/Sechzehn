@@ -63,7 +63,7 @@ class MessageController {
 
   * store (request, response) {
     const sender = request.authUser
-    const receiver = yield User.findOrFail(request.param('id', null))
+    const receiver = yield User.findOrFail(request.param('id'))
     const messageData = request.only('body')
 
     const validation = yield Validator.validate(messageData, Message.rules)
@@ -84,7 +84,7 @@ class MessageController {
 
   * show (request, response) {
     const me = request.authUser.username
-    const other = request.param('id', null)
+    const other = request.param('id')
 
     let page = Number(request.input('page', 1))
     let perPage = Number(request.input('per_page', 10))
@@ -110,10 +110,10 @@ class MessageController {
 
   * update (request, response) {
     const me = request.authUser.username
-    const other = request.param('id', null)
+    const other = request.param('id')
     const data = request.all()
 
-    const message = yield Message.findOrFail(request.param('message', null))
+    const message = yield Message.findOrFail(request.param('message'))
 
     if (message.receiver === me && message.sender === other) {
       message.is_read = message.is_read === true || Validator.sanitizor.toBoolean(data.is_read)

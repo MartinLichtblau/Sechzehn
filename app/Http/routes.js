@@ -63,6 +63,13 @@ Route.group('api', function () {
   Route.post('messages/:id', 'MessageController.store').middleware('auth')
   Route.patch('messages/:id/:message', 'MessageController.update').middleware('auth')
 
+  Route.post('venues/:venue_id/check-ins', 'CheckInController.store').middleware('auth')
+
+  Route
+    .resource('check-ins', 'CheckInController')
+    .only('index', 'update', 'destroy')
+    .middleware('auth')
+
   Route
     .resource('venues', 'VenueController')
     .only('index', 'show')

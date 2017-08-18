@@ -7,7 +7,7 @@ const Exceptions = require('adonis-lucid/src/Exceptions')
 
 class FriendshipController {
   * index (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.findOrFail(request.param('id'))
     const page = Number(request.input('page', 1))
     const perPage = Number(request.input('per_page', 10))
 
@@ -26,7 +26,7 @@ class FriendshipController {
   }
 
   * requests (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.findOrFail(request.param('id'))
     const page = Number(request.input('page', 1))
     const perPage = Number(request.input('per_page', 10))
 
@@ -52,7 +52,7 @@ class FriendshipController {
 
   * store (request, response) {
     const me = request.authUser
-    const other = yield User.findOrFail(request.param('id', null))
+    const other = yield User.findOrFail(request.param('id'))
 
     if (me.username === other.username) {
       response.forbidden({
@@ -91,7 +91,7 @@ class FriendshipController {
 
   * update (request, response) {
     const me = request.authUser
-    const other = yield User.findOrFail(request.param('id', null))
+    const other = yield User.findOrFail(request.param('id'))
     const statusData = request.only('status')
 
     const validation = yield Validator.validate(statusData, {
@@ -154,7 +154,7 @@ class FriendshipController {
 
   * destroy (request, response) {
     const me = request.authUser
-    const other = yield User.findOrFail(request.param('id', null))
+    const other = yield User.findOrFail(request.param('id'))
 
     const iAmFriendsWithOther = yield Friendship.query().where('relating_user', me.username).where('related_user', other.username).first()
     const otherIsFriendsWithMe = yield Friendship.query().where('relating_user', other.username).where('related_user', me.username).first()

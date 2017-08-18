@@ -125,15 +125,15 @@ class UserController {
   * show (request, response) {
     const authUsername = request.authUser.username
 
-    if (request.param('id', null) === authUsername) {
+    if (request.param('id') === authUsername) {
       response.ok(request.authUser.completeView())
     }
 
-    const user = yield User.query().where('username', request.param('id', null))
+    const user = yield User.query().where('username', request.param('id'))
       .leftJoin(Database.raw('friendships on users.username = friendships.relating_user and ? = friendships.related_user', [authUsername]))
       .first()
 
-    if (user === null) {
+    if (!user) {
       throw new Exceptions.ModelNotFoundException()
     }
 
@@ -145,7 +145,7 @@ class UserController {
   }
 
   * update (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.findOrFail(request.param('id'))
     const userData = request.only('real_name', 'city', 'date_of_birth', 'incognito')
 
     if (request.authUser.username !== user.username) {
@@ -167,7 +167,7 @@ class UserController {
   }
 
   * updateProfilePicture (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.findOrFail(request.param('id'))
 
     if (request.authUser.username !== user.username) {
       response.unauthorized({message: 'Not allowed to edit other users'})
@@ -192,7 +192,7 @@ class UserController {
   }
 
   * updatePassword (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.findOrFail(request.param('id'))
 
     if (request.authUser.username !== user.username) {
       response.unauthorized({message: 'Not allowed to edit other users'})
@@ -226,7 +226,7 @@ class UserController {
   }
 
   * updateEmail (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.findOrFail(request.param('id'))
 
     if (request.authUser.username !== user.username) {
       response.unauthorized({message: 'Not allowed to edit other users'})
@@ -267,7 +267,7 @@ class UserController {
   }
 
   * updateLocation (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.findOrFail(request.param('id'))
 
     if (request.authUser.username !== user.username) {
       response.unauthorized({message: 'Not allowed to edit other users'})
@@ -294,7 +294,7 @@ class UserController {
   }
 
   * destroy (request, response) {
-    const user = yield User.findOrFail(request.param('id', null))
+    const user = yield User.findOrFail(request.param('id'))
 
     if (request.authUser.username !== user.username) {
       response.unauthorized({message: 'Not allowed to delete other users'})

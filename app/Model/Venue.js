@@ -65,8 +65,20 @@ class Venue extends Lucid {
     return this.belongsTo('App/Model/VenueCategory', 'id', 'category_id')
   }
 
+  /**
+   * The related Opening Hours.
+   * @returns {Object}
+   */
   hours () {
     return this.hasMany('App/Model/VenueHoursRange')
+  }
+
+  /**
+   * The Check-Ins for this Venue.
+   * @returns {Object}
+   */
+  checkIns () {
+    return this.hasMany('App/Model/CheckIn')
   }
 }
 
