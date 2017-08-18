@@ -20,6 +20,7 @@ class CheckInController {
     }
 
     const checkIns = yield CheckIn.query()
+      .with('venue')
       .where('username', authUser.username)
       .orderBy('created_at', 'desc')
       .paginate(page, perPage)
@@ -42,6 +43,7 @@ class CheckInController {
     }
 
     const checkIns = yield CheckIn.query()
+      .with('user')
       .where('venue_id', venue.id)
       .orderBy('created_at', 'desc')
       .paginate(page, perPage)
@@ -69,6 +71,8 @@ class CheckInController {
       rating
     })
 
+    yield checkIn.related('user', 'venue').load()
+
     response.ok(checkIn)
   }
 
@@ -94,6 +98,8 @@ class CheckInController {
 
     checkIn.rating = rating
     yield checkIn.save()
+
+    yield checkIn.related('user', 'venue').load()
 
     response.ok(checkIn)
   }
