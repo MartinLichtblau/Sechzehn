@@ -1,12 +1,13 @@
 'use strict'
 
-const Venue = use('App/Model/Venue')
 const Database = use('Database')
-const Validator = use('Validator')
-const VenueRetriever = use('App/Utils/VenueRetriever')
-const Pagination = require('./Helper/Pagination')
-const Moment = require('moment')
 const Exceptions = require('adonis-lucid/src/Exceptions')
+const Moment = require('moment')
+const Pagination = require('./Helper/Pagination')
+const User = use('App/Model/User')
+const Validator = use('Validator')
+const Venue = use('App/Model/Venue')
+const VenueRetriever = use('App/Utils/VenueRetriever')
 
 class VenueController {
   * index (request, response) {
@@ -117,10 +118,14 @@ class VenueController {
     const venue = yield Venue
       .query()
       .where('id', request.param('id'))
-      .with('category', 'hours')
-      .withCount('checkIns')
+      .with('category', 'hours', 'checkIns', 'checkIns.user')
+      // .withCount('checkIns')
       .scope('hours', (builder) => {
         builder.orderBy('hours', 'asc')
+      })
+      .scope('checkIns', builder => {
+        builder.orderBy('created_at', 'desc')
+        builder.limit(3)
       })
       .first()
 
@@ -131,6 +136,24 @@ class VenueController {
     if (!venue.details_fetched) {
       yield VenueRetriever.retrieveDetails(venue)
     }
+
+    const userColumns = User.visible.map(item => 'users.' + item)
+    userColumns.push(Database.raw('count(id) as visit_count'))
+
+    const topVisitors = yield Database.select(userColumns).from('check_ins')
+      .where('venue_id', venue.id).groupBy('users.username')
+      .innerJoin('users', 'check_ins.username', 'users.username')
+      .orderBy('visit_count', 'desc').limit(3)
+
+    venue.topVisitors = topVisitors.map(item => {
+      const visitCount = item.visit_count
+      delete item.visit_count
+
+      return {
+        user: item,
+        visit_count: visitCount
+      }
+    })
 
     response.ok(venue)
   }

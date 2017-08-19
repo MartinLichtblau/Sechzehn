@@ -53,7 +53,8 @@ class Venue extends Lucid {
       // 'photo',
       'phone',
       'address',
-      'description'
+      'description',
+      'topVisitors'
     ]
   }
 
