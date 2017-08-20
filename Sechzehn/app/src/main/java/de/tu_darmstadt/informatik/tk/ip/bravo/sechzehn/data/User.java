@@ -1,8 +1,12 @@
 
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
 
+import android.databinding.BindingAdapter;
+import android.widget.ImageView;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.squareup.picasso.Picasso;
 
 public class User {
 
@@ -102,6 +106,9 @@ public class User {
     public String getOptionalRealName() {
         return realName != null ? realName : username;
     }
+    public String getOptionalUserName() {
+        return realName != null ? username : null;
+    }
 
     public void setRealName(String realName) {
         this.realName = realName;
@@ -197,12 +204,26 @@ public class User {
         if (lng != null ? !lng.equals(user.lng) : user.lng != null) return false;
         if (password != null ? !password.equals(user.password) : user.password != null)
             return false;
-        return email != null ? email.equals(user.email) : user.email == null;
+        if (email != null ? !email.equals(user.email) : user.email != null) return false;
+        return friendshipStatus == user.friendshipStatus;
 
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (realName != null ? realName.hashCode() : 0);
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (profilePicture != null ? profilePicture.hashCode() : 0);
+        result = 31 * result + (dateOfBirth != null ? dateOfBirth.hashCode() : 0);
+        result = 31 * result + (lat != null ? lat.hashCode() : 0);
+        result = 31 * result + (lng != null ? lng.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (incognito ? 1 : 0);
+        result = 31 * result + (confirmed ? 1 : 0);
+        result = 31 * result + (friendshipStatus != null ? friendshipStatus.hashCode() : 0);
+        return result;
     }
 }

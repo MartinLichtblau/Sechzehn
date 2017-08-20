@@ -85,6 +85,7 @@ dependencies {
     }
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.4.0'
 
+    compile 'org.jetbrains:annotations-java5:15.0'
 }
 
 

@@ -26,9 +26,51 @@
             android:background="?attr/colorPrimary"
             android:elevation="3dp"
             android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:subtitleTextColor="@android:color/white"
-            app:titleTextColor="@android:color/white" />
+            android:theme="?attr/actionBarTheme">
+
+            <ImageView
+                android:id="@+id/profilePicture"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="8dp"
+                app:profilePictureUrl="@{user.profilePicture}" />
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/realName"
+                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:gravity="center_vertical|start"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:text="@{user.optionalRealName}"
+
+                    tools:text="Real Name" />
+
+                <TextView
+                    android:id="@+id/userName"
+                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center_vertical|start"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:text="@{user.optionalUserName}"
+
+                    tools:text="Username" />
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
 
         <com.stfalcon.chatkit.messages.MessagesList
             android:id="@+id/messagesList"
@@ -36,17 +78,16 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/messagesInput"
             android:layout_below="@+id/messageToolbar"
-            app:incomingTextColor="@color/md_dark_primary_text"
             app:incomingDefaultBubbleColor="@color/colorPrimary"
             app:incomingDefaultBubblePressedColor="@color/primary_dark"
-            app:incomingTimeTextColor="@color/md_dark_secondary"
+            app:incomingTextColor="@color/md_dark_primary_text"
             app:incomingTextLinkColor="@color/accent"
+            app:incomingTimeTextColor="@color/md_dark_secondary"
             app:outcomingDefaultBubbleColor="@color/white"
             app:outcomingDefaultBubblePressedColor="@color/md_grey_100"
-            app:outcomingTimeTextColor="@color/md_light_secondary"
             app:outcomingTextColor="@color/md_light_primary_text"
             app:outcomingTextLinkColor="@color/accent"
-            />
+            app:outcomingTimeTextColor="@color/md_light_secondary" />
 
         <com.stfalcon.chatkit.messages.MessageInput
             android:id="@+id/messagesInput"

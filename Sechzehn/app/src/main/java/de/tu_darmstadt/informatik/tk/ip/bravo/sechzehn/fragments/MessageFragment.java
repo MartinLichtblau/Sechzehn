@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -26,23 +27,25 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentMessageBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.DataBindingItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.OutcomingMessageViewHolder;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.socket.ChatSocket;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.ChatNotificationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DataBindingAdapters;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.ChatService.*;
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService.*;
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.ChatService.ChatService;
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService.UserService;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MessageFragment#newInstance} factory method to
- * create an UserService of this fragment.
+ * create an object of this fragment.
  */
 public class MessageFragment extends DataBindingFragment<FragmentMessageBinding> {
 
@@ -145,7 +148,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (m.sender.equals(ownername)){
+                            if (m.sender.equals(ownername)) {
                                 m.senderUser = owner;
                                 adapter.update(m);
                             }
@@ -166,7 +169,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     }
 
     /**
-     * Use this factory method to create a new UserService of
+     * Use this factory method to create a new object of
      * this fragment using the provided parameters.
      *
      * @param username Username of the chat partner.
@@ -219,8 +222,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         ensureUsersAreLoaded(new Runnable() {
             @Override
             public void run() {
-                binding.messageToolbar.setTitle(user.getUser().getOptionalRealName());
-                binding.messageToolbar.setSubtitle(user.getUser().getUsername());
+                binding.setUser(user.getUser());
             }
         });
     }

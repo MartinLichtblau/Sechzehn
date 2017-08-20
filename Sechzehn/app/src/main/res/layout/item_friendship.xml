@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="friendship"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Friendship" />
+
+        <variable
+            name="self"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.FriendshipItem" />
+    </data>
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp">
+
+        <ImageView
+
+            android:id="@+id/profilePicture"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            app:profilePictureUrl="@{friendship.relatedUser.profilePicture}"
+            app:srcCompat="@drawable/ic_owner" />
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="56dp">
+
+            <LinearLayout
+
+                android:layout_width="0dp"
+
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/accept"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/item_user_realName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center_vertical|start"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:text="@{friendship.relatedUser.optionalRealName}"
+                    android:textSize="16sp"
+                    tools:text="Real Name" />
+
+                <TextView
+                    android:id="@+id/item_user_userName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_vertical|start"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:text="@{friendship.relatedUser.optionalUserName}"
+                    android:textSize="14sp"
+                    tools:text="Username" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/accept"
+                style="?android:attr/buttonBarPositiveButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+
+                android:onClick="@{self::onAccept}"
+                android:text="Accept"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/decline"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="8dp"
+
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/decline"
+                style="?android:attr/buttonBarNegativeButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+
+                android:onClick="@{self::onDecline}"
+                android:text="Decline"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
+        </android.support.constraint.ConstraintLayout>
+
+
+    </RelativeLayout>
+</layout>

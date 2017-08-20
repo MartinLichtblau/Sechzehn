@@ -40,6 +40,11 @@ public final class SzUtils {
     private static Context context;
     private static Bitmap user_background;
     private static Bitmap venue_background;
+
+    public static int ceilDiv(int x, int y) {
+        return (x+y-1)/y;
+    }
+
     public enum ThumbType {USER, VENUE}
     final static List<Target> strongReferenceTargetList = new ArrayList<>();
 

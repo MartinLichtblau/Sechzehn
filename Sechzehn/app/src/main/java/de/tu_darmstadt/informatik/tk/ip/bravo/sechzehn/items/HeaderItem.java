@@ -1,5 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.textservice.TextInfo;
@@ -17,12 +18,10 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
  */
 
 public class HeaderItem extends AbstractItem<HeaderItem, HeaderItem.ViewHolder> {
+    @NonNull
     public String title;
 
-    public HeaderItem() {
-    }
-
-    public HeaderItem(String title) {
+    public HeaderItem(@NonNull String title) {
         this.title = title;
     }
 
@@ -54,6 +53,24 @@ public class HeaderItem extends AbstractItem<HeaderItem, HeaderItem.ViewHolder> 
         holder.title.setText(null);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        HeaderItem that = (HeaderItem) o;
+
+        return title.equals(that.title);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + title.hashCode();
+        return result;
+    }
 
     @Override
     public ViewHolder getViewHolder(View v) {

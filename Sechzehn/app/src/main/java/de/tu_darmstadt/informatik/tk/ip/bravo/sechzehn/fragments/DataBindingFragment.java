@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.BR;
+
 /**
  * Abstract Fragment for usage with DataBinding
  *
@@ -90,11 +92,8 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
     }
 
     private void bindSelf(Binding binding) {
-        try {
-            Method setSelfMethod = binding.getClass().getMethod("setSelf", this.getClass());
-            setSelfMethod.invoke(binding, this);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            Log.w("DataBindingFragment", e.getMessage());
-        }
+       if(!binding.setVariable(BR.self,this)){
+           Log.w("DataBindingFragment", this.getClass().getName()+": Self not bound");
+       }
     }
 }

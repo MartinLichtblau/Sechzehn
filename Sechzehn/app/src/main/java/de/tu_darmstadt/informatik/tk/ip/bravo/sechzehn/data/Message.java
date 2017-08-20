@@ -123,4 +123,38 @@ public class Message implements IMessage {
             return null;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Message message = (Message) o;
+
+        if (id != message.id) return false;
+        if (isRead != message.isRead) return false;
+        if (created != null ? !created.equals(message.created) : message.created != null)
+            return false;
+        if (updated != null ? !updated.equals(message.updated) : message.updated != null)
+            return false;
+        if (sender != null ? !sender.equals(message.sender) : message.sender != null) return false;
+        if (receiver != null ? !receiver.equals(message.receiver) : message.receiver != null)
+            return false;
+        if (body != null ? !body.equals(message.body) : message.body != null) return false;
+        return senderUser != null ? senderUser.equals(message.senderUser) : message.senderUser == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (created != null ? created.hashCode() : 0);
+        result = 31 * result + (updated != null ? updated.hashCode() : 0);
+        result = 31 * result + (isRead ? 1 : 0);
+        result = 31 * result + (sender != null ? sender.hashCode() : 0);
+        result = 31 * result + (receiver != null ? receiver.hashCode() : 0);
+        result = 31 * result + (body != null ? body.hashCode() : 0);
+        result = 31 * result + (senderUser != null ? senderUser.hashCode() : 0);
+        return result;
+    }
 }
