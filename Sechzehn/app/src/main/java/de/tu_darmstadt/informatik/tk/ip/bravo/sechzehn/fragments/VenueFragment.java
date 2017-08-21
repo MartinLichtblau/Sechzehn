@@ -1,22 +1,32 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 
+import android.R;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.text.DecimalFormat;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFAB;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentVenueBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.CheckInService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -25,11 +35,12 @@ import retrofit2.Response;
  * Use the {@link VenueFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> implements OnMapReadyCallback {
+public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> implements OnMapReadyCallback, RatingBar.OnRatingBarChangeListener {
     private static final String ARG_PARAM1 = "venueId";
 
     private String venueId;
     private Venue venue;
+    private MaterialSheetFab<AnimatedFAB> fabSheet;
 
     /**
      * Use this factory method to create a new instance of
@@ -64,6 +75,11 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     @Override
     protected void useDataBinding(final FragmentVenueBinding binding, Bundle savedInstanceState) {
         binding.mapView.onCreate(savedInstanceState);
+
+        fabSheet = new MaterialSheetFab<>(binding.checkin, binding.fabSheet, binding.overlay,
+                getResources().getColor(R.color.white, null),
+                SzUtils.getThemeColor(getActivityEx(), R.attr.colorAccent));
+
         VenueService.VenueService.getVenue(venueId).enqueue(new DefaultCallback<Venue>(getActivityEx()) {
             @Override
             public void onResponse(Call<Venue> call, Response<Venue> response) {
@@ -74,11 +90,60 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                 }
             }
         });
+
+        binding.ratingBar.setOnRatingBarChangeListener(this);
     }
 
+    public void checkIn(View v) {
+        fabSheet.showSheet();
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         googleMap.addMarker(new MarkerOptions().position(venue.getPosition()));
+    }
+
+    @Override
+    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+        if (fromUser) {
+            fabSheet.hideSheet();
+            CheckInService.CheckInService.checkIn(venueId, new CheckIn((int) rating))
+                    .enqueue(new DefaultCallback<CheckIn>(getActivityEx()) {
+                                 @Override
+                                 public void onResponse(Call<CheckIn> call, Response<CheckIn> response) {
+                                     binding.checkin.setEnabled(false);
+                                 }
+                             }
+                    );
+        }
+    }
+
+    private static DecimalFormat ratingFormatter = new DecimalFormat("##.0");
+
+    @Nullable
+    public static String formatRating(@Nullable @FloatRange(from = 0.0, to = 10.0) Double rating) {
+        if (rating != null) {
+            return ratingFormatter.format(rating);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String formatPrice(@Nullable @IntRange(from = 1, to = 5) Integer price) {
+        if (price != null) {
+            switch (price) {
+                case 1:
+                    return "€ ·";
+                case 2:
+                    return "€€ ·";
+                case 3:
+                    return "€€€ ·";
+                case 4:
+                    return "€€€€ ·";
+                case 5:
+                    return "€€€€€ ·";
+            }
+        }
+        return null;
     }
 }

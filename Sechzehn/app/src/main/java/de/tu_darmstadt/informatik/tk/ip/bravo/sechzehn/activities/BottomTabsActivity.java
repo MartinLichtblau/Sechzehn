@@ -383,7 +383,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                 return SearchFragment.newInstance();
             case INDEX_FRIENDS:
                 //return FriendsFragment.newInstance();
-                return VenueFragment.newInstance("53a1fb76498e33d268e51cee");
+                return VenueFragment.newInstance("4bccb6ebb6c49c7418419491");
             case INDEX_OWNER:
                 return OwnerFragment.newInstance();         //In Background gets owners data from server
         }

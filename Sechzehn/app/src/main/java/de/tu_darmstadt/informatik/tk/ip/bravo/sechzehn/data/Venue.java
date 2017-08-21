@@ -56,6 +56,33 @@ public class Venue {
 
     public String phone;
     public String address;
+
+    public String getAddressPart1() {
+        if (address == null) {
+            return null;
+        }
+        int endOfFirstPart = address.indexOf(';');
+        if (endOfFirstPart < 1) {
+            return null;
+        }
+        return address.substring(0, endOfFirstPart);
+    }
+
+    public String getAddressPart2() {
+        if (address == null) {
+            return null;
+        }
+        int endOfPart1 = address.indexOf(';');
+        if (endOfPart1 < 1) {
+            return null;
+        }
+        int endOfPart2 = address.indexOf(';', endOfPart1);
+        if (endOfPart2 < 1) {
+            return null;
+        }
+        return address.substring(0, endOfPart2);
+    }
+
     public String description;
 
     /**

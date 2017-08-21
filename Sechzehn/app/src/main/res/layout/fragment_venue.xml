@@ -4,6 +4,8 @@
 
     <data>
 
+        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment" />
+
         <variable
             name="venue"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue" />
@@ -13,23 +15,31 @@
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment" />
     </data>
 
-    <FrameLayout
+    <RelativeLayout
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment">
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/floatingActionButton"
+
+        <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFAB
+
+            android:id="@+id/checkin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_margin="16dp"
-            android:clickable="true"
-            app:fabSize="normal"
-            app:srcCompat="@drawable/ic_check_white_18dp" />
+            android:onClick="@{self::checkIn}"
+            android:src="@drawable/ic_notification"
+            android:tint="@android:color/white"
+            app:elevation="6dp"
+            app:fabSize="normal" />
+
+        <!-- Circular reveal container for the sheet -->
 
         <com.amar.library.ui.StickyScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:stickyHeader="@+id/toolbar">
@@ -47,7 +57,8 @@
                     android:adjustViewBounds="true"
                     android:cropToPadding="false"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/profile_coverfoto_default" />
+                    android:src="@drawable/profile_coverfoto_default"
+                    tools:visibility="gone" />
 
 
                 <android.support.v7.widget.Toolbar
@@ -70,8 +81,9 @@
                         tools:text="{name}" />
                 </android.support.v7.widget.Toolbar>
 
-
+                <!--Infos-->
                 <LinearLayout
+                    android:id="@+id/infos"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="16dp"
@@ -86,6 +98,7 @@
                             android:id="@+id/textView9"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="@{VenueFragment.formatPrice(venue.price)}"
                             android:textAppearance="@android:style/TextAppearance.Material.Title"
                             tools:text="$$$$$ · " />
 
@@ -111,19 +124,30 @@
 
                 </LinearLayout>
 
+                <!-- Rating Card -->
                 <android.support.v7.widget.CardView
+                    android:id="@+id/ratingCard"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp">
+                    android:layout_marginRight="8dp"
+                    tools:showIn="@layout/fragment_venue"
+                    tools:visibility="gone">
 
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="16dp"
-                        android:gravity="center_vertical"
                         android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Rating"
+                            android:textAppearance="@android:style/TextAppearance.Material.Title" />
 
                         <RelativeLayout
                             android:layout_width="wrap_content"
@@ -133,7 +157,6 @@
                                 android:id="@+id/imageView3"
                                 android:layout_width="120dp"
                                 android:layout_height="120dp"
-                                android:layout_weight="1"
                                 android:scaleX="1.2"
                                 android:scaleY="1.2"
                                 android:src="@drawable/ic_star_pink"
@@ -145,10 +168,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
-                                android:layout_weight="1"
+
 
                                 android:paddingTop="4dp"
-                                android:text="@{String.format(`%f`,venue.rating)}"
+                                android:text="@{VenueFragment.formatRating(venue.rating)}"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Title.Inverse"
                                 android:textSize="24sp"
                                 app:layout_constraintBottom_toBottomOf="@+id/imageView3"
@@ -158,53 +181,12 @@
                                 tools:text="10.9" />
                         </RelativeLayout>
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="16dp"
-                            android:layout_marginRight="16dp"
-                            android:gravity="center_horizontal"
-                            android:orientation="vertical"
-                            app:layout_constraintRight_toRightOf="parent"
-                            tools:layout_editor_absoluteY="8dp">
-
-                            <TextView
-                                android:id="@+id/textView4"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="7dp"
-                                android:layout_marginTop="8dp"
-                                android:text="Rate this location"
-                                android:textAlignment="center"
-                                android:textAppearance="@android:style/TextAppearance.Material.Title"
-                                app:layout_constraintBottom_toTopOf="@+id/ratingBar"
-                                app:layout_constraintLeft_toLeftOf="@+id/ratingBar"
-                                app:layout_constraintRight_toRightOf="@+id/ratingBar"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <RatingBar
-                                android:id="@+id/ratingBar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginRight="8dp"
-                                android:layout_marginStart="8dp"
-                                android:numStars="3"
-                                android:stepSize="1"
-                                app:layout_constraintBottom_toBottomOf="parent"
-
-                                app:layout_constraintHorizontal_bias="0.551"
-                                app:layout_constraintLeft_toRightOf="@+id/imageView3"
-                                app:layout_constraintRight_toRightOf="parent" />
-                        </LinearLayout>
-
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
-
+                <!-- Address Card -->
                 <android.support.v7.widget.CardView
+                    android:id="@+id/addressCard"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
@@ -228,17 +210,122 @@
                             tools:background="@drawable/profile_coverfoto_default" />
 
                         <TextView
-                            android:id="@+id/textView10"
+
+                            la
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="16dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginTop="16dp"
+                            android:text="@{venue.addressPart1}"
                             android:textAppearance="@android:style/TextAppearance.Material.Title"
-                            tools:text="{address}" />
+                            tools:text="{address1}" />
 
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:text="@{venue.addressPart2}"
+                            android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                            tools:text="{address2}" />
 
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
+                <!-- Opening Hours Card -->
+                <android.support.v7.widget.CardView
+                    android:id="@+id/hoursCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="16dp"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="56dp"
+                            android:orientation="vertical">>
+
+                            <TextView
+
+
+                                android:id="@+id/textView7"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:text="Opening Hours"
+                                android:textAppearance="@android:style/TextAppearance.Material.Title" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                                tools:text="{Today}" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:visibility="gone"
+                                tools:visibility="gone">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginTop="8dp"
+                                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                                    tools:text="{address2}" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                                    tools:text="{address2}" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                                    tools:text="{address2}" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                                    tools:text="{address2}" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imageView4"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="false"
+                            android:layout_alignParentTop="true"
+                            app:srcCompat="@drawable/ic_expand_more" />
+                    </RelativeLayout>
+
+
+                </android.support.v7.widget.CardView>
+
+
 
                 <TextView
                     android:id="@+id/textView12"
@@ -250,95 +337,64 @@
                     android:text="Comments"
                     android:textAppearance="@android:style/TextAppearance.Material.Title" />
 
-                <android.support.v7.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="8dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="8dp"
-                            android:layout_marginRight="8dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/imageView5"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                app:srcCompat="@drawable/ic_owner" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="16dp"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/textView13"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginBottom="8dp"
-                                    android:textAppearance="@android:style/TextAppearance.Material.Title"
-                                    tools:text="{realname}" />
-
-                                <TextView
-                                    android:id="@+id/textView14"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginBottom="8dp"
-
-                                    tools:text="{username}" />
-
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/textView15"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:layout_marginLeft="8dp"
-                            android:layout_marginRight="8dp"
-                            android:layout_marginTop="16dp"
-                            tools:text="{text}" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-
-                            <Button
-                                android:id="@+id/button4"
-                                style="@style/Widget.AppCompat.Button.Borderless"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Reply" />
-
-                            <Button
-                                android:id="@+id/button3"
-                                style="@style/Widget.AppCompat.Button.Borderless"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Button" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-
-                </android.support.v7.widget.CardView>
 
             </LinearLayout>
         </com.amar.library.ui.StickyScrollView>
 
+        <com.gordonwong.materialsheetfab.DimOverlayFrameLayout
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:visibility="gone" />
 
-    </FrameLayout>
+        <io.codetail.widget.RevealLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="end|bottom"
+            android:orientation="vertical"
+            tools:visibility="gone">
+
+            <!-- Sheet that contains your items -->
+            <android.support.v7.widget.CardView
+                android:id="@+id/fab_sheet"
+                android:layout_width="220dp"
+                android:layout_height="152dp"
+                android:layout_margin="16dp">
+
+                <!-- TODO: Put your sheet items here -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="16dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Check In"
+                        android:textAlignment="textStart"
+                        android:textAppearance="@android:style/TextAppearance.Material.Title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="To check in rate this location" />
+
+                    <RatingBar
+                        android:id="@+id/ratingBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="3" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+        </io.codetail.widget.RevealLinearLayout>
+
+
+    </RelativeLayout>
 </layout>
