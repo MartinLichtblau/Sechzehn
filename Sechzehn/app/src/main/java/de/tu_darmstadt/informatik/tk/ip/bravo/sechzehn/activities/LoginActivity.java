@@ -12,11 +12,8 @@ import java.util.List;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.ResetPasswordFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.*;
@@ -44,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
                             .commitAllowingStateLoss(); // Fix crash while starting app from Email-link
 
                 } else if (pathSegments.get(0).equals("confirm")) {
-                    LoginService.confirmEmail(pathSegments.get(1)).enqueue(new DefaultCallback<Object>(getActivity()) {
+                    LoginService.confirmEmail(pathSegments.get(1)).enqueue(new DefaultCallback<de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage>(getActivity()) {
                         @Override
                         public void onResponse(Call<Object> call, Response<Object> response) {
                             if (response.isSuccessful()) {

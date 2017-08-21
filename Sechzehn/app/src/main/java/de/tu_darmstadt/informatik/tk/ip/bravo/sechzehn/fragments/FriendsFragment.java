@@ -124,7 +124,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
             @Override
             protected Pagination<IItem> doInBackground(Integer... params) {
                 Pagination<IItem> list = searchList.get(params[0], params[1]);
-             ensureDataLoaded(list);
+                ensureDataLoaded(list);
                 return list;
             }
 
@@ -141,7 +141,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
      * If the fragment is not resumed it displays the default list,
      * else the content will be automatically created through the onQueryTextChangeEvent.
      *
-     * @param binding The DataBinding of this Fragment.
+     * @param binding            The DataBinding of this Fragment.
      * @param savedInstanceState
      */
     @Override
@@ -177,7 +177,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
                     friends.reset();
                 }
 
-                Pagination<IItem> list=defaultList.get(1, PER_PAGE);
+                Pagination<IItem> list = defaultList.get(1, PER_PAGE);
                 ensureDataLoaded(list);
                 return list;
             }
@@ -254,7 +254,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
             @Override
             protected Pagination<Friendship> load(int page, int perPage) {
                 try {
-                    Response<Pagination<Friendship>> response = FriendshipService.getFriendshipRequests(SzUtils.getOwnername(), page, perPage).execute();
+                    Response<Pagination<Friendship>> response = FriendshipService.getFriendshipRequests(SzUtils.getOwnername(), page, perPage, true).execute();
                     if (response.isSuccessful()) {
                         return response.body();
                     }
@@ -393,6 +393,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
 
     /**
      * Ensures all data is loaded from the server.
+     *
      * @param page The list for which the data should be present.
      */
     private static void ensureDataLoaded(Pagination<IItem> page) {

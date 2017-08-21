@@ -13,7 +13,10 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
+ * Provides interaction with the Sechzehn API related to Chats.
+ *
  * @author Alexander Geiß on 03.08.2017.
+ * @see de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.socket.ChatSocket
  */
 
 public interface ChatService {

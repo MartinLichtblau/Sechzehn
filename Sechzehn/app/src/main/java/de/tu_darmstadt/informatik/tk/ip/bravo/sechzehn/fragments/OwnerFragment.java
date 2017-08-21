@@ -123,7 +123,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     }
 
     public void resetPassword(View view){
-        DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("resetPassword");
+        DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("requestResetPassword");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 

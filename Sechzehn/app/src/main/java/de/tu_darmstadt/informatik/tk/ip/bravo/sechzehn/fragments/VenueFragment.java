@@ -11,6 +11,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentVenueBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService;

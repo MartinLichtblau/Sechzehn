@@ -6,6 +6,13 @@ import android.support.annotation.IntRange;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Category;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Hour;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.UserVisit;
+
 /**
  * This class represents a venue.
  *
@@ -58,12 +65,18 @@ public class Venue {
     @IntRange(from = 1, to = 5)
     public Integer price;
     /**
-     * The Foursquare rating.
+     * The rating.
      * Must be between 0 and 10.
      */
-    @SerializedName("foursquare_rating")
+    @SerializedName("rating")
     @FloatRange(from = 0.0, to = 10.0)
-    public Double foursquareRating;
+    public Double rating;
+    /**
+     * The number of ratings.
+     */
+    @SerializedName("rating_count")
+    public Integer ratingCount;
+
     /**
      * The category of the venue.
      */
@@ -76,53 +89,31 @@ public class Venue {
      * The distance from the search location.
      */
     public Double distance;
-
     /**
-     * This class represents a venue's category.
+     * The top visitors of this location.
      */
-    public static class Category {
-        /**
-         * The id of the category.
-         */
-        public String id;
-        /**
-         * The name of the category.
-         */
-        public String name;
-        /**
-         * The short name of the category.
-         */
-        @SerializedName("short_name")
-        public String shortName;
-        /**
-         * The plural name of the category.
-         */
-        @SerializedName("plural_name")
-        public String pluralName;
-        /**
-         * The url of the category icon.
-         */
-        public String icon;
-
-    }
+    @SerializedName("top_visitors")
+    public List<UserVisit> topVisitors;
+    /**
+     * The opening hours.
+     */
+    public List<Hour> hours;
+    /**
+     * The last checkins.
+     */
+    public List<CheckIn> checkins;
 
     /**
      * This class represents a venue's section.
      */
-    public static enum Section {
-        @SerializedName("food")
-        FOOD,
-        @SerializedName("drinks")
-        DRINKS,
-        @SerializedName("coffee")
-        COFFEE,
-        @SerializedName("shops")
-        SHOPS,
-        @SerializedName("arts")
-        ARTS,
-        @SerializedName("outdoors")
-        OUTDOORS,
-        @SerializedName("sights")
-        SIGHTS
+    public enum Section {
+        @SerializedName("food")FOOD,
+        @SerializedName("drinks")DRINKS,
+        @SerializedName("coffee")COFFEE,
+        @SerializedName("shops")SHOPS,
+        @SerializedName("arts")ARTS,
+        @SerializedName("outdoors")OUTDOORS,
+        @SerializedName("sights")SIGHTS,
+        UNKNOWN
     }
 }

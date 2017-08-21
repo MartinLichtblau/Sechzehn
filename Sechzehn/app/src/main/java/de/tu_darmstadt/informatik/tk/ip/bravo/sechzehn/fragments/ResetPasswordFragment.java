@@ -90,7 +90,7 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
             binding.resetPasswordPasswordConfirmation.setError(null);
         }
 
-        LoginService.resetPasswordConfirm(token, user).enqueue(new DefaultCallback<Object>(getActivity()) {
+        LoginService.confirmResetPassword(token, user).enqueue(new DefaultCallback<de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage>(getActivity()) {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if (response.isSuccessful()) {

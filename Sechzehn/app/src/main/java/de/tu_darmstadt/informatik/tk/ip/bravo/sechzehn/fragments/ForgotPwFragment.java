@@ -60,7 +60,7 @@ public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBindin
     }
 
     public void confirmReset(View view) {
-        LoginService.resetPassword(user).enqueue(new Callback<Object>() {
+        LoginService.requestResetPassword(user).enqueue(new Callback<de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage>() {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if (response.isSuccessful()) {

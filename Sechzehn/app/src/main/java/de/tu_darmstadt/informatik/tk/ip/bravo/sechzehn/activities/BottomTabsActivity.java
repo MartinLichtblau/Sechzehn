@@ -33,6 +33,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.ChatNotificationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
@@ -381,7 +382,8 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
             case INDEX_SEARCH:
                 return SearchFragment.newInstance();
             case INDEX_FRIENDS:
-                return FriendsFragment.newInstance();
+                //return FriendsFragment.newInstance();
+                return VenueFragment.newInstance("53a1fb76498e33d268e51cee");
             case INDEX_OWNER:
                 return OwnerFragment.newInstance();         //In Background gets owners data from server
         }
