@@ -7,8 +7,14 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +24,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,10 +41,8 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public final class SzUtils {
     public static final CropCircleTransformation CROP_CIRCLE_TRANSFORMATION = new CropCircleTransformation();
-    private static SharedPreferences sharedPreferences; //SharedPreferences are null when app is not running
     private static String ownername;
     private static String token;
-    private static Context context;
     private static Bitmap user_background;
     private static Bitmap venue_background;
     public enum ThumbType {USER, VENUE}
@@ -47,17 +52,16 @@ public final class SzUtils {
 
     private void SzUtils(){}
 
-    public static void initialize(Context cx){
-        context = cx;
-        sharedPreferences = cx.getSharedPreferences("Sechzehn",0);
-        ownername = sharedPreferences.getString("ownername","");
-        token = sharedPreferences.getString("JWT","");
+    public static void initialize(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        ownername = prefs.getString("ownername","");
+        token = prefs.getString("JWT","");
 
         user_background = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_person_pin), 120, 120, false);
+                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin), 120, 120, false);
 
         venue_background = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_search), 120, 120, false);
+                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin), 120, 120, false);
     }
 
     public static String getToken(){
@@ -121,32 +125,92 @@ public final class SzUtils {
         return scaledImg;
     }
 
-    public static MutableLiveData<Bitmap> createThumb(@NonNull ThumbType type, @Nullable String url){
+    private static Bitmap compressBitmap(Bitmap original){
+        return original;
+        /*ByteArrayOutputStream out = new ByteArrayOutputStream();
+        original.compress(Bitmap.CompressFormat.PNG, 100, out);
+        return BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));*/
+    }
+
+    public static MutableLiveData<Bitmap> createUserPin(Context context, Boolean highlight, @Nullable String url){
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
         final Bitmap background;
-        switch (type){
-            case VENUE:
-                background = venue_background;
-            break;
-            default:
-                background = user_background;
+        if(highlight){
+            background = tintBitmap(user_background, R.color.colorAccent);
+        }else {
+            background = tintBitmap(user_background, R.color.colorAccent);;
         }
+
+        final Bitmap defaultUserPin =
+                compressBitmap(mergeToPin(background,
+                        Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin_default), 100, 100, false)));
+
         if(TextUtils.isEmpty(url)){
             //User has no profile picture
-            Bitmap defaultPicture = Bitmap.createScaledBitmap(
-                    BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_default_user_pin), 120, 120, false);
-            scaledImg.setValue(defaultPicture);
+            scaledImg.setValue(defaultUserPin);
         }else{
             final Target target = new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     strongReferenceTargetList.remove(this);
-                    scaledImg.setValue(mergeToPin(background, bitmap));
+                    scaledImg.setValue(compressBitmap(mergeToPin(background, bitmap)));
                 }
                 @Override
                 public void onBitmapFailed(Drawable errorDrawable) {
                     strongReferenceTargetList.add(this);
-                    scaledImg.setValue(background);
+                    scaledImg.setValue(defaultUserPin);
+                }
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            };
+            strongReferenceTargetList.add(target);
+
+            Picasso.with(context)
+                    .load(url)
+                    .centerCrop().resize(100, 100)
+                    .transform(CROP_CIRCLE_TRANSFORMATION)
+                    .into(target);
+        }
+
+        return scaledImg;
+    }
+
+    public static Bitmap tintBitmap(Bitmap bitmap, int color) {
+        Paint paint = new Paint();
+        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+        Bitmap bitmapResult = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmapResult);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return bitmapResult;
+    }
+
+    public static MutableLiveData<Bitmap> createVenuePin(Context context, Boolean highlight, @Nullable String url){
+        final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
+        final Bitmap background;
+        if(highlight){
+            background = tintBitmap(venue_background, R.color.colorAccent);
+        }else {
+            background = venue_background;
+        }
+
+        final Bitmap defaultVenuePin =
+                compressBitmap(mergeToPin(background,
+                        Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_default), 100, 100, false)));
+
+        if(TextUtils.isEmpty(url)){
+            scaledImg.setValue(defaultVenuePin);
+        }else{
+            final Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    strongReferenceTargetList.remove(this);
+                    scaledImg.setValue(compressBitmap(mergeToPin(background, bitmap)));
+                }
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    strongReferenceTargetList.add(this);
+                    scaledImg.setValue(defaultVenuePin);
                 }
                 @Override
                 public void onPrepareLoad(Drawable placeHolderDrawable) {

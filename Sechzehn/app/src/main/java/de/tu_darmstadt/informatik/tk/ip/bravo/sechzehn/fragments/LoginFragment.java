@@ -1,6 +1,8 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -85,7 +87,7 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
             @Override
             public void onResponse(Call<UserToken> call, Response<UserToken> response) {
                 if (response.isSuccessful()) {
-                    getActivity().getSharedPreferences("Sechzehn", 0).edit()
+                    PreferenceManager.getDefaultSharedPreferences(getContext()).edit()
                             .putString("JWT", response.body().token)
                             .putString("ownername", response.body().user.getUsername()).apply(); // > https://stackoverflow.com/questions/28096876/how-to-store-multiple-key-value-pairs-in-shared-preferences
                     Intent intent = new Intent(getActivity(), BottomTabsActivity.class);

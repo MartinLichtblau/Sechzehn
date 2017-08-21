@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.MutableLiveData;
@@ -8,9 +9,11 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -47,6 +50,8 @@ import permissions.dispatcher.RuntimePermissions;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
+
+import java.io.File;
 
 @RuntimePermissions
 public class BottomTabsActivity extends LifecycleActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
@@ -148,9 +153,11 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     }
 
     public void checkLoggedIn() {
-        SzUtils.initialize(getBaseContext());
+        SzUtils.initialize(this);
         if (TextUtils.isEmpty(SzUtils.getToken()) || TextUtils.isEmpty(SzUtils.getOwnername())) {
-            factoryReset();
+            Intent intent = new Intent(this, LoginActivity.class);
+            this.finish();
+            startActivity(intent);
         } else {
             checkStages.setValue(checkStages.getValue() + 1);
         }
@@ -292,17 +299,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     }
 
     public void factoryReset() {
-        getSharedPreferences("Sechzehn", 0).edit().clear().apply();
-        SzUtils.initialize(this);
-        ownerVM = null;
-        Intent locationServiceIntent = new Intent(this, LocationService.class);
-        stopService(locationServiceIntent);
-        Intent chatServiceIntent = new Intent(this, ChatNotificationService.class);
-        stopService(chatServiceIntent);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        this.finish(); //Finish BottomTabs
-        return;
+        //Awesome new function > clearApplicationUserData > https://developer.android.com/reference/android/app/ActivityManager.html
+        ((ActivityManager)getSystemService(ACTIVITY_SERVICE))
+                .clearApplicationUserData();
     }
 
     private void postOwnerToasts() {

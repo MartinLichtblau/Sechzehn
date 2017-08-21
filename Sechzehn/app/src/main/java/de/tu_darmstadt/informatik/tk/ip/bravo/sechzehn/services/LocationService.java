@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
@@ -36,16 +37,19 @@ public class LocationService extends Service implements
     public Location previousBestLocation = null;
     private LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
+    private static String token;
+    private static String ownername;
     private static UserService userService;
-    private static final String token = SzUtils.getToken();
-    private static String ownername = SzUtils.getOwnername();
-
 
     @Override
     public void onCreate() {
         //Is called multiple times again by Android System, after destroy, and runs also when main activity destroyed
         Log.d(TAG, "onCreate");
         super.onCreate();
+        if(TextUtils.isEmpty(SzUtils.getOwnername()))
+            SzUtils.initialize(getApplicationContext());
+        ownername = SzUtils.getOwnername();
+        token = SzUtils.getToken();
         userService = ServiceGenerator.createService(UserService.class,token);
     }
 
@@ -101,8 +105,8 @@ public class LocationService extends Service implements
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected");
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(30000); // milliseconds
-        locationRequest.setFastestInterval(30000); // you will get updates faster if e.g. another app requests location before your interval
+        locationRequest.setInterval(TWO_MINUTES); // milliseconds
+        locationRequest.setFastestInterval(15 * 1000); // you will get updates faster if e.g. another app requests location before your interval
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         //Since our app assures that at all times all permissions are granted it's ok like this
         LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -174,16 +178,17 @@ public class LocationService extends Service implements
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.d(TAG, "onLocationChanged");
         //Update only if new location is better and moved more than 100 meters
         if(isBetterLocation(location,previousBestLocation)){
-            if(previousBestLocation == null || location.distanceTo(previousBestLocation) > 100){
+            if(previousBestLocation == null || location.distanceTo(previousBestLocation) > 50){
                 updateLocation(location);
             }
         }
     }
 
     protected void updateLocation(Location location) {
-        Log.d(TAG, "updateLocation() | position: " + location.getLatitude() + ", " + location.getLongitude() + " accuracy: " + location.getAccuracy());
+        Log.d(TAG, "updateLocation() | ownername: " + ownername + " position: " + location.getLatitude() + ", " + location.getLongitude() + " accuracy: " + location.getAccuracy());
         previousBestLocation = location;
         RequestBody body = new GenericBody()
                     .put("lat", String.valueOf(location.getLatitude()))
