@@ -2,22 +2,24 @@
 
 const Schema = use('Schema')
 
-class CheckInsTableSchema extends Schema {
+class CommentsTableSchema extends Schema {
   up () {
-    this.create('check_ins', (table) => {
+    this.create('comments', (table) => {
       table.increments()
       table.timestamps()
+      table.text('body').notNullable()
       table.string('venue_id', 60).notNullable()
       table.string('username', 80).notNullable()
-      table.specificType('rating', 'smallint')
+      table.integer('photo_id').unsigned()
       table.foreign('venue_id').references('venues.id')
       table.foreign('username').references('users.username')
+      table.foreign('photo_id').references('photos.id')
     })
   }
 
   down () {
-    this.drop('check_ins')
+    this.drop('comments')
   }
 }
 
-module.exports = CheckInsTableSchema
+module.exports = CommentsTableSchema
