@@ -2,7 +2,6 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -36,6 +35,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActi
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentSearchBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
@@ -168,11 +168,11 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     public void initalSearch(){
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleMapRange());
-        /*searchVM.searchXVenuesNearby(...*/
+        searchVM.searchXVenuesNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleMapRange());
     }
 
     public void observeSearchResults(){
-        searchVM.searchResultUsers.observe(this, new Observer<Resource>() {
+        searchVM.userResults.observe(this, new Observer<Resource>() {
             @Override
             public void onChanged(@Nullable Resource resource) {
                 switch (resource.status){
@@ -183,19 +183,41 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                         Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
                         break;
                     case SUCCESS:
-                        Pagination<User> usersPage = (Pagination<User>) resource.data;
-                        Toast.makeText(getContext(), "Found"+usersPage.total+" users", Toast.LENGTH_SHORT).show();
-                        addUsers(usersPage.data);
+                        Pagination<User> userPagination = (Pagination<User>) resource.data;
+                        Toast.makeText(getContext(), "Found"+userPagination.total+" users", Toast.LENGTH_SHORT).show();
+                        addUsers(userPagination.data);
                         break;
                 }
             }
         });
-        //Observe Venue search result changes
+        searchVM.venueResults.observe(this, new Observer<Resource>() {
+            @Override
+            public void onChanged(@Nullable Resource resource) {
+                switch (resource.status){
+                    case LOADING:
+                        Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
+                        break;
+                    case ERROR:
+                        Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
+                        break;
+                    case SUCCESS:
+                        Pagination<Venue> venuePagination = (Pagination<Venue>) resource.data;
+                        Toast.makeText(getContext(), "Found"+venuePagination.total+" venues", Toast.LENGTH_SHORT).show();
+                        addVenues(venuePagination.data);
+                        break;
+                }
+            }
+        });
     }
 
     public void addUsers(List<User> userList){
         createAddUserMarkers(userList);
         /*showUsersOnList(userList);*/
+    }
+
+    public void addVenues(List<Venue> venueList){
+        createAddVenueMarkers(venueList);
+        //showVenuesOnList(venueList); @TODO @Alexander
     }
 
     private void createAddUserMarkers(final List<User> userList) {
@@ -219,6 +241,28 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                     }
                 });
             }
+        }
+    }
+
+    private void createAddVenueMarkers(final List<Venue> venueList) {
+        final HashMap<Marker,MarkerOptions> tempMarkerMap = new HashMap<>();
+        for (final Venue venue :  venueList) {
+                SzUtils.createThumb(SzUtils.ThumbType.VENUE, "placeholder url to picture").observe(this, new Observer<Bitmap>() {
+                    @Override
+                    public void onChanged(@Nullable Bitmap bitmap) {
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(new LatLng(venue.getLat(), venue.getLng()))
+                                .title(venue.getName())
+                                .snippet("View Venue")
+                                .infoWindowAnchor(0.5f, 0.5f)
+                                .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                        Marker marker = searchVM.map.addMarker(markerOptions);
+                        marker.setTag(venue);
+                        tempMarkerMap.put(marker, markerOptions);
+                        if (tempMarkerMap.size() >= (venueList.size()))
+                            searchVM.venuesOnMap.setValue(tempMarkerMap);
+                    }
+                });
         }
     }
 

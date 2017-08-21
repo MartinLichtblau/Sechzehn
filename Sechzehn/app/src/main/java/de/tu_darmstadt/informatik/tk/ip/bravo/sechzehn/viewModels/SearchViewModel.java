@@ -12,16 +12,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.maps.android.SphericalUtil;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.NetworkUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
@@ -35,10 +35,12 @@ import retrofit2.Response;
 public class SearchViewModel extends ViewModel{
     private final String TAG = "SearchViewModel";
     private static final UserService userService = ServiceGenerator.createService(UserService.class,SzUtils.getToken());
-    public MutableLiveData<Resource> searchResultUsers = new MutableLiveData<>();
+    private static final VenueService venueService = ServiceGenerator.createService(VenueService.class,SzUtils.getToken());
+    public MutableLiveData<Resource> userResults = new MutableLiveData<>();
     public MutableLiveData<HashMap<Marker,MarkerOptions>> usersOnMap = new MutableLiveData<>();
-    /*public MutableLiveData<HashMap<Marker,Venue>> venuesOnMap = new MutableLiveData<>();
-    * public MutableLiveData<Resource> searchResultVenues = new MutableLiveData<>();*/
+    public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
+    public MutableLiveData<HashMap<Marker,MarkerOptions>> venuesOnMap = new MutableLiveData<>();
+
 
     public Boolean lastStateSaved = false;
     public GoogleMap map;
@@ -51,20 +53,42 @@ public class SearchViewModel extends ViewModel{
     }
 
     public void getUsers(Integer page, Integer perPage, Double lat, Double lng, Double radius, Boolean isFriend, String searchedUsername){
-        searchResultUsers.setValue(Resource.loading(null));
+        userResults.setValue(Resource.loading(null));
         userService.getUsers(page, perPage, lat, lng, radius, isFriend, searchedUsername)
                 .enqueue(new Callback<Pagination<User>>(){
             @Override
             public void onResponse(Call<Pagination<User>> call, Response<Pagination<User>> response) {
                 if (response.isSuccessful())
-                    searchResultUsers.setValue(Resource.success(response.body(),null));
+                    userResults.setValue(Resource.success(response.body(),null));
                 else
-                    searchResultUsers.setValue(Resource.error(NetworkUtils.parseError(response).getMessage(), null));
+                    userResults.setValue(Resource.error(NetworkUtils.parseError(response).getMessage(), null));
             }
             @Override
             public void onFailure(Call<Pagination<User>> call, Throwable t) {
                 if(null != t.getCause())
-                    searchResultUsers.setValue(Resource.error(t.getCause().toString(),null));
+                    userResults.setValue(Resource.error(t.getCause().toString(),null));
+            }
+        });
+    }
+
+    public void searchXVenuesNearby(Integer numberVenues, Double lat, Double lng, Double radius){
+        getVenues(null, numberVenues, lat, lng, radius, null, null,null,null);
+    }
+
+    public void getVenues (Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time) {
+        venueResults.setValue(Resource.loading(null));
+        venueService.getVenues(page, perPage, lat, lng, radius, section, query, price, time).enqueue(new Callback<Pagination<Venue>>() {
+            @Override
+            public void onResponse(Call<Pagination<Venue>> call, Response<Pagination<Venue>> response) {
+                if (response.isSuccessful())
+                    venueResults.setValue(Resource.success(response.body(), null));
+                else
+                    venueResults.setValue(Resource.error(NetworkUtils.parseError(response).getMessage(), null));
+            }
+            @Override
+            public void onFailure(Call<Pagination<Venue>> call, Throwable t) {
+                if (null != t.getCause())
+                    venueResults.setValue(Resource.error(t.getCause().toString(), null));
             }
         });
     }
