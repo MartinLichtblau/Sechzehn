@@ -29,6 +29,7 @@ class FriendshipController {
     const user = yield User.findOrFail(request.param('id', null))
     const page = Number(request.input('page', 1))
     const perPage = Number(request.input('per_page', 10))
+    const onlyIncoming = Validator.sanitizor.toBoolean(request.input('only_incoming'))
 
     if (request.authUser.username !== user.username) {
       response.unauthorized({message: 'Not allowed to show friend requests for other users'})
@@ -45,7 +46,15 @@ class FriendshipController {
       return
     }
 
-    const friendshipRequests = yield Friendship.query().where('relating_user', user.username).whereNot('friendships.status', 'CONFIRMED').with('related_user').paginate(page, perPage)
+    const query = Friendship.query().where('relating_user', user.username)
+
+    if (onlyIncoming) {
+      query.where('friendships.status', 'RELATING_CONFIRMED')
+    } else {
+      query.whereNot('friendships.status', 'CONFIRMED')
+    }
+
+    const friendshipRequests = yield query.with('related_user').paginate(page, perPage)
 
     response.ok(friendshipRequests)
   }
