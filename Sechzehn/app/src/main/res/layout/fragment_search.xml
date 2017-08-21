@@ -65,7 +65,8 @@
             app:behavior_peekHeight="@dimen/search_bottomsheet_collapsed"
             app:layout_behavior="@string/bottom_sheet_behavior"
             app:behavior_hideable="false"
-            android:elevation="16dp">
+            android:elevation="16dp"
+            android:fitsSystemWindows="true">
             <include
                 android:id="@+id/search_bottomsheet"
                 layout="@layout/bottomsheet_search"/>
