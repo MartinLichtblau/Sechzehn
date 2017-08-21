@@ -1,8 +1,8 @@
 'use strict'
 
 const CheckIn = use('App/Model/CheckIn')
-const Venue = use('App/Model/Venue')
 const Validator = use('Validator')
+const Venue = use('App/Model/Venue')
 
 class CheckInController {
   * index (request, response) {
@@ -21,6 +21,9 @@ class CheckInController {
 
     const checkIns = yield CheckIn.query()
       .with('venue')
+      .scope('venue', builder => {
+        builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
+      })
       .where('username', authUser.username)
       .orderBy('created_at', 'desc')
       .paginate(page, perPage)
@@ -71,7 +74,11 @@ class CheckInController {
       rating
     })
 
-    yield checkIn.related('user', 'venue').load()
+    yield checkIn
+      .related('user', 'venue')
+      .scope('venue', builder => {
+        builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
+      }).load()
 
     response.ok(checkIn)
   }
@@ -99,7 +106,11 @@ class CheckInController {
     checkIn.rating = rating
     yield checkIn.save()
 
-    yield checkIn.related('user', 'venue').load()
+    yield checkIn
+      .related('user', 'venue')
+      .scope('venue', builder => {
+        builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
+      }).load()
 
     response.ok(checkIn)
   }

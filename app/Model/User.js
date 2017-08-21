@@ -157,7 +157,7 @@ class User extends Lucid {
    * List all Check-Ins of the this User.
    * @returns {Object}
    */
-  checkIns () {
+  checkins () {
     return this.hasMany('App/Model/CheckIn', 'username', 'username')
   }
 

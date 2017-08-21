@@ -18,14 +18,16 @@ class VenueController {
     const time = Moment(request.input('time'))
     const section = request.input('section', '')
     const price = Number(request.input('price'))
+    const sortByDistance = Number(request.input('sortByDistance'))
 
-    const validation = yield Validator.validate({section, searchQuery, lat, lng, radius, price}, {
+    const validation = yield Validator.validate({section, searchQuery, lat, lng, radius, price, sortByDistance}, {
       section: 'string|in:food,drinks,coffee,shops,arts,outdoors,sights',
       searchQuery: 'string',
       lat: 'range:-180,180',
       lng: 'range:-180,180',
       radius: 'range:0,6371',
-      price: 'integer|range:-1,6' // exclusive bounds
+      price: 'integer|range:-1,6', // exclusive bounds
+      sortByDistance: 'boolean'
     })
 
     if (validation.fails()) {
@@ -37,9 +39,14 @@ class VenueController {
 
     const cols = Venue.visibleList
     cols.push('venue_categories.name as category')
+    // Calculate the rating based on the foursquare rating and the ratings from the CheckIns
+    cols.push(Database.raw('round(((COALESCE(checkins_rating, foursquare_rating, -1) + COALESCE(foursquare_rating, checkins_rating, -1)) / 2)::numeric, 2) as rating'))
+    // Determine the overall rating count
+    cols.push(Database.raw('(COALESCE(foursquare_rating_count, 0) + COALESCE(checkins_rating_count, 0)) as rating_count'))
 
     // The main query
     const currentPageQuery = Venue.query().column(cols).leftOuterJoin('venue_categories', 'venues.category_id', 'venue_categories.id')
+      .leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
 
     // The query for calculation the total count
     const totalQuery = Venue.query().leftOuterJoin('venue_categories', 'venues.category_id', 'venue_categories.id')
@@ -93,18 +100,23 @@ class VenueController {
       const inRadiusQuery = 'earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
       currentPageQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
 
-      currentPageQuery.orderBy('distance', 'asc')
+      if (sortByDistance) {
+        currentPageQuery.orderBy('distance', 'asc')
+      }
 
       totalQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
     }
 
-    // TODO: Order by our rating
-    // currentPageQuery.orderBy('foursquare_rating', 'desc')
+    if (!(sortByDistance && lat !== null && lng !== null)) {
+      currentPageQuery.orderBy('rating', 'desc')
+    }
 
     // Fetch the actual data and complete the Pagination object
     const totalResult = yield totalQuery.count().first()
     pagination.data = yield currentPageQuery.forPage(pagination.page, pagination.perPage)
     pagination.data.map(item => {
+      item.rating = Number(item.rating)
+      item.rating_count = Number(item.rating_count)
       item.category = {
         name: item.category
       }
@@ -117,16 +129,16 @@ class VenueController {
   * show (request, response) {
     const venue = yield Venue
       .query()
-      .where('id', request.param('id'))
-      .with('category', 'hours', 'checkIns', 'checkIns.user')
-      // .withCount('checkIns')
+      .where('venues.id', request.param('id'))
+      .with('category', 'hours', 'checkins', 'checkins.user')
       .scope('hours', (builder) => {
         builder.orderBy('hours', 'asc')
       })
-      .scope('checkIns', builder => {
+      .scope('checkins', builder => {
         builder.orderBy('created_at', 'desc')
         builder.limit(3)
       })
+      .leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       .first()
 
     if (!venue) {
@@ -145,8 +157,8 @@ class VenueController {
       .innerJoin('users', 'check_ins.username', 'users.username')
       .orderBy('visit_count', 'desc').limit(3)
 
-    venue.topVisitors = topVisitors.map(item => {
-      const visitCount = item.visit_count
+    venue.top_visitors = topVisitors.map(item => {
+      const visitCount = Number(item.visit_count)
       delete item.visit_count
 
       return {
