@@ -26,7 +26,7 @@ class UserController {
     const pagination = new Pagination(request)
 
     // The main query
-    const query = User.query().column(User.visible)
+    const query = User.query().column(User.visibleList)
 
     // The query for calculation the total count
     const totalQuery = User.query()
@@ -99,6 +99,11 @@ class UserController {
     // Fetch the actual data and complete the Pagination object
     const totalResult = yield totalQuery.count().first()
     pagination.data = yield query.forPage(pagination.page, pagination.perPage)
+
+    /*    pagination.data.map(item => {
+          item.friendship_status = item.status
+        })*/
+
     pagination.total = Number(totalResult.count)
     response.ok(pagination)
   }
@@ -123,34 +128,30 @@ class UserController {
   }
 
   * show (request, response) {
-    const authUser = request.authUser
-    const authUsername = authUser.username
+    const authUsername = request.authUser.username
 
+    let user
     if (request.param('id') === authUsername) {
-      authUser.lol = true
-      yield authUser
-        .related('checkins')
-        .scope('checkins', builder => {
-          builder.limit(3)
-        })
-        .load()
-      response.ok(authUser)
-      return
+      user = request.authUser
+      user.isOwner = true
+    } else {
+      user = yield User.query().where('username', request.param('id'))
+        .leftJoin(Database.raw('friendships on users.username = friendships.relating_user and ? = friendships.related_user', [authUsername]))
+        .first()
     }
-
-    const user = yield User.query().where('username', request.param('id'))
-      .leftJoin(Database.raw('friendships on users.username = friendships.relating_user and ? = friendships.related_user', [authUsername]))
-      .first()
 
     if (!user) {
       throw new Exceptions.ModelNotFoundException()
     }
 
-    if (user.status === 'CONFIRMED') {
-      response.ok(user.friendView())
-    } else {
-      response.ok(user.strangerView())
-    }
+    yield user
+      .related('checkins')
+      .scope('checkins', builder => {
+        builder.limit(3)
+      })
+      .load()
+
+    response.ok(user)
   }
 
   * update (request, response) {
@@ -172,7 +173,8 @@ class UserController {
     user.fill(userData)
     yield user.save()
 
-    response.ok(user.completeView())
+    user.isOwner = true
+    response.ok(user)
   }
 
   * updateProfilePicture (request, response) {
@@ -197,7 +199,8 @@ class UserController {
     // Delete the old picture
     yield Storage.delete(oldUrl)
 
-    response.ok(user.completeView())
+    user.isOwner = true
+    response.ok(user)
   }
 
   * updatePassword (request, response) {
@@ -231,7 +234,9 @@ class UserController {
 
     user.password = yield Hash.make(userData.password)
     yield user.save()
-    response.ok(user.completeView())
+
+    user.isOwner = true
+    response.ok(user)
   }
 
   * updateEmail (request, response) {
@@ -272,7 +277,9 @@ class UserController {
     user.confirmed = false
 
     yield user.save()
-    response.ok(user.completeView())
+
+    user.isOwner = true
+    response.ok(user)
   }
 
   * updateLocation (request, response) {

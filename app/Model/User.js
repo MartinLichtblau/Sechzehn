@@ -81,73 +81,91 @@ class User extends Lucid {
       'profile_picture',
       'lat',
       'lng',
-      'lol'
+      // For friends
+      'date_of_birth',
+      // Only for owner
+      'email',
+      'incognito',
+      'confirmed'
     ]
   }
 
-  getLat () {
-    console.log(this)
-    console.log(this.lol)
+  static get visibleList () {
+    return [
+      'username',
+      'real_name',
+      'city',
+      'profile_picture',
+      'lat',
+      'lng'
+    ]
+  }
 
-    if (!this.incognito || this.lol) {
-      return this.lat
+  getLat (lat) {
+    if (!this.attributes.incognito || this.attributes.isOwner) {
+      return lat
+    } else {
+      return null
+    }
+  }
+
+  getLng (lng) {
+    if (!this.attributes.incognito || this.attributes.isOwner) {
+      return lng
     } else {
       return null
     }
   }
 
   /**
-   * Builds an object with all relevant properties of this user for viewing the profile.
-   * @returns {{username: (string|string), real_name: (*|string), city: (*|string), profile_picture: (*|profile_picture|{fileExtension}|null), lat: (*|lat|{min, max}|string|string), lng: (*|string|lng|{min, max}), friendship_status: string}}
+   * Format the date_of_birth as YYYY-MM-DD and restrict the access to this field.
+   *
+   * @param dob - the date of birth
+   * @returns {*|String}
    */
-  strangerView () {
-    return {
-      username: this.username,
-      real_name: this.real_name,
-      city: this.city,
-      profile_picture: this.profile_picture,
-      lat: this.lat,
-      lng: this.lng,
-      friendship_status: this.status || 'NONE'
+  getDateOfBirth (dob) {
+    if (this.attributes.isOwner || this.attributes.status === 'CONFIRMED') {
+      return (dob ? Moment(dob).format('YYYY-MM-DD') : dob)
+    } else {
+      return null
     }
   }
 
-  /**
-   * Builds an object with all relevant properties of this user for viewing the own profile.
-   * @returns {{id: number, username: string, email: string, real_name: (string|null), date_of_birth: (Date|null), city: (string|null), profile_picture: (string|null), lat: (null|float), lng: (null|float), incognito: boolean, confirmed: boolean}}
-   */
-  completeView () {
-    return {
-      username: this.username,
-      email: this.email,
-      real_name: this.real_name,
-      date_of_birth: this.date_of_birth,
-      city: this.city,
-      profile_picture: this.profile_picture,
-      lat: this.lat,
-      lng: this.lng,
-      incognito: this.incognito,
-      confirmed: this.confirmed,
-      friendship_status: 'SELF',
-      checkins: this.checkins
+  getEmail (email) {
+    if (this.attributes.isOwner) {
+      return email
+    } else {
+      return null
     }
   }
 
-  /**
-   * Builds an object with all relevant properties of this user for viewing the profile as a friend.
-   * @returns {{username: (string|string), email: (string|string), real_name: (*|string), date_of_birth: (string|*), city: (*|string), profile_picture: (*|profile_picture|{fileExtension}|null), lat: (*|string|lat|{min, max}|string), lng: (*|lng|{min, max}|string), friendship_status}}
-   */
-  friendView () {
-    return {
-      username: this.username,
-      real_name: this.real_name,
-      date_of_birth: this.date_of_birth,
-      city: this.city,
-      profile_picture: this.profile_picture,
-      lat: this.lat,
-      lng: this.lng,
-      friendship_status: this.status
+  getIncognito (val) {
+    if (this.attributes.isOwner) {
+      return val
+    } else {
+      return null
     }
+  }
+
+  getConfirmed (val) {
+    if (this.attributes.isOwner) {
+      return val
+    } else {
+      return null
+    }
+  }
+
+  static get computed () {
+    return ['friendship_status']
+  }
+
+  getFriendshipStatus () {
+    if (this.status) {
+      return this.status
+    } else if (this.isOwner) {
+      return 'SELF'
+    }
+    return 'NONE'
   }
 
   /**
@@ -173,16 +191,7 @@ class User extends Lucid {
   checkins () {
     return this.hasMany('App/Model/CheckIn', 'username', 'username')
   }
-
-  /**
-   * Format the date_of_birth as YYYY-MM-DD.
-   *
-   * @param dob - the date of birth
-   * @returns {*|String}
-   */
-  getDateOfBirth (dob) {
-    return (dob ? Moment(dob).format('YYYY-MM-DD') : dob)
-  }
 }
 
-module.exports = User
+module
+  .exports = User

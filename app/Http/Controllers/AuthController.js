@@ -21,14 +21,17 @@ class AuthController {
       const token = yield request.auth.attempt(credentials.email, credentials.password)
       const user = yield User.findBy('email', credentials.email)
 
+      user.isOwner = true
+
       if (!user.confirmed) {
         response.status(420).send({
           message: 'Email not confirmed'
         })
+        return
       }
 
       response.ok({
-        user: user.completeView(),
+        user: user,
         token: token
       })
     } catch (e) {
