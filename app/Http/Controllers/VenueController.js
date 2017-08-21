@@ -18,16 +18,15 @@ class VenueController {
     const time = Moment(request.input('time'))
     const section = request.input('section', '')
     const price = Number(request.input('price'))
-    const sortByDistance = Number(request.input('sortByDistance'))
+    const sortByDistance = Validator.sanitizor.toBoolean(request.input('sort_by_distance'))
 
-    const validation = yield Validator.validate({section, searchQuery, lat, lng, radius, price, sortByDistance}, {
+    const validation = yield Validator.validate({section, searchQuery, lat, lng, radius, price}, {
       section: 'string|in:food,drinks,coffee,shops,arts,outdoors,sights',
       searchQuery: 'string',
       lat: 'range:-180,180',
       lng: 'range:-180,180',
       radius: 'range:0,6371',
-      price: 'integer|range:-1,6', // exclusive bounds
-      sortByDistance: 'boolean'
+      price: 'integer|range:-1,6' // exclusive bounds
     })
 
     if (validation.fails()) {
@@ -70,7 +69,10 @@ class VenueController {
 
       currentPageQuery.select(Database.raw(similarityQueryString + ' as similarity', {searchQuery: searchQuery}))
         .whereRaw(similarityQueryString + ' > :threshold', queryParams)
-        .orderBy('similarity', 'DESC')
+
+      if (!sortByDistance) {
+        currentPageQuery.orderBy('similarity', 'DESC')
+      }
 
       totalQuery.whereRaw(similarityQueryString + ' > :threshold', queryParams)
     }
@@ -107,7 +109,7 @@ class VenueController {
       totalQuery.whereRaw(inRadiusQuery, [lat, lng, radius * 1000])
     }
 
-    if (!(sortByDistance && lat !== null && lng !== null)) {
+    if (!(sortByDistance && lat !== null && lng !== null) && !searchQuery) {
       currentPageQuery.orderBy('rating', 'desc')
     }
 
