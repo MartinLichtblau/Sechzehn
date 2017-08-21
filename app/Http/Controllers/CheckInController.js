@@ -3,10 +3,11 @@
 const CheckIn = use('App/Model/CheckIn')
 const Validator = use('Validator')
 const Venue = use('App/Model/Venue')
+const User = use('App/Model/User')
 
 class CheckInController {
   * index (request, response) {
-    const authUser = request.authUser
+    const user = yield User.findOrFail(request.param('users_id'))
 
     let page = Number(request.input('page', 1))
     let perPage = Number(request.input('per_page', 10))
@@ -24,7 +25,7 @@ class CheckInController {
       .scope('venue', builder => {
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       })
-      .where('username', authUser.username)
+      .where('username', user.username)
       .orderBy('created_at', 'desc')
       .paginate(page, perPage)
 
