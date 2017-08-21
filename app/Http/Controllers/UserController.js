@@ -123,10 +123,19 @@ class UserController {
   }
 
   * show (request, response) {
-    const authUsername = request.authUser.username
+    const authUser = request.authUser
+    const authUsername = authUser.username
 
     if (request.param('id') === authUsername) {
-      response.ok(request.authUser.completeView())
+      authUser.lol = true
+      yield authUser
+        .related('checkins')
+        .scope('checkins', builder => {
+          builder.limit(3)
+        })
+        .load()
+      response.ok(authUser)
+      return
     }
 
     const user = yield User.query().where('username', request.param('id'))

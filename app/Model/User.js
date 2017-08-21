@@ -47,22 +47,6 @@ class User extends Lucid {
     return false
   }
 
-  /**
-   * The fields which are visible per default for this Model (i.e for JSON serialization).
-   *
-   * @returns {[string,string,string,string,string,string,string,string,string]}
-   */
-  static get visible () {
-    return [
-      'username',
-      'real_name',
-      'city',
-      'profile_picture',
-      'lat',
-      'lng'
-    ]
-  }
-
   static boot () {
     super.boot()
 
@@ -82,6 +66,34 @@ class User extends Lucid {
    */
   static scopeUnhidden (builder) {
     builder.whereNot('incognito', true)
+  }
+
+  /**
+   * The fields which are visible per default for this Model (i.e for JSON serialization).
+   *
+   * @returns {[string,string,string,string,string,string,string,string,string]}
+   */
+  static get visible () {
+    return [
+      'username',
+      'real_name',
+      'city',
+      'profile_picture',
+      'lat',
+      'lng',
+      'lol'
+    ]
+  }
+
+  getLat () {
+    console.log(this)
+    console.log(this.lol)
+
+    if (!this.incognito || this.lol) {
+      return this.lat
+    } else {
+      return null
+    }
   }
 
   /**
@@ -116,7 +128,8 @@ class User extends Lucid {
       lng: this.lng,
       incognito: this.incognito,
       confirmed: this.confirmed,
-      friendship_status: 'SELF'
+      friendship_status: 'SELF',
+      checkins: this.checkins
     }
   }
 

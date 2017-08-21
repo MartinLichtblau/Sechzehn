@@ -67,7 +67,7 @@ Route.group('api', function () {
   Route.post('venues/:venue_id/check-ins', 'CheckInController.store').middleware('auth')
 
   Route
-    .resource('check-ins', 'CheckInController')
+    .resource('users.check-ins', 'CheckInController')
     .only('index', 'update', 'destroy')
     .middleware('auth')
 
