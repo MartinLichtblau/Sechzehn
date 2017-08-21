@@ -1,18 +1,13 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.BR;
 
@@ -34,12 +29,14 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = initDataBinding(inflater, container);
         bindSelf(binding);
-        useDataBinding(binding);
+        useDataBinding(binding,savedInstanceState);
         View view = binding.getRoot();
         initView(view);
         activity = getActivity();
+
         return view;
     }
+
 
     /**
      * This method initialises the DataBinding.
@@ -70,8 +67,9 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
      * to use the DataBinding to initialize contained views.
      *
      * @param binding The DataBinding of this Fragment.
+     * @param savedInstanceState
      */
-    protected void useDataBinding(Binding binding) {
+    protected void useDataBinding(Binding binding, Bundle savedInstanceState) {
     }
 
     /**
@@ -92,8 +90,8 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
     }
 
     private void bindSelf(Binding binding) {
-       if(!binding.setVariable(BR.self,this)){
-           Log.w("DataBindingFragment", this.getClass().getName()+": Self not bound");
-       }
+        if (!binding.setVariable(BR.self, this)) {
+            Log.w("DataBindingFragment", this.getClass().getName() + ": Self not bound");
+        }
     }
 }

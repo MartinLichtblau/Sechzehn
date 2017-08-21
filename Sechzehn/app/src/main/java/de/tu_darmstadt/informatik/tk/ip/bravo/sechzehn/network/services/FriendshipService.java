@@ -52,5 +52,5 @@ public interface FriendshipService {
             @Path("username") @NonNull String username
     );
 
-    public FriendshipService FriendshipService = ServiceGenerator.createService(FriendshipService.class);
+    FriendshipService FriendshipService = ServiceGenerator.createService(FriendshipService.class);
 }

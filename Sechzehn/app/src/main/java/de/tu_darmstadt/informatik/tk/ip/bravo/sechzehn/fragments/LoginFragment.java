@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -8,7 +9,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,8 +17,6 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActi
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentLoginBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,7 +55,7 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
     }
 
     @Override
-    protected void useDataBinding(FragmentLoginBinding binding) {
+    protected void useDataBinding(FragmentLoginBinding binding, Bundle savedInstanceState) {
         binding.setUser(user);
         binding.loginPassword.setOnEditorActionListener(new ActionDoneListener() {
             @Override

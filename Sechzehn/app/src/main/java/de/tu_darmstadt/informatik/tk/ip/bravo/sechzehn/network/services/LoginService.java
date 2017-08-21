@@ -29,6 +29,6 @@ public interface LoginService {
     @GET("/confirm/{token}")
     Call<Object> confirmEmail(@Path("token") String token);
 
-    public static LoginService LoginService = ServiceGenerator.createService(LoginService.class);
+    LoginService LoginService = ServiceGenerator.createService(LoginService.class);
 
 }

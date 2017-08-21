@@ -122,7 +122,7 @@ public interface UserService {
             @Path("username") @NonNull String username
     );
 
-    public UserService UserService = ServiceGenerator.createService(UserService.class);
+    UserService UserService = ServiceGenerator.createService(UserService.class);
 
 
 }

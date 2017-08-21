@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -27,12 +26,10 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentMessageBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.DataBindingItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.OutcomingMessageViewHolder;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.socket.ChatSocket;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.ChatNotificationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DataBindingAdapters;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
@@ -198,7 +195,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     }
 
     @Override
-    protected void useDataBinding(final FragmentMessageBinding binding) {
+    protected void useDataBinding(final FragmentMessageBinding binding, Bundle savedInstanceState) {
         MessageHolders holders = new MessageHolders();
         holders.setOutcomingTextHolder(OutcomingMessageViewHolder.class);
         adapter = new MessagesListAdapter<>(SzUtils.getOwnername(), holders, imageLoader);

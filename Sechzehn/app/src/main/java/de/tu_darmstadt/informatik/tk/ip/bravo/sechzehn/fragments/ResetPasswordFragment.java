@@ -7,12 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 import android.view.ViewGroup;
@@ -74,7 +71,7 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
     }
 
     @Override
-    protected void useDataBinding(FragmentResetPasswordBinding binding) {
+    protected void useDataBinding(FragmentResetPasswordBinding binding, Bundle savedInstanceState) {
         binding.setUser(user);
         binding.setSelf(this);
         binding.resetPasswordPasswordConfirmation.setOnEditorActionListener(new ActionDoneListener() {

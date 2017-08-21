@@ -2,9 +2,9 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 
 import android.app.Fragment;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +15,6 @@ import android.widget.Toast;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentForgotPwBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,7 +49,7 @@ public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBindin
     }
 
     @Override
-    protected void useDataBinding(FragmentForgotPwBinding binding) {
+    protected void useDataBinding(FragmentForgotPwBinding binding, Bundle savedInstanceState) {
         binding.setUser(user);
         binding.forgotPwEmail.setOnEditorActionListener(new ActionDoneListener() {
             @Override

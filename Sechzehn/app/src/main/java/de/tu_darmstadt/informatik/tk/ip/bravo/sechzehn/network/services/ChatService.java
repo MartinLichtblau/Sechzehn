@@ -30,5 +30,5 @@ public interface ChatService {
             @Nullable @Query("per_page") Integer perPage
     );
 
-    public static ChatService ChatService = ServiceGenerator.createService(ChatService.class);
+    ChatService ChatService = ServiceGenerator.createService(ChatService.class);
 }

@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.app.Fragment;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
@@ -17,12 +18,9 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentRegisterBinding;
 
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService.*;
@@ -65,7 +63,7 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
     }
 
     @Override
-    protected void useDataBinding(FragmentRegisterBinding binding) {
+    protected void useDataBinding(FragmentRegisterBinding binding, Bundle savedInstanceState) {
         binding.setUser(user);
         binding.registerPasswordConfirmation.setOnEditorActionListener(new ActionDoneListener() {
             @Override

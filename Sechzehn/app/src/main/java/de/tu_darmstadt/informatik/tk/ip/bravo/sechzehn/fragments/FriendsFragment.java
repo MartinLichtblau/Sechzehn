@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -141,9 +142,10 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
      * else the content will be automatically created through the onQueryTextChangeEvent.
      *
      * @param binding The DataBinding of this Fragment.
+     * @param savedInstanceState
      */
     @Override
-    protected void useDataBinding(final FragmentFriendsBinding binding) {
+    protected void useDataBinding(final FragmentFriendsBinding binding, Bundle savedInstanceState) {
         fastAdapter.withOnClickListener(this);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
