@@ -2,7 +2,6 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.socket;
 
 import android.util.Log;
 
-
 import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
@@ -50,6 +49,9 @@ public class ChatSocket {
         }
     }
 
+    /**
+     * Starts the logging.
+     */
     private void enableLogging() {
         socket
                 .on(Socket.EVENT_ERROR, new Emitter.Listener() {
@@ -104,11 +106,23 @@ public class ChatSocket {
         return sb.toString();
     }
 
-    private static JSONObject messageToJSONObject(Message m) {
-        JsonObject gsonMessage = SzUtils.gson.toJsonTree(m).getAsJsonObject();
+    /**
+     * Converts a {@link Message} object to JSON.
+     *
+     * @param message The Message.
+     * @return The corresponding JSONObject.
+     */
+    private static JSONObject messageToJSONObject(Message message) {
+        JsonObject gsonMessage = SzUtils.gson.toJsonTree(message).getAsJsonObject();
         return GsonJsonConverter.convert(gsonMessage);
     }
 
+    /**
+     * Executes the message {@link Listener} after deserializing the {@link Message} object.
+     *
+     * @param args     Socket event arguments.
+     * @param listener The message listener.
+     */
     private static void executeMessageListener(Object[] args, Listener listener) {
         if (args.length == 1) {
             Message msg = SzUtils.gson.fromJson(args[0].toString(), Message.class);
@@ -118,6 +132,12 @@ public class ChatSocket {
         }
     }
 
+    /**
+     * Executes the {@link WarningListener} after deserializing the {@link  ApiMessage} object.
+     *
+     * @param args     Socket event arguments.
+     * @param listener The warning listener.
+     */
     private void executeWarningListener(Object[] args, WarningListener listener) {
         if (args.length == 1) {
             ApiMessage err = SzUtils.gson.fromJson(args[0].toString(), ApiMessage.class);
@@ -222,11 +242,24 @@ public class ChatSocket {
         removeListener(EVENT_WARNING, listener);
     }
 
+    /**
+     * Adds a new Listener
+     *
+     * @param event           for this event.
+     * @param listener        The listener.
+     * @param emitterListener The underlying {@link io.socket.emitter.Emitter.Listener}.
+     */
     private void addListener(String event, final BaseListener listener, Emitter.Listener emitterListener) {
         listeners.put(listener, emitterListener);
         socket.on(event, emitterListener);
     }
 
+    /**
+     * Removes a Listener
+     *
+     * @param event    from this event.
+     * @param listener The listener.
+     */
     private void removeListener(String event, BaseListener listener) {
         if (!listeners.containsKey(listener)) return;
         socket.off(event, listeners.remove(listener));

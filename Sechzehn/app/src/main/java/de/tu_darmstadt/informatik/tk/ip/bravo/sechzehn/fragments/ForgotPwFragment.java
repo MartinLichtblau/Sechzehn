@@ -16,11 +16,12 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentForgotPwBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.*;
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.LoginService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,8 +43,8 @@ public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBindin
         return FragmentForgotPwBinding.inflate(inflater, container, false);
     }
 
-    public void backToLogin(View view){
-        FragmentTransaction transaction= getActivity().getSupportFragmentManager().beginTransaction();
+    public void backToLogin(View view) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.loginContainer, LoginFragment.newInstance());
         transaction.commit();
     }
@@ -60,17 +61,12 @@ public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBindin
     }
 
     public void confirmReset(View view) {
-        LoginService.requestResetPassword(user).enqueue(new Callback<de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage>() {
+        LoginService.requestResetPassword(user).enqueue(new DefaultCallback<ApiMessage>(getActivityEx()) {
             @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
+            public void onResponse(Call<ApiMessage> call, Response<ApiMessage> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getActivity(), "Email sent", Toast.LENGTH_LONG).show();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<Object> call, Throwable t) {
-                Toast.makeText(getActivity(), "Connectivity error!", Toast.LENGTH_SHORT).show();
             }
         });
 

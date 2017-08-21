@@ -22,14 +22,25 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
      * The DataBinding
      */
     protected Binding binding;
-
+    /**
+     * Containing activity. For {@link #getActivityEx()}.
+     */
     private Activity activity;
 
+    /**
+     * Initialise the DataBinding and create the view.
+     * @param inflater  The LayoutInflater object that can be used to inflate
+     *                  any views in the fragment.
+     * @param container This is the parent view that the fragment's
+     *                  UI should be attached to.
+     * @param savedInstanceState The saved instance state, if the fragment is resumed.
+     * @return The new view.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = initDataBinding(inflater, container);
         bindSelf(binding);
-        useDataBinding(binding,savedInstanceState);
+        useDataBinding(binding, savedInstanceState);
         View view = binding.getRoot();
         initView(view);
         activity = getActivity();
@@ -56,7 +67,7 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
      */
     protected void runOnUiThread(Runnable runnable) {
         if (getActivityEx() == null) {
-            Log.d("DataBindingFragment", "runOnUiThread: getActivity returns null");
+            Log.d("DataBindingFragment", "runOnUiThread: getActivityEx returns null");
             return;
         }
         getActivityEx().runOnUiThread(runnable);
@@ -66,8 +77,8 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
      * This method can be overridden instead of the onCreateView method
      * to use the DataBinding to initialize contained views.
      *
-     * @param binding The DataBinding of this Fragment.
-     * @param savedInstanceState
+     * @param binding            The DataBinding of this Fragment.
+     * @param savedInstanceState The saved instance state, if the fragment is resumed.
      */
     protected void useDataBinding(Binding binding, Bundle savedInstanceState) {
     }
@@ -89,6 +100,11 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
         throw new NullPointerException("Activity is null");
     }
 
+    /**
+     * Bind the self variable if present.
+     *
+     * @param binding The DataBinding.
+     */
     private void bindSelf(Binding binding) {
         if (!binding.setVariable(BR.self, this)) {
             Log.w("DataBindingFragment", this.getClass().getName() + ": Self not bound");

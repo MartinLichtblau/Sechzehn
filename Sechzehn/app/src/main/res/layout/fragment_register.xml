@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.RegisterFragment">
 
-        <!-- TODO: Update blank fragment layout -->
+
 
         <LinearLayout
             android:layout_width="match_parent"

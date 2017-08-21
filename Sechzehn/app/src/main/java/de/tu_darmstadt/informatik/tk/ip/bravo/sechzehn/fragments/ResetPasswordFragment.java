@@ -1,26 +1,24 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
-import retrofit2.Call;
-import retrofit2.Response;
-
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
-
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentResetPasswordBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
+import retrofit2.Call;
+import retrofit2.Response;
 
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.*;
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.LoginService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,14 +26,13 @@ import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.L
  * create an UserService of this fragment.
  */
 public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPasswordBinding> {
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "token";
 
     User user = new User();
 
 
-    // TODO: Rename and change types of parameters
     private String token;
 
 
@@ -90,9 +87,9 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
             binding.resetPasswordPasswordConfirmation.setError(null);
         }
 
-        LoginService.confirmResetPassword(token, user).enqueue(new DefaultCallback<de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage>(getActivity()) {
+        LoginService.confirmResetPassword(token, user).enqueue(new DefaultCallback<ApiMessage>(getActivity()) {
             @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
+            public void onResponse(Call<ApiMessage> call, Response<ApiMessage> response) {
                 if (response.isSuccessful()) {
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.loginContainer, LoginFragment.newInstance()).commitAllowingStateLoss();
                     Toast.makeText(getActivity(), "new password set successful", Toast.LENGTH_LONG).show();

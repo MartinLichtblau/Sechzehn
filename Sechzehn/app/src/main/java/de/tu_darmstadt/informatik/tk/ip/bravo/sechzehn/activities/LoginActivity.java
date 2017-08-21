@@ -1,10 +1,9 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-
-import android.os.Bundle;
 import android.widget.Toast;
 
 import java.util.List;
@@ -12,11 +11,12 @@ import java.util.List;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.ResetPasswordFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.*;
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.LoginService;
 
 /**
  * A login screen that offers login via email/password.
@@ -28,11 +28,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onNewIntent(Intent intent) {
         if (intent.hasCategory("android.intent.category.BROWSABLE")) {
-            List<String> pathSegments =intent.getData().getPathSegments();
+            List<String> pathSegments = intent.getData().getPathSegments();
             if (pathSegments.size() > 1) {
                 if (pathSegments.get(0).equals("reset")) {
                     getActivity().getSupportFragmentManager().beginTransaction()
@@ -41,9 +40,9 @@ public class LoginActivity extends AppCompatActivity {
                             .commitAllowingStateLoss(); // Fix crash while starting app from Email-link
 
                 } else if (pathSegments.get(0).equals("confirm")) {
-                    LoginService.confirmEmail(pathSegments.get(1)).enqueue(new DefaultCallback<de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ApiMessage>(getActivity()) {
+                    LoginService.confirmEmail(pathSegments.get(1)).enqueue(new DefaultCallback<ApiMessage>(getActivity()) {
                         @Override
-                        public void onResponse(Call<Object> call, Response<Object> response) {
+                        public void onResponse(Call<ApiMessage> call, Response<ApiMessage> response) {
                             if (response.isSuccessful()) {
                                 Toast.makeText(getActivity(), "Email confirmed.", Toast.LENGTH_LONG).show();
                             } else {
