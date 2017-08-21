@@ -75,7 +75,7 @@ class CheckInController {
     })
 
     yield checkIn
-      .related('user', 'venue')
+      .related('venue')
       .scope('venue', builder => {
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       }).load()
@@ -107,7 +107,7 @@ class CheckInController {
     yield checkIn.save()
 
     yield checkIn
-      .related('user', 'venue')
+      .related('venue')
       .scope('venue', builder => {
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       }).load()

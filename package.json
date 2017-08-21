@@ -1,6 +1,6 @@
 {
   "name": "sechzehn-server",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "main": "server.js",
   "scripts": {
     "start": "npm run serve",
