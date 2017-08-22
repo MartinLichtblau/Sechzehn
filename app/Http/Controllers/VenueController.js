@@ -37,7 +37,8 @@ class VenueController {
     const pagination = new Pagination(request)
 
     const cols = Venue.visibleList
-    cols.push('venue_categories.name as category')
+    cols.push('venue_categories.name as category_name')
+    cols.push('venue_categories.icon as category_icon')
     // Calculate the rating based on the foursquare rating and the ratings from the CheckIns
     cols.push(Database.raw('round(((COALESCE(checkins_rating, foursquare_rating, -1) + COALESCE(foursquare_rating, checkins_rating, -1)) / 2)::numeric, 2) as rating'))
     // Determine the overall rating count
@@ -120,8 +121,12 @@ class VenueController {
       item.rating = Number(item.rating)
       item.rating_count = Number(item.rating_count)
       item.category = {
-        name: item.category
+        name: item.category_name,
+        icon: item.category_icon
       }
+
+      delete item.category_name
+      delete item.category_icon
     })
 
     pagination.total = Number(totalResult.count)
@@ -132,6 +137,7 @@ class VenueController {
     const venue = yield Venue
       .query()
       .where('venues.id', request.param('id'))
+      .withCount('checkins')
       .leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       .first()
 
@@ -156,6 +162,7 @@ class VenueController {
         builder.limit(5)
       }).load()
 
+    // Find the top visitors
     const userColumns = User.visibleList.map(item => 'users.' + item)
     userColumns.push('users.incognito')
     userColumns.push(Database.raw('count(id) as visit_count'))
@@ -176,6 +183,8 @@ class VenueController {
         visit_count: visitCount
       }
     })
+
+    venue.checkins_count = Number(venue.checkins_count)
 
     response.ok(venue)
   }
