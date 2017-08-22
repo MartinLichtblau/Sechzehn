@@ -9,7 +9,7 @@
 \documentclass[11pt, accentcolor=tud1c]{tudreport}	
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath, enumitem, graphicx, hyperref, lipsum, listings, mathtools, parcolumns, pdfpages}
+\usepackage{amsmath, enumitem, graphicx, hyperref, lipsum, listings, mathtools, parcolumns, pdfpages, subcaption}
 
 % https://scm.informatik.tu-darmstadt.de/news/129-technical-documentation-sample
 
@@ -149,6 +149,28 @@ The venue search offers filtering for opening hours and price category.
 \section{App Flow}
 % system requirements, get started, functionalities, features, app flow, ...
 %%%LOGIN SCREEN%%%
+\begin{figure}
+\centering
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./res/Screenshot_login.png}
+  \captionof{figure}{Login Screen}
+  \label{fig:_login_screen}
+\end{minipage}%
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./res/Screenshot_login.png}
+  \captionof{figure}{Map View}
+  \label{fig:map_view}
+\end{minipage}
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./res/Screenshot_login.png}
+  \captionof{figure}{Venue View}
+  \label{fig:venue_view}
+\end{minipage}%
+\end{figure}
+
 When a user starts the app for the first time he enters the login screen. On this screen the user has three options:
 \begin{enumerate}
 \item he can log in with his email and password. If the login was successful the app asks for some permissions (further information on why the app needs those permissions can be found in \ref{sec:system_requirements}.
