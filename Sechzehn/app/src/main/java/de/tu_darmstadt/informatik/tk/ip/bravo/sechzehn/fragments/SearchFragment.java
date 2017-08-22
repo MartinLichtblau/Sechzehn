@@ -101,13 +101,11 @@ public class SearchFragment extends BaseFragment {
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        binding.searchFab.setVisibility(View.INVISIBLE);
                         setMapPaddingBotttom(1f);
                         cu = CameraUpdateFactory.zoomTo(userSetMapZoom - 1.1f);
                         searchVM.map.animateCamera(cu, 500, null);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
-                        binding.searchFab.setVisibility(View.VISIBLE);
                         setMapPaddingBotttom(0f);
                         cu = CameraUpdateFactory.zoomTo(userSetMapZoom);
                         searchVM.map.animateCamera(cu, 500, null);
@@ -199,6 +197,14 @@ public class SearchFragment extends BaseFragment {
                     userSetMapCenter = searchVM.map.getCameraPosition().target;
                     userSetMapZoom = searchVM.map.getCameraPosition().zoom;
                     userMovedCamera = false;
+                    new Handler().postDelayed(new Runnable() {
+                        //Maps Bug UI Hang while replacing fragment
+                        // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
+                        @Override
+                        public void run() {
+                            binding.research.setVisibility(View.VISIBLE);
+                        }
+                    }, 500);
                 }
             }
         });
@@ -252,6 +258,7 @@ public class SearchFragment extends BaseFragment {
                 switch (resource.status){
                     case LOADING:
                         Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
+                        binding.research.setVisibility(View.INVISIBLE);
                         //@TODO show loading dialog progress bar
                         break;
                     case ERROR:
@@ -326,7 +333,7 @@ public class SearchFragment extends BaseFragment {
     }
 
     public void fab(View view){
-        BottomSheetBehavior.from(binding.bottomsheetSearch.getRoot()).setState(BottomSheetBehavior.STATE_EXPANDED);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         //focusSearchView();
     }
 
