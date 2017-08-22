@@ -124,6 +124,8 @@ class UserController {
     yield this.generateEmailConfirmation(user)
     yield user.save()
 
+    user.isOwner = true
+
     response.created(user)
   }
 
