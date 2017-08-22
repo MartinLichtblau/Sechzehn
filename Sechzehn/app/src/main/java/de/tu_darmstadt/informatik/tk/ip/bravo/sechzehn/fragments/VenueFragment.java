@@ -22,7 +22,10 @@ import java.text.DecimalFormat;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFAB;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Hour;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentVenueBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.CommentItem;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.HourItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.CheckInService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
@@ -72,6 +75,7 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
         return FragmentVenueBinding.inflate(inflater, container, false);
     }
 
+
     @Override
     protected void useDataBinding(final FragmentVenueBinding binding, Bundle savedInstanceState) {
         binding.mapView.onCreate(savedInstanceState);
@@ -80,6 +84,7 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                 getResources().getColor(R.color.white, null),
                 SzUtils.getThemeColor(getActivityEx(), R.attr.colorAccent));
 
+
         VenueService.VenueService.getVenue(venueId).enqueue(new DefaultCallback<Venue>(getActivityEx()) {
             @Override
             public void onResponse(Call<Venue> call, Response<Venue> response) {
@@ -87,11 +92,19 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                     venue = response.body();
                     binding.setVenue(venue);
                     binding.mapView.getMapAsync(VenueFragment.this);
+                    for (int i = 0; i < 12; i++) {
+                        binding.comments.add(new CommentItem());
+                    }
+                    for (Hour hour : venue.hours) {
+                        binding.hours.add(new HourItem(hour));
+                    }
+
                 }
             }
         });
 
         binding.ratingBar.setOnRatingBarChangeListener(this);
+
     }
 
     public void checkIn(View v) {
@@ -145,5 +158,9 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
             }
         }
         return null;
+    }
+
+    public static int objectToVisibility(Object obj) {
+        return obj == null ? View.GONE : View.VISIBLE;
     }
 }

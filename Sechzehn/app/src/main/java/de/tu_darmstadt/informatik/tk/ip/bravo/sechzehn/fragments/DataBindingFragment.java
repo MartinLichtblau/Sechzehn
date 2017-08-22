@@ -12,14 +12,14 @@ import android.view.ViewGroup;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.BR;
 
 /**
- * Abstract Fragment for usage with DataBinding
+ * Abstract Fragment for usage with Item
  *
- * @param <Binding> The DataBinding class of the implementing Fragment
+ * @param <Binding> The Item class of the implementing Fragment
  * @author Alexander Geiß on 29.06.2017.
  */
 public abstract class DataBindingFragment<Binding extends ViewDataBinding> extends BaseFragment {
     /**
-     * The DataBinding
+     * The Item
      */
     protected Binding binding;
     /**
@@ -28,7 +28,7 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
     private Activity activity;
 
     /**
-     * Initialise the DataBinding and create the view.
+     * Initialise the Item and create the view.
      * @param inflater  The LayoutInflater object that can be used to inflate
      *                  any views in the fragment.
      * @param container This is the parent view that the fragment's
@@ -50,13 +50,13 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
 
 
     /**
-     * This method initialises the DataBinding.
+     * This method initialises the Item.
      *
      * @param inflater  The LayoutInflater object that can be used to inflate
      *                  any views in the fragment.
      * @param container This is the parent view that the fragment's
      *                  UI should be attached to.
-     * @return The initialised DataBinding.
+     * @return The initialised Item.
      */
     protected abstract Binding initDataBinding(LayoutInflater inflater, @Nullable ViewGroup container);
 
@@ -75,9 +75,9 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
 
     /**
      * This method can be overridden instead of the onCreateView method
-     * to use the DataBinding to initialize contained views.
+     * to use the Item to initialize contained views.
      *
-     * @param binding            The DataBinding of this Fragment.
+     * @param binding            The Item of this Fragment.
      * @param savedInstanceState The saved instance state, if the fragment is resumed.
      */
     protected void useDataBinding(Binding binding, Bundle savedInstanceState) {
@@ -103,7 +103,7 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
     /**
      * Bind the self variable if present.
      *
-     * @param binding The DataBinding.
+     * @param binding The Item.
      */
     private void bindSelf(Binding binding) {
         if (!binding.setVariable(BR.self, this)) {

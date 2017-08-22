@@ -5,4 +5,5 @@
     <item name="class_header_item" type="id" />
     <item name="class_friendship_item" type="id" />
     <item name="class_chat_item" type="id" />
+    <item name="class_comment_item" type="id"/>
 </resources>

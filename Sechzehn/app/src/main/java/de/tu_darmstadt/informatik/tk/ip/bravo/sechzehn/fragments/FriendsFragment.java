@@ -141,8 +141,8 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
      * If the fragment is not resumed it displays the default list,
      * else the content will be automatically created through the onQueryTextChangeEvent.
      *
-     * @param binding            The DataBinding of this Fragment.
-     * @param savedInstanceState
+     * @param binding            The Item of this Fragment.
+     * @param savedInstanceState The saved instance state.
      */
     @Override
     protected void useDataBinding(final FragmentFriendsBinding binding, Bundle savedInstanceState) {
@@ -151,6 +151,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         binding.friendsList.setLayoutManager(llm);
         HeaderAdapter<HeaderItem> headerAdapter = new HeaderAdapter<>();
+
         binding.friendsList.setAdapter(
                 headerAdapter.wrap(fastAdapter));
         if (!resume) {
@@ -282,7 +283,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
             @Override
             protected Pagination<User> load(int page, int perPage) {
                 try {
-                    Response<Pagination<User>> response = UserService.getFriends(SzUtils.getOwnername(), page, perPage).execute();
+                    Response<Pagination<User>> response = FriendshipService.getFriends(SzUtils.getOwnername(), page, perPage).execute();
                     if (response.isSuccessful()) {
                         return response.body();
                     }

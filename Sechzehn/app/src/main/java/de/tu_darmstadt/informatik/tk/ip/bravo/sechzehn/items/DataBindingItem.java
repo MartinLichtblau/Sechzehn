@@ -13,11 +13,11 @@ import java.util.List;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.BR;
 
 /**
- * Provides support for DataBinding for FastAdapter Items.
+ * Provides support for Item for FastAdapter Items.
  *
  * @param <Data>           The data class which will be bound.
  * @param <Binding>        The data binding of the item.
- * @param <Item>           The item which uses this DataBindingItem.
+ * @param <Item>           The item which uses this Item.
  * @param <ItemViewHolder> The ViewHolder if the item.
  * @author Alexander Geiß on 18.08.2017.
  */

@@ -17,13 +17,34 @@ public class Hour {
      */
 
     public enum Day {
-        @SerializedName("Sun")SUN,
-        @SerializedName("Mon")MON,
-        @SerializedName("Tue")TUE,
-        @SerializedName("Wed")WED,
-        @SerializedName("Thu")THU,
-        @SerializedName("Fri")FRI,
-        @SerializedName("Sat")SAT,
-        UNKNOWN
+
+        @SerializedName("Mon")MON(1, "Mon"),
+        @SerializedName("Tue")TUE(2, "Tue"),
+        @SerializedName("Wed")WED(3, "Wed"),
+        @SerializedName("Thu")THU(4, "Thu"),
+        @SerializedName("Fri")FRI(5, "Fri"),
+        @SerializedName("Sat")SAT(6, "Sat"),
+        @SerializedName("Sun")SUN(7, "Sun"),
+        UNKNOWN(0, "");
+        private final int id;
+        private final String name;
+
+        Day(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public int getDayNumber() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }
