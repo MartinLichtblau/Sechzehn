@@ -54,7 +54,8 @@ class User extends Lucid {
      * Hashing password before storing to the
      * database.
      */
-    this.addHook('beforeCreate', function* (next) {
+    this.addHook('beforeCreate', function * (next) {
+      this.username = this.username.toLowerCase()
       this.password = yield Hash.make(this.password)
       yield next
     })
