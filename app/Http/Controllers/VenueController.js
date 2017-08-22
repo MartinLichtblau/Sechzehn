@@ -132,18 +132,6 @@ class VenueController {
     const venue = yield Venue
       .query()
       .where('venues.id', request.param('id'))
-      .with('category', 'hours', 'photos', 'comments', 'comments.user')
-      .scope('hours', (builder) => {
-        builder.orderBy('hours', 'asc')
-      })
-      .scope('photos', builder => {
-        builder.orderBy('created_at', 'desc')
-        builder.limit(4)
-      })
-      .scope('comments', builder => {
-        builder.orderBy('created_at', 'desc')
-        builder.limit(5)
-      })
       .leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       .first()
 
@@ -154,6 +142,19 @@ class VenueController {
     if (!venue.details_fetched) {
       yield VenueRetriever.retrieveDetails(venue)
     }
+
+    yield venue.related('category', 'hours', 'photos', 'comments', 'comments.user')
+      .scope('hours', (builder) => {
+        builder.orderBy('hours', 'asc')
+      })
+      .scope('photos', builder => {
+        builder.orderBy('created_at', 'desc')
+        builder.limit(5)
+      })
+      .scope('comments', builder => {
+        builder.orderBy('created_at', 'desc')
+        builder.limit(5)
+      }).load()
 
     const userColumns = User.visibleList.map(item => 'users.' + item)
     userColumns.push('users.incognito')
