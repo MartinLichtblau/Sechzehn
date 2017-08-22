@@ -96,19 +96,23 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                     for (int i = 0; i < 12; i++) {
                         binding.comments.add(new CommentItem());
                     }
-                    if (venue.hours.isEmpty()) {
-                        binding.hours.add(UNKNOWN_HOUR);
-                    } else {
-                        for (Hour hour : venue.hours) {
-                            binding.hours.add(new HourItem(hour));
-                        }
-                    }
+                    displayHours();
                 }
             }
         });
 
         binding.ratingBar.setOnRatingBarChangeListener(this);
 
+    }
+
+    private void displayHours() {
+        if (venue.hours.isEmpty()) {
+            binding.hours.add(UNKNOWN_HOUR);
+        } else {
+            for (Hour hour : venue.hours) {
+                binding.hours.add(new HourItem(hour));
+            }
+        }
     }
 
     public void checkIn(View v) {
