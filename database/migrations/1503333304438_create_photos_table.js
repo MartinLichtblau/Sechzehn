@@ -9,7 +9,7 @@ class PhotosTableSchema extends Schema {
       table.timestamps()
       table.string('url')
       table.string('venue_id', 60)
-      table.string('username', 80).notNullable()
+      table.string('username', 80)
       table.foreign('venue_id').references('venues.id')
       table.foreign('username').references('users.username')
     })

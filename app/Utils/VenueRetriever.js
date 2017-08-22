@@ -1,13 +1,14 @@
 'use strict'
 
+const Config = use('Config')
 const Database = use('Database')
+const Moment = require('moment')
+const Photo = use('App/Model/Photo')
+const Request = require('request-promise-native')
 const Venue = use('App/Model/Venue')
 const VenueCategory = use('App/Model/VenueCategory')
 const VenueHoursRange = use('App/Model/VenueHoursRange')
 const VenueRetrieval = use('App/Model/VenueRetrieval')
-const Config = use('Config')
-const Request = require('request-promise-native')
-const Moment = require('moment')
 
 class VenueRetriever {
   /**
@@ -112,7 +113,7 @@ class VenueRetriever {
         })
       }
 
-      const venueFromDb = yield Venue.findOrCreate({
+      yield Venue.findOrCreate({
         id: venue.id
       }, {
         id: venue.id,
@@ -165,9 +166,16 @@ class VenueRetriever {
       }
     }
 
-    // TODO: save Comments and Photos
-
     venue.phone = details.contact.formattedPhone
+
+    const photoUrls = response.response.venue.photos.groups[0].items.map(photo => {
+      return {
+        url: photo.prefix + 'original' + photo.suffix,
+        venue_id: venue.id
+      }
+    })
+
+    yield Photo.createMany(photoUrls)
 
     venue.details_fetched = true
 

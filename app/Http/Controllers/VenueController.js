@@ -155,8 +155,6 @@ class VenueController {
       yield VenueRetriever.retrieveDetails(venue)
     }
 
-    // yield venue.related('comments', 'comments.photo', 'comments.user', 'photos').load()
-
     const userColumns = User.visibleList.map(item => 'users.' + item)
     userColumns.push('users.incognito')
     userColumns.push(Database.raw('count(id) as visit_count'))
