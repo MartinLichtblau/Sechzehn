@@ -63,12 +63,22 @@ Route.group('api', function () {
   Route.post('messages/:id', 'MessageController.store').middleware('auth')
   Route.patch('messages/:id/:message', 'MessageController.update').middleware('auth')
 
-  Route.get('venues/:venue_id/check-ins', 'CheckInController.indexForVenue').middleware('auth')
+  Route.get('users/:username/check-ins', 'CheckInController.indexForUser')
+  Route.get('venues/:venue_id/check-ins', 'CheckInController.indexForVenue')
   Route.post('venues/:venue_id/check-ins', 'CheckInController.store').middleware('auth')
 
+  Route.get('users/:username/photos', 'PhotoController.indexForUser')
+  Route.get('venues/:venue_id/photos', 'PhotoController.indexForVenue')
+  Route.post('venues/:venue_id/photos', 'PhotoController.store').middleware('auth')
+
   Route
-    .resource('users.check-ins', 'CheckInController')
-    .only('index', 'update', 'destroy')
+    .resource('photos', 'PhotoController')
+    .only('update', 'destroy')
+    .middleware('auth')
+
+  Route
+    .resource('check-ins', 'CheckInController')
+    .only('update', 'destroy')
     .middleware('auth')
 
   Route

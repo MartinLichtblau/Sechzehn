@@ -6,7 +6,7 @@ const Venue = use('App/Model/Venue')
 const User = use('App/Model/User')
 
 class CheckInController {
-  * index (request, response) {
+  * indexForUser (request, response) {
     const user = yield User.findOrFail(request.param('users_id'))
 
     let page = Number(request.input('page', 1))
