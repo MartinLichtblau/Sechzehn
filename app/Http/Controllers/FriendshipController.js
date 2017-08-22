@@ -49,7 +49,7 @@ class FriendshipController {
     const query = Friendship.query().where('relating_user', user.username)
 
     if (onlyIncoming) {
-      query.where('friendships.status', 'RELATING_CONFIRMED')
+      query.where('friendships.status', 'RELATED_CONFIRMED')
     } else {
       query.whereNot('friendships.status', 'CONFIRMED')
     }
