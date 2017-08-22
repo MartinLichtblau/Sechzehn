@@ -20,7 +20,6 @@ class VenuesTableSchema extends Schema {
       table.float('lng', 10, 6)
       table.text('address')
       table.string('url')
-      table.string('photo')
       table.string('phone')
       table.specificType('price', 'smallint')
       table.float('foursquare_rating', 4, 2)

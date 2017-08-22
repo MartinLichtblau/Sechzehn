@@ -82,6 +82,25 @@ class Venue extends Lucid {
     return this.hasMany('App/Model/CheckIn')
   }
 
+  /**
+   * The Comments to this Venue.
+   * @returns {Object}
+   */
+  comments () {
+    return this.hasMany('App/Model/Comment')
+  }
+
+  /**
+   * The Photos of this Venue.
+   * @returns {Object}
+   */
+  photos () {
+    return this.hasMany('App/Model/Photo')
+  }
+
+  /**
+   * The computed properties.
+   */
   static get computed () {
     return ['rating', 'rating_count']
   }

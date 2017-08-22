@@ -7,7 +7,7 @@ const User = use('App/Model/User')
 
 class CheckInController {
   * indexForUser (request, response) {
-    const user = yield User.findOrFail(request.param('users_id'))
+    const user = yield User.findOrFail(request.param('username'))
 
     let page = Number(request.input('page', 1))
     let perPage = Number(request.input('per_page', 10))
@@ -81,7 +81,7 @@ class CheckInController {
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       }).load()
 
-    response.ok(checkIn)
+    response.created(checkIn)
   }
 
   * update (request, response) {

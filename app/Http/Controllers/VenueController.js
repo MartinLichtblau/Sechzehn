@@ -132,9 +132,17 @@ class VenueController {
     const venue = yield Venue
       .query()
       .where('venues.id', request.param('id'))
-      .with('category', 'hours', 'checkins', 'checkins.user')
+      .with('category', 'hours', 'photos', 'comments', 'comments.user', 'checkins', 'checkins.user')
       .scope('hours', (builder) => {
         builder.orderBy('hours', 'asc')
+      })
+      .scope('photos', builder => {
+        builder.orderBy('created_at', 'desc')
+        builder.limit(4)
+      })
+      .scope('comments', builder => {
+        builder.orderBy('created_at', 'desc')
+        builder.limit(10)
       })
       .scope('checkins', builder => {
         builder.orderBy('created_at', 'desc')
@@ -151,17 +159,22 @@ class VenueController {
       yield VenueRetriever.retrieveDetails(venue)
     }
 
-    const userColumns = User.visible.map(item => 'users.' + item)
+    // yield venue.related('comments', 'comments.photo', 'comments.user', 'photos').load()
+
+    const userColumns = User.visibleList.map(item => 'users.' + item)
+    userColumns.push('users.incognito')
     userColumns.push(Database.raw('count(id) as visit_count'))
 
     const topVisitors = yield Database.select(userColumns).from('check_ins')
       .where('venue_id', venue.id).groupBy('users.username')
       .innerJoin('users', 'check_ins.username', 'users.username')
+      .where('users.incognito', false)
       .orderBy('visit_count', 'desc').limit(3)
 
     venue.top_visitors = topVisitors.map(item => {
       const visitCount = Number(item.visit_count)
       delete item.visit_count
+      delete item.incognito
 
       return {
         user: item,

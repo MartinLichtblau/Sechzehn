@@ -71,9 +71,18 @@ Route.group('api', function () {
   Route.get('venues/:venue_id/photos', 'PhotoController.indexForVenue')
   Route.post('venues/:venue_id/photos', 'PhotoController.store').middleware('auth')
 
+  Route.get('users/:username/comments', 'CommentController.indexForUser')
+  Route.get('venues/:venue_id/comments', 'CommentController.indexForVenue')
+  Route.post('venues/:venue_id/comments', 'CommentController.store').middleware('auth')
+
+  Route
+    .resource('comments', 'CommentController')
+    .only('update', 'destroy')
+    .middleware('auth')
+
   Route
     .resource('photos', 'PhotoController')
-    .only('update', 'destroy')
+    .only('show', 'destroy')
     .middleware('auth')
 
   Route

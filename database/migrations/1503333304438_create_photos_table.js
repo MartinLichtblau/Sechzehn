@@ -7,7 +7,8 @@ class PhotosTableSchema extends Schema {
     this.create('photos', (table) => {
       table.increments()
       table.timestamps()
-      table.string('venue_id', 60).notNullable()
+      table.string('url')
+      table.string('venue_id', 60)
       table.string('username', 80).notNullable()
       table.foreign('venue_id').references('venues.id')
       table.foreign('username').references('users.username')

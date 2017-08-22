@@ -102,7 +102,7 @@ class UserController {
 
     /*    pagination.data.map(item => {
           item.friendship_status = item.status
-        })*/
+        }) */
 
     pagination.total = Number(totalResult.count)
     response.ok(pagination)
