@@ -132,7 +132,7 @@ class VenueController {
     const venue = yield Venue
       .query()
       .where('venues.id', request.param('id'))
-      .with('category', 'hours', 'photos', 'comments', 'comments.user', 'checkins', 'checkins.user')
+      .with('category', 'hours', 'photos', 'comments', 'comments.user')
       .scope('hours', (builder) => {
         builder.orderBy('hours', 'asc')
       })
@@ -143,10 +143,6 @@ class VenueController {
       .scope('comments', builder => {
         builder.orderBy('created_at', 'desc')
         builder.limit(5)
-      })
-      .scope('checkins', builder => {
-        builder.orderBy('created_at', 'desc')
-        builder.limit(3)
       })
       .leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       .first()
