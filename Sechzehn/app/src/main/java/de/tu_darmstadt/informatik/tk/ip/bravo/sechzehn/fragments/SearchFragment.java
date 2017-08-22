@@ -172,6 +172,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                         break;
                     case SUCCESS:
                         Pagination<User> userPagination = (Pagination<User>) resource.data;
+                        searchVM.removeAllUsers();
                         addUsers(userPagination.data);
                         break;
                 }
@@ -190,6 +191,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                         break;
                     case SUCCESS:
                         Pagination<Venue> venuePagination = (Pagination<Venue>) resource.data;
+                        searchVM.removeAllVenues();
                         addVenues(venuePagination.data);
                         break;
                 }

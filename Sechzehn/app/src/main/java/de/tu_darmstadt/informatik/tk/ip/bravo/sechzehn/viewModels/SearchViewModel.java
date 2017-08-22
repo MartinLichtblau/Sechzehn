@@ -164,6 +164,22 @@ public class SearchViewModel extends ViewModel{
         }
     }
 
+    public void removeMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
+        for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
+            entry.getKey().remove();
+        }
+    }
+
+    public void removeAllUsers(){
+        if(null != usersOnMap.getValue())
+            removeMarkersOnMap(usersOnMap.getValue());
+    }
+
+    public void removeAllVenues(){
+        if(null != venuesOnMap.getValue())
+            removeMarkersOnMap(venuesOnMap.getValue());
+    }
+
     public Double getVisibleRadius(){
         //in Kilometer
         VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
