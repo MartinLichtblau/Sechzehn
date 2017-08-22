@@ -48,11 +48,12 @@
 % ! max. 1 page !
 With the backing of its helpful and positive community, Sechzehn guides you through venues all around the world. 
 Places like restaurants and museums are collectively rated. Each and every user of Sechzehn has the ability to share his personal experiences with the whole community. 
-Our rating not only includes a textual rating system, it also allows the user to upload photos taken at this place. Furthermore we also offer a short like and dislike rating. \\
+Our rating not only includes a textual rating system, it also allows the user to upload photos taken at this place. Furthermore we also offer a short like and dislike rating. \\\\
 Sechzehn also has a social component. You see other members of our community on a map. This map combined with our real-time chat paves the way to quickly establish new and longlasting friendships.
-Our real-time chats focuses on the most important features a messenger should have. This includes read receipts and the transmission of emojis. We do not distract you with features no one needs like photo filters and drawing capabilities in the chat. With our app maintaining friendships is also easier than ever: Friends are specially highlighted on the map. \\% TODO mehr
-Since some privacy-aware users might not be happy with frequent position updates, we also provide an incognito switch. With this setting turned on, the users is not displayed on the map.
-To provide the user experience
+Our real-time chats focuses on the most important features a messenger should have. This includes read receipts and the transmission of emojis. We do not distract you with features no one needs like photo filters and drawing capabilities in the chat. With our app maintaining friendships is also easier than ever: Friends are specially highlighted on the map. \\\\% TODO mehr
+To satisfy more privacy-aware users who might not be happy with frequent position updates, we also provide an incongnito mode. If the user enters it, he is not displayed on the map of other users. 
+This feature makes it possible to use our app if the user is somewhere he is not expected be. \\\\
+An intuitive and enjoyable user experience is important for us. That's why we designed our app following the material design guidelines.
 
 % datenschutz
 % pure material design 
@@ -76,9 +77,11 @@ In this section we present the architecture we used and thereby how our componen
 \section{Server}\label{sec:server}
 To host our server we use the Heroku Cloud Application Platform\cite{heroku}. Heroku provides us a PostgreSQL\cite{postgresql} database service and an nodejs execution environment. Furthermore it offers access to Cloudinary\cite{cloudinary} image backend. The Cloudinary service can be used as plugin within heroku.
 \subsection{Node.js}
-\cite{nodejs}
+Node.js \cite{nodejs} is a cross-platform environment, that allows building web servers with JavaScript.
+This is contrary to the usual applications of JavaScript since it was firstly designed to be a client-side scripting language. Node.js in its current version also supports asynchronous execution and concepts like promises. This allows elegant code and increases the performance.
+
 \subsection{AdonisJs}\label{sec:adonisjs}
-\cite{adonisjs}
+AdonisJs \cite{adonisjs} is a MVC Framework for Node.js. It's focus is to be a stable framework and to offer a nice and clean API with a bunch of tested modules to make the development experience enjoyable. Some features are an API and Session based Authentication System, the validation and sanitization of every user’s input, and has an easy way to send emails via SMTP or Web Service.
 \subsection{PostgreSQL}
 PostgreSQL\cite{postgresql} is an open-source relational database management system. It is possible to add new data types and functions in PostgreSQL. Amongst other things we implemented a function to compute the Great-circle distance\cite{greatcircledist}. The Great-circle distance is necessary to compute distances on spheres and therefore to compute distances on the earth. Moreover native programming interfaces exist for many languages. Since Heroku also has a PostgreSQL plugin, that was our way to go.
 \subsection{JSON Web Tokens}\label{sec:json_web_tokens}
@@ -90,9 +93,9 @@ The Authentication in our project is done with JSON Web Tokens(JWTs)\cite{jwt}.
 \subsection{Retrofit}
 In our app HTTP requests are done with Retrofit\cite{retrofit}. Retrofit is a type-safe client for Android that helps the developer to retrieve and upload structured data like JSON via a REST based webservice. Retrofit itself is based on the OkHttp Library. We chose to use Retrofit because it is a state-of-the-art technology that is also recommended by the Google Guidelines.
 \subsection{GSON}
-\cite{gson}
+GSON\cite{gson} is a Java library that offers a simple way to serialize and deserialize JSON Objects to Java Objects and the other way around. One of the reason why we chose it, that it does not require additional class anotations like alternative libraries do. GSON is well documented and developed (and recommended) by Google.
 \subsection{ChatKit}
-ChatKit for Android \cite{chatkit} is a library that is designed to simplify the UI development of websocket based chats in Android. It offers predefined components like Dialog Lists, Message Lists, and Message Input.
+ChatKit for Android \cite{chatkit} is a library that is designed to simplify the UI development of websocket based chats in Android. It offers predefined components like Dialog Lists, Message Lists, and Message Input. Furthermore it provides state-of-the-art messaging features like read receipts without too much additional effort.
 
 % TODO
 % technologies used
