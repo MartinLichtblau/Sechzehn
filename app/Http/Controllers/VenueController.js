@@ -142,7 +142,7 @@ class VenueController {
       })
       .scope('comments', builder => {
         builder.orderBy('created_at', 'desc')
-        builder.limit(10)
+        builder.limit(5)
       })
       .scope('checkins', builder => {
         builder.orderBy('created_at', 'desc')

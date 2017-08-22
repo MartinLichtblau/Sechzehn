@@ -88,6 +88,8 @@ class CommentController {
       photo_id: photo ? photo.id : null
     })
 
+    yield comment.related('photo').load()
+
     response.created(comment)
   }
 
