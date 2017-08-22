@@ -40,6 +40,7 @@ import retrofit2.Response;
  */
 public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> implements OnMapReadyCallback, RatingBar.OnRatingBarChangeListener {
     private static final String ARG_PARAM1 = "venueId";
+    public static final HourItem UNKNOWN_HOUR = new HourItem(new Hour(Hour.Day.UNKNOWN, null, null));
 
     private String venueId;
     private Venue venue;
@@ -95,10 +96,13 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                     for (int i = 0; i < 12; i++) {
                         binding.comments.add(new CommentItem());
                     }
-                    for (Hour hour : venue.hours) {
-                        binding.hours.add(new HourItem(hour));
+                    if (venue.hours.isEmpty()) {
+                        binding.hours.add(UNKNOWN_HOUR);
+                    } else {
+                        for (Hour hour : venue.hours) {
+                            binding.hours.add(new HourItem(hour));
+                        }
                     }
-
                 }
             }
         });
@@ -161,6 +165,10 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     }
 
     public static int objectToVisibility(Object obj) {
-        return obj == null ? View.GONE : View.VISIBLE;
+        return booleanToVisibility(obj == null);
+    }
+
+    public static int booleanToVisibility(boolean bool) {
+        return bool ? View.GONE : View.VISIBLE;
     }
 }

@@ -31,7 +31,15 @@ public class HourItem implements NestedListView.Item {
     @Override
     public void bind(View view) {
         textView = (TextView) view.findViewById(R.id.hourItem);
+        if (hour.day == Hour.Day.UNKNOWN) {
+            textView.setText("Not available");
+            return;
+        }
         textView.setText(String.format("%s %s-%s", hour.day, hour.start, hour.end));
+        colorIfToday(view);
+    }
+
+    private void colorIfToday(View view) {
         int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         if (hour.day.getDayNumber() == today) {
             int accentColor = SzUtils.getThemeColor(view.getContext(), R.attr.colorAccent);

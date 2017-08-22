@@ -7,6 +7,15 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Hour {
+    public Hour() {
+    }
+
+    public Hour(Day day, String start, String end) {
+        this.day = day;
+        this.start = start;
+        this.end = end;
+    }
+
     public Day day;
     public String start;
     public String end;

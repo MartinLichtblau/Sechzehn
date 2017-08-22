@@ -262,7 +262,6 @@
 
                         <TextView
 
-
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
@@ -300,9 +299,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
-                        android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="4dp"
+
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -335,13 +334,13 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="0dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/hoursCard"
-                        app:layout_constraintLeft_toRightOf="@+id/hoursCard"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginTop="0dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/hoursCard"
+                        app:layout_constraintLeft_toRightOf="@+id/hoursCard"
                         app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/hoursCard"
-                        android:layout_marginTop="0dp">
+                        app:layout_constraintTop_toTopOf="@+id/hoursCard">
 
 
                         <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView
