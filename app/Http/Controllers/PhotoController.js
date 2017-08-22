@@ -65,6 +65,15 @@ class PhotoController {
       allowedExtensions: ['jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG']
     })
 
+    if (!file) {
+      response.unprocessableEntity([{
+        field: 'photo',
+        validation: 'required',
+        message: 'A file must be send for photo.'
+      }])
+      return
+    }
+
     const url = yield Storage.store(file)
 
     const photo = yield Photo.create({
