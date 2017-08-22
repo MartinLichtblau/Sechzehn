@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -10,7 +11,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.HashMap;
@@ -82,6 +82,7 @@ public class SearchViewModel extends ViewModel{
         Double radius = getVisibleRadius();
         getVenues(null, null, latLng.latitude, latLng.longitude, radius, section, null,null,null);
     }
+
     public void instantSearchVenuesMock(View view) {
         String section = view.getTag().toString();
         instantSearchVenues(section);
@@ -181,10 +182,24 @@ public class SearchViewModel extends ViewModel{
     }
 
     public Double getVisibleRadius(){
-        //in Kilometer
-        VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
-        return SphericalUtil.computeDistanceBetween(
-                visibleRegion.nearLeft, map.getCameraPosition().target) / 1000;
+        //Ref.: https://stackoverflow.com/questions/20422701/retrieve-distance-from-visible-part-of-google-map
+        LatLng center = map.getCameraPosition().target;
+        LatLng northeast = map.getProjection().getVisibleRegion().latLngBounds.northeast;
+        Double distKM;
+
+        LatLng middleRight = new LatLng(center.latitude, northeast.longitude);
+        LatLng topMiddle = new LatLng(northeast.latitude, center.longitude);
+        Double distWidth = SphericalUtil.computeDistanceBetween(center, middleRight);
+        Double distHeight = SphericalUtil.computeDistanceBetween(center, topMiddle);
+        //To get smallest visible radius is in height or width
+        if(distHeight < distWidth){
+            Log.d(TAG," getVisibleRadius | distHeight");
+            distKM = (distHeight / 1000) * 0.50;
+        } else{
+            Log.d(TAG," getVisibleRadius | distWidth");
+            distKM = (distWidth / 1000) * 0.8;
+        }
+        return distKM;
     }
 
     public void saveCurrentState(){

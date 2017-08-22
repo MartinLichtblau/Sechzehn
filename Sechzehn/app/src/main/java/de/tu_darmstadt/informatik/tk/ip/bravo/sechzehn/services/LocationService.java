@@ -34,7 +34,7 @@ public class LocationService extends Service implements
     private static final String TAG = "LocationService";
     private static final int TWO_MINUTES = 1000 * 60 * 2;
     private boolean currentlyProcessingLocation = false;
-    public Location previousBestLocation = null;
+    public static Location previousBestLocation = null;
     private LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
     private static String token;
@@ -207,5 +207,9 @@ public class LocationService extends Service implements
                     //Toast.makeText(LocationService.this, "Error: "+t.getCause(), Toast.LENGTH_SHORT).show();
                 }
             });
+    }
+
+    public static Location getPreviousBestLocation(){
+        return previousBestLocation;
     }
 }
