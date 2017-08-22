@@ -144,6 +144,7 @@ public class SearchFragment extends BaseFragment {
     public void setupMap(GoogleMap googleMap){
         searchVM.map = googleMap;
         searchVM.map.setMyLocationEnabled(true);
+        searchVM.map.getUiSettings().setMapToolbarEnabled(false);
         searchVM.map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.search_map_style));
 
         if(searchVM.lastStateSaved){

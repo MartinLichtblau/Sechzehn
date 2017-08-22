@@ -20,6 +20,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.VenueSearch;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService;
@@ -41,7 +42,7 @@ public class SearchViewModel extends ViewModel{
     public MutableLiveData<HashMap<Marker,MarkerOptions>> usersOnMap = new MutableLiveData<>();
     public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
     public MutableLiveData<HashMap<Marker,MarkerOptions>> venuesOnMap = new MutableLiveData<>();
-
+    public VenueSearch lastVS;
 
     public Boolean lastStateSaved = false;
     public GoogleMap map;
@@ -74,13 +75,13 @@ public class SearchViewModel extends ViewModel{
     }
 
     public void searchXVenuesNearby(Integer numberVenues, Double lat, Double lng, Double radius){
-        getVenues(null, numberVenues, lat, lng, radius, null, null,null,null);
+        getVenues(null, numberVenues, lat, lng, radius, null, null, null, null, null);
     }
 
     public void instantSearchVenues(String section) {
         LatLng latLng = map.getCameraPosition().target;
         Double radius = getVisibleRadius();
-        getVenues(null, null, latLng.latitude, latLng.longitude, radius, section, null,null,null);
+        getVenues(null, null, latLng.latitude, latLng.longitude, radius, section, null, null, null, null);
     }
 
     public void instantSearchVenuesMock(View view) {
@@ -88,14 +89,12 @@ public class SearchViewModel extends ViewModel{
         instantSearchVenues(section);
     }
 
-    public void getVenues (Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time) {
-        //the section for quick searches Example: food. Possible values:  food , drinks , coffee , shops , arts , outdoors , sights .
-        //the price ranking Example: 1. Possible values:  1 , 2 , 3 , 4 , 5 .
-        //time Example: 2017-08-17 15:20.
+    public void getVenues (Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time, Boolean sortByDistance) {
+        lastVS = new VenueSearch(page, perPage, lat, lng, radius, section, query, price, time, sortByDistance);
         if(null == perPage)
             perPage = 50;
         venueResults.setValue(Resource.loading(null));
-        venueService.getVenues(page, perPage, lat, lng, radius, section, query, price, time).enqueue(new Callback<Pagination<Venue>>() {
+        venueService.getVenues(page, perPage, lat, lng, radius, section, query, price, time, sortByDistance).enqueue(new Callback<Pagination<Venue>>() {
             @Override
             public void onResponse(Call<Pagination<Venue>> call, Response<Pagination<Venue>> response) {
                 if (response.isSuccessful())
@@ -109,6 +108,14 @@ public class SearchViewModel extends ViewModel{
                     venueResults.setValue(Resource.error(t.getCause().toString(), null));
             }
         });
+    }
+
+    public void researchHere(View view){
+        LatLng center = map.getCameraPosition().target;
+        Double radius = getVisibleRadius();
+        getVenues(lastVS.getPage(), lastVS.getPerPage(),
+                center.latitude, center.longitude, radius, //those three are changed
+                lastVS.getSection(), lastVS.getQuery(), lastVS.getPrice(), lastVS.getTime(), lastVS.getSortByDistance());
     }
 
     public void reAddUserMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
