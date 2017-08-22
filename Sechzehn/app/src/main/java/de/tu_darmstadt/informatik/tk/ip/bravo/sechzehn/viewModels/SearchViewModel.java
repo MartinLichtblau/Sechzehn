@@ -7,6 +7,7 @@ import android.view.View;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
@@ -46,6 +47,7 @@ public class SearchViewModel extends ViewModel{
     public GoogleMap map;
     private CameraPosition cameraPosition;
     public Boolean userToggle = true;
+    public Boolean venueToggle = true;
 
 
     public void searchXUsersNearby(Integer numberUsers, Double lat, Double lng, Double radius){
@@ -75,7 +77,22 @@ public class SearchViewModel extends ViewModel{
         getVenues(null, numberVenues, lat, lng, radius, null, null,null,null);
     }
 
+    public void instantSearchVenues(String section) {
+        LatLng latLng = map.getCameraPosition().target;
+        Double radius = getVisibleRadius();
+        getVenues(null, null, latLng.latitude, latLng.longitude, radius, section, null,null,null);
+    }
+    public void instantSearchVenuesMock(View view) {
+        String section = view.getTag().toString();
+        instantSearchVenues(section);
+    }
+
     public void getVenues (Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time) {
+        //the section for quick searches Example: food. Possible values:  food , drinks , coffee , shops , arts , outdoors , sights .
+        //the price ranking Example: 1. Possible values:  1 , 2 , 3 , 4 , 5 .
+        //time Example: 2017-08-17 15:20.
+        if(null == perPage)
+            perPage = 50;
         venueResults.setValue(Resource.loading(null));
         venueService.getVenues(page, perPage, lat, lng, radius, section, query, price, time).enqueue(new Callback<Pagination<Venue>>() {
             @Override
@@ -93,11 +110,14 @@ public class SearchViewModel extends ViewModel{
         });
     }
 
-
-
     public void reAddUserMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
         //Add markers through markerOptions and save them
         usersOnMap.setValue(reAddMarkersOnMap(markerMap));
+    }
+
+    public void reAddVenueMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
+        //Add markers through markerOptions and save them
+        venuesOnMap.setValue(reAddMarkersOnMap(markerMap));
     }
 
     public HashMap<Marker,MarkerOptions> reAddMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
@@ -114,10 +134,19 @@ public class SearchViewModel extends ViewModel{
         if(userToggle){
             userToggle = false;
             hideMarkersOnMap(usersOnMap.getValue());
-        }
-        else{
+        } else{
             userToggle = true;
             showMarkersOnMap(usersOnMap.getValue());
+        }
+    }
+
+    public void toggleVenues(View view){
+        if(venueToggle){
+            venueToggle = false;
+            hideMarkersOnMap(venuesOnMap.getValue());
+        } else{
+            venueToggle = true;
+            showMarkersOnMap(venuesOnMap.getValue());
         }
     }
 
@@ -135,10 +164,11 @@ public class SearchViewModel extends ViewModel{
         }
     }
 
-    public Double getVisibleMapRange(){
+    public Double getVisibleRadius(){
+        //in Kilometer
         VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
         return SphericalUtil.computeDistanceBetween(
-                visibleRegion.farLeft, map.getCameraPosition().target) / 1000;
+                visibleRegion.nearLeft, map.getCameraPosition().target) / 1000;
     }
 
     public void saveCurrentState(){
@@ -147,10 +177,11 @@ public class SearchViewModel extends ViewModel{
     }
 
     public void restoreLastState(){
+        lastStateSaved = false;
         //restore User Data
         reAddUserMarkersOnMap(usersOnMap.getValue());
         //restore Venue Data
-        //.......
+        reAddVenueMarkersOnMap(venuesOnMap.getValue());
         //restore Camera
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }

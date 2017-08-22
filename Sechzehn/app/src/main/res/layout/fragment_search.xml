@@ -11,7 +11,8 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:outlineProvider="bounds">
 
         <FrameLayout
             android:id="@+id/mapFrame"
@@ -55,27 +56,22 @@
                     android:gravity="center"
                     style="@style/Widget.Material.ToggleButton"
                     android:button="@drawable/ic_venue_icon"
-                    android:checked="true"/>
+                    android:checked='@{safeUnbox(searchVM.venueToggle)}'
+                    android:onClick="@{searchVM::toggleVenues}"/>
             </android.support.v7.widget.ToggleGroup>
         </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/search_bottomsheet_expanded"
-            app:behavior_peekHeight="@dimen/search_bottomsheet_collapsed"
-            app:layout_behavior="@string/bottom_sheet_behavior"
-            app:behavior_hideable="false"
-            android:elevation="16dp"
-            android:fitsSystemWindows="true">
-            <include
-                android:id="@+id/search_bottomsheet"
-                layout="@layout/bottomsheet_search"/>
-        </FrameLayout>
+
+        <include
+            android:id="@+id/bottomsheet_search"
+            layout="@layout/bottomsheet_search"
+            app:searchVM="@{searchVM}"
+            app:frag="@{frag}"/>
 
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_anchor="@id/search_bottomsheet"
+            app:layout_anchor="@id/bottomsheet_search"
             app:layout_anchorGravity="top|end"
             android:elevation="16dp">
             <android.support.design.widget.FloatingActionButton

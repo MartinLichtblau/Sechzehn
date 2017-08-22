@@ -197,14 +197,14 @@ public class LocationService extends Service implements
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if(response.isSuccessful()) {
-                        Toast.makeText(LocationService.this, "Location successfully updated", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(LocationService.this, "Location successfully updated", Toast.LENGTH_SHORT).show();
                     }else{
-                        Toast.makeText(LocationService.this, NetworkUtils.parseError(response).getMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(LocationService.this, NetworkUtils.parseError(response).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
-                    Toast.makeText(LocationService.this, "Error: "+t.getCause(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LocationService.this, "Error: "+t.getCause(), Toast.LENGTH_SHORT).show();
                 }
             });
     }

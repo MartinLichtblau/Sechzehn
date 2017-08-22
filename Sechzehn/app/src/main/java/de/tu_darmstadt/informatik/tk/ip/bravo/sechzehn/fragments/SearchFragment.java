@@ -32,6 +32,7 @@ import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Friendship;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
@@ -70,9 +71,8 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(binding.searchBottomsheet);
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomsheetSearch.getRoot());
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        // set callback for changes
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             CameraPosition cameraPos;
             LatLng oldPos;
@@ -133,20 +133,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
         return binding.getRoot();
     }
 
-    public void fab(View view){
-        BottomSheetBehavior.from(binding.searchBottomsheet).setState(BottomSheetBehavior.STATE_EXPANDED);
-        //focusSearchView();
-    }
-
-    private void focusSearchView(){
-       /* final SearchView searchView = binding.searchSearchbarView;
-        searchView.setIconifiedByDefault(false);
-        searchView.requestFocus();
-        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).
-                toggleSoftInput(InputMethodManager.SHOW_FORCED,
-                InputMethodManager.HIDE_IMPLICIT_ONLY);*/
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         searchVM.map = googleMap;
@@ -167,8 +153,10 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
 
     public void initalSearch(){
         //Show only nearby users and venues
-        searchVM.searchXUsersNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleMapRange());
-        searchVM.searchXVenuesNearby(100, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleMapRange());
+        searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
+        //searchVM.searchXVenuesNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
+        /*searchVM.instantSearchVenues("coffee");*/
+        binding.bottomsheetSearch.toggleCoffee.performClick();
     }
 
     public void observeSearchResults(){
@@ -184,7 +172,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                         break;
                     case SUCCESS:
                         Pagination<User> userPagination = (Pagination<User>) resource.data;
-                        Toast.makeText(getContext(), "Found"+userPagination.total+" users", Toast.LENGTH_SHORT).show();
                         addUsers(userPagination.data);
                         break;
                 }
@@ -196,13 +183,13 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                 switch (resource.status){
                     case LOADING:
                         Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
+                        //@TODO show loading dialog progress bar
                         break;
                     case ERROR:
                         Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
                         break;
                     case SUCCESS:
                         Pagination<Venue> venuePagination = (Pagination<Venue>) resource.data;
-                        Toast.makeText(getContext(), "Found"+venuePagination.total+" venues", Toast.LENGTH_SHORT).show();
                         addVenues(venuePagination.data);
                         break;
                 }
@@ -212,7 +199,6 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
 
     public void addUsers(List<User> userList){
         createAddUserMarkers(userList);
-        /*showUsersOnList(userList);*/
     }
 
     public void addVenues(List<Venue> venueList){
@@ -222,9 +208,12 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
 
     private void createAddUserMarkers(final List<User> userList) {
         final HashMap<Marker,MarkerOptions> tempMarkerMap = new HashMap<>();
+        Boolean highlight = false;
         for (final User user :  userList) {
             if (!TextUtils.equals(user.getUsername(), SzUtils.getOwnername())) {
-                SzUtils.createThumb(SzUtils.ThumbType.USER, user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
+                if(user.getFriendshipStatus() == Friendship.Status.CONFIRMED)
+                    highlight = true;
+                SzUtils.createUserPin(getContext(), highlight, user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
                     @Override
                     public void onChanged(@Nullable Bitmap bitmap) {
                         MarkerOptions markerOptions = new MarkerOptions()
@@ -247,7 +236,7 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
     private void createAddVenueMarkers(final List<Venue> venueList) {
         final HashMap<Marker,MarkerOptions> tempMarkerMap = new HashMap<>();
         for (final Venue venue :  venueList) {
-                SzUtils.createThumb(SzUtils.ThumbType.VENUE, "placeholder url to picture").observe(this, new Observer<Bitmap>() {
+                SzUtils.createVenuePin(getContext(), false, "placeholder url to picture").observe(this, new Observer<Bitmap>() {
                     @Override
                     public void onChanged(@Nullable Bitmap bitmap) {
                         MarkerOptions markerOptions = new MarkerOptions()
@@ -278,13 +267,27 @@ public class SearchFragment extends BaseFragment implements GoogleMap.OnInfoWind
                 }
             }, 100);
         }else {
-            //@ venues
+            //@TODO open detailed venue Fragment
         }
     }
 
     @Override
     public void onMapClick(LatLng latLng) {
-        BottomSheetBehavior.from(binding.searchBottomsheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
+        BottomSheetBehavior.from(binding.bottomsheetSearch.getRoot()).setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    public void fab(View view){
+        BottomSheetBehavior.from(binding.bottomsheetSearch.getRoot()).setState(BottomSheetBehavior.STATE_EXPANDED);
+        //focusSearchView();
+    }
+
+    private void focusSearchView(){
+       /* final SearchView searchView = binding.searchSearchbarView;
+        searchView.setIconifiedByDefault(false);
+        searchView.requestFocus();
+        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).
+                toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                InputMethodManager.HIDE_IMPLICIT_ONLY);*/
     }
 
     //>>>>>>>>>>>>Forward Lifecycle for googlemaps MapView

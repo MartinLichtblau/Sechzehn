@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -16,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +23,7 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,8 +42,8 @@ public final class SzUtils {
     public static final CropCircleTransformation CROP_CIRCLE_TRANSFORMATION = new CropCircleTransformation();
     private static String ownername;
     private static String token;
-    private static Bitmap user_background;
-    private static Bitmap venue_background;
+    private static Bitmap userPinBackground;
+    private static Bitmap venuePinBackground;
     public enum ThumbType {USER, VENUE}
     final static List<Target> strongReferenceTargetList = new ArrayList<>();
 
@@ -57,11 +56,12 @@ public final class SzUtils {
         ownername = prefs.getString("ownername","");
         token = prefs.getString("JWT","");
 
-        user_background = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin), 120, 120, false);
+        userPinBackground = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin_background), 120, 120, false);
 
-        venue_background = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin), 120, 120, false);
+        venuePinBackground = tintBitmap(Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_background), 120, 120, false),
+                Color.GRAY);
     }
 
     public static String getToken(){
@@ -126,24 +126,23 @@ public final class SzUtils {
     }
 
     private static Bitmap compressBitmap(Bitmap original){
-        return original;
-        /*ByteArrayOutputStream out = new ByteArrayOutputStream();
+        /*return original;*/
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         original.compress(Bitmap.CompressFormat.PNG, 100, out);
-        return BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));*/
+        return BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
     }
 
     public static MutableLiveData<Bitmap> createUserPin(Context context, Boolean highlight, @Nullable String url){
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
         final Bitmap background;
         if(highlight){
-            background = tintBitmap(user_background, R.color.colorAccent);
+            background = tintBitmap(userPinBackground, Color.parseColor("#FF4081"));
         }else {
-            background = tintBitmap(user_background, R.color.colorAccent);;
+            background = userPinBackground;
         }
 
-        final Bitmap defaultUserPin =
-                compressBitmap(mergeToPin(background,
-                        Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin_default), 100, 100, false)));
+        final Bitmap defaultUserPin = compressBitmap(mergeToPin(background,
+                Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin_pic_default), 100, 100, false)));
 
         if(TextUtils.isEmpty(url)){
             //User has no profile picture
@@ -189,14 +188,14 @@ public final class SzUtils {
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
         final Bitmap background;
         if(highlight){
-            background = tintBitmap(venue_background, R.color.colorAccent);
+            background = tintBitmap(venuePinBackground, Color.parseColor("#FF4081"));
         }else {
-            background = venue_background;
+            background = venuePinBackground;
         }
 
-        final Bitmap defaultVenuePin =
-                compressBitmap(mergeToPin(background,
-                        Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_default), 100, 100, false)));
+        /*final Bitmap defaultVenuePin = compressBitmap(mergeToPin(background,
+                Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_pic_default), 100, 100, false)));*/
+        final Bitmap defaultVenuePin = compressBitmap(background);
 
         if(TextUtils.isEmpty(url)){
             scaledImg.setValue(defaultVenuePin);
