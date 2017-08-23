@@ -243,8 +243,12 @@ public class SearchFragment extends BaseFragment {
             @Override
             public void onCameraMoveStarted(int i) {
                 //Ref.: https://developers.google.com/maps/documentation/android-api/events
-                if(REASON_GESTURE == i && (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)){
+                if(REASON_GESTURE == i){
                     userMovedCamera = true;
+                    if(bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_COLLAPSED){
+                        //User should not scroll when the BottomSheet is expanded and map is super tiny small
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
                 }
             }
         });
