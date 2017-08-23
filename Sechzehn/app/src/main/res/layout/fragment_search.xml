@@ -38,7 +38,6 @@
                 android:layout_gravity="start"
                 android:layout_marginTop="12dp"
                 android:layout_marginStart="12dp"
-                app:divider="@drawable/toggle_divider"
                 app:orientation="vertical"
                 app:exclusive="false"
                 app:allowUnselected="true">
