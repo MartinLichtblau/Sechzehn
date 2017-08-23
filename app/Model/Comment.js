@@ -10,7 +10,7 @@ class Comment extends Lucid {
       'venue_id',
       'username',
       'photo_id',
-      'ratingsPositive_count'
+      'comment_id'
     ]
   }
 

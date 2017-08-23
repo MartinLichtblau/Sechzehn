@@ -1,8 +1,9 @@
 'use strict'
 
-const CommentRating = use('App/Model/CommentRating')
-const Validator = use('Validator')
 const Comment = use('App/Model/Comment')
+const CommentRating = use('App/Model/CommentRating')
+const Database = use('Database')
+const Validator = use('Validator')
 
 class CommenRatingController {
   * store (request, response) {
@@ -19,7 +20,9 @@ class CommenRatingController {
       return
     }
 
-    const oldCommentRating = yield CommentRating.query().where('username', user.username).where('comment_id', comment.id).first()
+    const oldCommentRating = yield CommentRating.query()
+      .where('username', user.username)
+      .where('comment_id', comment.id).first()
 
     if (oldCommentRating) {
       oldCommentRating.rating = rating
@@ -31,6 +34,10 @@ class CommenRatingController {
         rating
       })
     }
+
+    const ratingQueryResult = yield Database.select(Database.raw('sum(rating) as rating')).from('comment_ratings').where('comment_id', comment.id).first()
+
+    comment.rating = ratingQueryResult.rating
 
     response.ok(comment)
   }
