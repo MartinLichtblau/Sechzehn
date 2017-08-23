@@ -6,6 +6,14 @@ const Moment = require('moment')
 
 class User extends Lucid {
   /**
+   * Enable soft deletes.
+   * @returns {string}
+   */
+  static get deleteTimestamp () {
+    return 'deleted_at'
+  }
+
+  /**
    * The validation rules for creating a User.
    * @returns {{username: string, email: string, password: string}}
    */
@@ -66,7 +74,6 @@ class User extends Lucid {
      */
     this.addHook('beforeUpdate', function * (next) {
       delete this.attributes.isOwner
-      console.log(this.isOwner)
       yield next
     })
   }

@@ -101,10 +101,6 @@ class UserController {
     const totalResult = yield totalQuery.count().first()
     pagination.data = yield query.forPage(pagination.page, pagination.perPage)
 
-    /*    pagination.data.map(item => {
-          item.friendship_status = item.status
-        }) */
-
     pagination.total = Number(totalResult.count)
     response.ok(pagination)
   }
@@ -367,8 +363,6 @@ class UserController {
     user.confirmation_token = token
 
     user.isOwner = true
-
-    console.log(user.email)
 
     // Send the confirmation email
     yield Mail.send('emails.confirmation', {
