@@ -229,11 +229,19 @@ class User extends Lucid {
   }
 
   /**
-   * List all Check-Ins of the this User.
+   * List all Check-Ins of this User.
    * @returns {Object}
    */
   checkins () {
     return this.hasMany('App/Model/CheckIn', 'username', 'username')
+  }
+
+  /**
+   * List all Photos of this User.
+   * @returns {Object}
+   */
+  photos () {
+    return this.hasMany('App/Model/Photo', 'username', 'username')
   }
 }
 

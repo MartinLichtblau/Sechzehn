@@ -18,7 +18,6 @@ class CheckIn extends Lucid {
   venue () {
     return this.belongsTo('App/Model/Venue')
   }
-
 }
 
 module.exports = CheckIn

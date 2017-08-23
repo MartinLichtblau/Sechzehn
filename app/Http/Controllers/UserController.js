@@ -1,18 +1,19 @@
 'use strict'
 
-const Validator = use('Validator')
-const Hash = use('Hash')
-const Database = use('Database')
-const User = use('App/Model/User')
-const Route = use('Route')
 const Config = use('Config')
-const TokenGenerator = use('TokenGenerator')
-const Storage = use('Storage')
-const Mail = use('Mail')
-const Url = require('url')
-const Path = require('path')
+const Database = use('Database')
 const Exceptions = require('adonis-lucid/src/Exceptions')
+const Hash = use('Hash')
+const Mail = use('Mail')
 const Pagination = require('./Helper/Pagination')
+const Path = require('path')
+const Route = use('Route')
+const Storage = use('Storage')
+const TokenGenerator = use('TokenGenerator')
+const Url = require('url')
+const User = use('App/Model/User')
+const Validator = use('Validator')
+const Venue = use('App/Model/Venue')
 
 class UserController {
   * index (request, response) {
@@ -147,9 +148,15 @@ class UserController {
     }
 
     yield user
-      .related('checkins')
-      .scope('checkins', builder => {
+      .related('photos', 'checkins', 'checkins.venue')
+      .scope('photos', builder => {
         builder.limit(3)
+      })
+      .scope('checkins', builder => {
+        builder.limit(10)
+      })
+      .scope('checkins.venue', builder => {
+        builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       })
       .load()
 
