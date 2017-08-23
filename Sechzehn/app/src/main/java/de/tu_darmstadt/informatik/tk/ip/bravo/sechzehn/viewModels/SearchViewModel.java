@@ -42,7 +42,7 @@ public class SearchViewModel extends ViewModel{
     public MutableLiveData<HashMap<Marker,MarkerOptions>> usersOnMap = new MutableLiveData<>();
     public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
     public MutableLiveData<HashMap<Marker,MarkerOptions>> venuesOnMap = new MutableLiveData<>();
-    public VenueSearch lastVS;
+    public VenueSearch lastVS = new VenueSearch();
 
     public Boolean lastStateSaved = false;
     public GoogleMap map;
@@ -74,27 +74,41 @@ public class SearchViewModel extends ViewModel{
         });
     }
 
-    public void searchXVenuesNearby(Integer numberVenues, Double lat, Double lng, Double radius){
+/*    public void searchXVenuesNearby(Integer numberVenues, Double lat, Double lng, Double radius){
         getVenues(null, numberVenues, lat, lng, radius, null, null, null, null, null);
-    }
+    }*/
 
-    public void instantSearchVenues(String section) {
-        LatLng latLng = map.getCameraPosition().target;
+    public void newSearchSectionHere (String section) {
+        LatLng center = map.getCameraPosition().target;
         Double radius = getVisibleRadius();
-        getVenues(null, null, latLng.latitude, latLng.longitude, radius, section, null, null, null, null);
+        VenueSearch vs = lastVS;
+        vs.setSection(section);
+        vs.setLat(center.latitude); vs.setLng(center.longitude); vs.setRadius(radius);
+        getVenues(vs);
     }
 
-    public void instantSearchVenuesMock(View view) {
-        String section = view.getTag().toString();
-        instantSearchVenues(section);
+    public void alterLastVenueSearch(Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time, Boolean sortByDistance){
+        if(null != query){
+
+        }
+        if(null != section){
+
+        }
+
+
     }
 
-    public void getVenues (Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time, Boolean sortByDistance) {
-        lastVS = new VenueSearch(page, perPage, lat, lng, radius, section, query, price, time, sortByDistance);
-        if(null == perPage)
-            perPage = 50;
+    public void getVenues (VenueSearch vs) {
         venueResults.setValue(Resource.loading(null));
-        venueService.getVenues(page, perPage, lat, lng, radius, section, query, price, time, sortByDistance).enqueue(new Callback<Pagination<Venue>>() {
+
+        if(vs.getSearchHere()){
+            LatLng center = map.getCameraPosition().target;
+            Double radius = getVisibleRadius();
+            vs.setLat(center.latitude); vs.setLng(center.longitude); vs.setRadius(radius);
+        }
+
+        venueService.getVenues(vs.page, vs.perPage, vs.lat, vs.lng, vs.radius, vs.section, vs.query, vs.price, vs.time, vs.sortByDistance)
+                .enqueue(new Callback<Pagination<Venue>>() {
             @Override
             public void onResponse(Call<Pagination<Venue>> call, Response<Pagination<Venue>> response) {
                 if (response.isSuccessful())
@@ -108,14 +122,15 @@ public class SearchViewModel extends ViewModel{
                     venueResults.setValue(Resource.error(t.getCause().toString(), null));
             }
         });
+        lastVS = vs;
     }
 
     public void researchHere(View view){
         LatLng center = map.getCameraPosition().target;
         Double radius = getVisibleRadius();
-        getVenues(lastVS.getPage(), lastVS.getPerPage(),
-                center.latitude, center.longitude, radius, //those three are changed
-                lastVS.getSection(), lastVS.getQuery(), lastVS.getPrice(), lastVS.getTime(), lastVS.getSortByDistance());
+        VenueSearch vs = lastVS;
+        vs.setLat(center.latitude); vs.setLng(center.longitude); vs.setRadius(radius);
+        getVenues(vs);
     }
 
     public void reAddUserMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){

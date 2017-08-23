@@ -16,7 +16,7 @@
     <dimen name="txt_normal">16sp</dimen>
     <dimen name="txt_large">32sp</dimen>
 
-    <dimen name="search_bottomsheet_expanded">350dp</dimen>
+    <dimen name="search_bottomsheet_expanded">380dp</dimen>
     <dimen name="search_bottomsheet_collapsed">48dp</dimen>
 
 </resources>

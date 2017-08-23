@@ -34,7 +34,7 @@
                 app:expandedTitleTextAppearance="@style/my_toolbar_text">
 
                 <android.support.v7.widget.ToggleGroup
-                    android:id="@+id/searchinterface_sections_group"
+                    android:id="@+id/search_instant"
                     style="@style/Widget.Material.ToggleGroup"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/search_bottomsheet_collapsed"
@@ -42,48 +42,48 @@
                     android:gravity="center"
                     app:orientation="horizontal"
                     app:exclusive="true"
-                    app:allowUnselected="false"
+                    app:allowUnselected="true"
                     android:onClick="@{frag::fab}">
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_food"
+                        android:id="@+id/section_food"
                         android:tag="food"
                         android:button="@drawable/ic_food"
-                        android:onClick="@{searchVM::instantSearchVenuesMock}"
-                        style="@style/Widget.Material.ToggleButton"/>
+                        android:onClick="@{frag::alterSearchSection}"
+                        style="@style/PinkToggle"/>
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_drinks"
+                        android:id="@+id/section_drinks"
                         android:tag="drinks"
                         android:button="@drawable/ic_drinks"
-                        android:onClick="@{searchVM::instantSearchVenuesMock}"
-                        style="@style/Widget.Material.ToggleButton"/>
+                        android:onClick="@{frag::alterSearchSection}"
+                        style="@style/PinkToggle"/>
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_coffee"
+                        android:id="@+id/section_coffee"
                         android:tag="coffee"
                         android:button="@drawable/ic_coffee"
-                        android:onClick="@{searchVM::instantSearchVenuesMock}"
-                        style="@style/Widget.Material.ToggleButton"/>
+                        android:onClick="@{frag::alterSearchSection}"
+                        style="@style/PinkToggle"/>
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_shops"
+                        android:id="@+id/section_shops"
                         android:tag="shops"
                         android:button="@drawable/ic_shops"
-                        android:onClick="@{searchVM::instantSearchVenuesMock}"
-                        style="@style/Widget.Material.ToggleButton"/>
+                        android:onClick="@{frag::alterSearchSection}"
+                        style="@style/PinkToggle"/>
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_arts"
+                        android:id="@+id/section_arts"
                         android:tag="arts"
                         android:button="@drawable/ic_arts"
-                        android:onClick="@{searchVM::instantSearchVenuesMock}"
-                        style="@style/Widget.Material.ToggleButton"/>
+                        android:onClick="@{frag::alterSearchSection}"
+                        style="@style/PinkToggle"/>
                     <android.support.v7.widget.ToggleButton
-                        android:id="@+id/toggle_outdoors"
+                        android:id="@+id/section_outdoors"
                         android:tag="outdoors"
                         android:button="@drawable/ic_outdoors"
-                        android:onClick="@{searchVM::instantSearchVenuesMock}"
-                        style="@style/Widget.Material.ToggleButton"/>
+                        android:onClick="@{frag::alterSearchSection}"
+                        style="@style/PinkToggle"/>
                 </android.support.v7.widget.ToggleGroup>
 
                 <LinearLayout
-                    android:id="@+id/searchinterface"
+                    android:id="@+id/search_detailed"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="@dimen/dim_normal"
@@ -93,59 +93,111 @@
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.7">
 
-                    <android.support.v7.widget.Toolbar
-                        android:id="@+id/toolbar_venue"
+                    <SearchView
+                        android:id="@+id/searchview_venue"
                         android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        android:height="?attr/actionBarSize">
+                        android:layout_height="48dp"
+                        android:background="@color/md_grey_200"
+                        android:queryHint="Search Venues"
+                        android:iconifiedByDefault="false"/>
 
-                        <SearchView
-                            android:id="@+id/toolbar_venue_view"
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dim_normal"/>
+
+                   <!-- <SearchView
+                        android:id="@+id/searchview_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@color/md_grey_200"
+                        android:queryHint="Around Here"
+                        android:iconifiedByDefault="false"/>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dim_normal"/>-->
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                     <!--   <TextView
+                            android:id="@+id/price_textbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="Price"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:visibility="gone"/>-->
+
+                        <android.support.v7.widget.ToggleGroup
+                            android:id="@+id/prices"
+                            style="@style/Widget.Material.ToggleGroup"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@color/md_grey_200"
-                            android:iconifiedByDefault="false"
-                            android:queryHint="Search Venues" />
-                    </android.support.v7.widget.Toolbar>
+                            app:orientation="horizontal"
+                            app:exclusive="true"
+                            app:allowUnselected="false"
+                            app:divider="@drawable/toggle_divider">
+                            <android.support.v7.widget.ToggleButton
+                                android:id="@+id/price_any"
+                                android:tag="0"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:text="Any Price"
+                                android:onClick="@{frag::alterSearchPrice}"
+                                style="@style/PinkToggle"/>
+                            <android.support.v7.widget.ToggleButton
+                                android:id="@+id/price_1"
+                                android:tag="1"
+                                android:text="$"
+                                android:onClick="@{frag::alterSearchPrice}"
+                                style="@style/PinkToggle"/>
+                            <android.support.v7.widget.ToggleButton
+                                android:id="@+id/price_2"
+                                android:tag="2"
+                                android:text="$$"
+                                android:onClick="@{frag::alterSearchPrice}"
+                                style="@style/PinkToggle"/>
+                            <android.support.v7.widget.ToggleButton
+                                android:id="@+id/price_3"
+                                android:tag="3"
+                                android:text="$$$"
+                                android:onClick="@{frag::alterSearchPrice}"
+                                style="@style/PinkToggle"/>
+                            <android.support.v7.widget.ToggleButton
+                                android:id="@+id/price_4"
+                                android:tag="4"
+                                android:text="$$$$"
+                                android:onClick="@{frag::alterSearchPrice}"
+                                style="@style/PinkToggle"/>
+                            <android.support.v7.widget.ToggleButton
+                                android:id="@+id/price_5"
+                                android:tag="5"
+                                android:text="$$$$$"
+                                android:onClick="@{frag::alterSearchPrice}"
+                                style="@style/PinkToggle"/>
+                        </android.support.v7.widget.ToggleGroup>
+                    </RelativeLayout>
 
-                    <android.support.v7.widget.Toolbar
-                        android:id="@+id/toolbar_location"
+                    <Space
                         android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        android:height="?attr/actionBarSize">
+                        android:layout_height="@dimen/dim_normal"/>
 
-                        <SearchView
-                            android:id="@+id/toolbar_location_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/md_grey_200"
-                            android:iconifiedByDefault="false"
-                            android:queryHint="Search Here" />
-                    </android.support.v7.widget.Toolbar>
-
-                    <LinearLayout
+                    <CheckBox
+                        android:id="@+id/opennow"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <Button
-                            android:id="@+id/b1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Price"
-                            style="@style/PrimaryFlatButton"/>
-                        <Button
-                            android:id="@+id/b2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Opening"
-                            style="@style/PrimaryFlatButton"/>
-                        <Button
-                            android:id="@+id/b3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="..."
-                            style="@style/PrimaryFlatButton"/>
-                    </LinearLayout>
+                        android:text="Open now"
+                        android:onClick="@{frag::alterSearchOpennow}"/>
+
+                  <!--  <android.support.v7.widget.ToggleButton
+                        android:id="@+id/toggle_opennow"
+                        android:layout_width="wrap_content"
+                        android:paddingStart="@dimen/dim_small"
+                        android:paddingEnd="@dimen/dim_small"
+                        android:text="Open Now"
+                        style="@style/PinkToggle"
+                        android:layout_weight="0.50" />-->
                 </LinearLayout>
 
                 <android.support.v7.widget.Toolbar

@@ -5,16 +5,17 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
  */
 
 public class VenueSearch {
-    Integer page;
-    Integer perPage;
-    Double lat;
-    Double lng;
-    Double radius;
-    String section; //the section for quick searches Example: food. Possible values:  food , drinks , coffee , shops , arts , outdoors , sights .
-    String query;
-    Integer price; //the price ranking Example: 1. Possible values:  1 , 2 , 3 , 4 , 5 .
-    String time; //time Example: 2017-08-17 15:20.
-    Boolean sortByDistance;
+    public Integer page;
+    public Integer perPage;
+    public Double lat;
+    public Double lng;
+    public Double radius;
+    public String section; //the section for quick searches Example: food. Possible values:  food , drinks , coffee , shops , arts , outdoors , sights .
+    public String query;
+    public Integer price; //the price ranking Example: 1. Possible values:  1 , 2 , 3 , 4 , 5 .
+    public String time; //time Example: 2017-08-17 15:20.
+    public Boolean sortByDistance;
+    public Boolean searchHere = true; //default is to search here in this area
 
     public VenueSearch(Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time, Boolean sortByDistance) {
         this.page = page;
@@ -27,6 +28,11 @@ public class VenueSearch {
         this.price = price;
         this.time = time;
         this.sortByDistance = sortByDistance;
+        this.searchHere = searchHere;
+    }
+
+    public VenueSearch(){
+
     }
 
     public Integer getPage() {
@@ -107,5 +113,13 @@ public class VenueSearch {
 
     public void setSortByDistance(Boolean sortByDistance) {
         this.sortByDistance = sortByDistance;
+    }
+
+    public Boolean getSearchHere() {
+        return searchHere;
+    }
+
+    public void setSearchHere(Boolean searchHere) {
+        this.searchHere = searchHere;
     }
 }

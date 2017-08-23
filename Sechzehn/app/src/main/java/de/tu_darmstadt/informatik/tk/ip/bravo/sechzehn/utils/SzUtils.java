@@ -265,6 +265,14 @@ public final class SzUtils {
         return String.valueOf(age);
     }
 
+    public static String getNowDate(String format){
+        String nowDate;
+        Calendar now = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(format); //e.g. "yyyy-MM-dd hh:mm"
+        nowDate = sdf.format(now.getTime());
+        return nowDate;
+    }
+
 
 
 

@@ -10,11 +10,13 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v7.widget.ToggleButton;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -39,6 +41,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.VenueSearch;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentSearchBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
@@ -85,9 +88,63 @@ public class SearchFragment extends BaseFragment {
                 setupMap(googleMap);
             }
         });
-
         setupBottomSheet();
+        setupSearch();
+
         return binding.getRoot();
+    }
+
+    private void setupSearch(){
+        VenueSearch vs = new VenueSearch();
+        binding.bottomsheetSearch.searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Log.e("onQueryTextChange", "called");
+                return false;
+            }
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                alterSearchQuery(query);
+                return false;
+            }
+        });
+    }
+
+    public void alterSearchQuery(String query){
+        Toast.makeText(getActivity(), "alterSearchQuery: "+query, Toast.LENGTH_SHORT).show();
+        VenueSearch alteredVS = searchVM.lastVS;
+        alteredVS.setQuery(query);
+        searchVM.getVenues(alteredVS);
+    }
+
+    public void alterSearchSection(View view) {
+        String section = null;
+        VenueSearch alteredVS = searchVM.lastVS;
+        ToggleButton toggleButton = (ToggleButton) view;
+        if(toggleButton.isChecked())
+            section = view.getTag().toString();
+        alteredVS.setSection(section);
+        searchVM.getVenues(alteredVS);
+    }
+
+    public void alterSearchPrice(View view){
+        Integer price = Integer.valueOf(view.getTag().toString());
+        VenueSearch alteredVS = searchVM.lastVS;
+        if(price == 0) //price 0 is Any price > means price is null
+            price = null;
+        alteredVS.setPrice(price);
+        searchVM.getVenues(alteredVS);
+    }
+
+    public void alterSearchOpennow(View view){
+        Boolean opennow = binding.bottomsheetSearch.opennow.isChecked();
+        String nowDate = null;
+        VenueSearch alteredVS = searchVM.lastVS;
+        Toast.makeText(getActivity(), "alterSearchOpennow: "+opennow.toString(), Toast.LENGTH_SHORT).show();
+        if(opennow)
+            nowDate = SzUtils.getNowDate("yyyy-MM-dd hh:mm");
+        alteredVS.setTime(nowDate);
+        searchVM.getVenues(alteredVS);
     }
 
     private void setupBottomSheet(){
@@ -231,7 +288,8 @@ public class SearchFragment extends BaseFragment {
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
         //searchVM.searchXVenuesNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
         /*searchVM.instantSearchVenues("coffee");*/
-        binding.bottomsheetSearch.toggleCoffee.performClick();
+
+        binding.bottomsheetSearch.sectionCoffee.performClick();
     }
 
     public void observeSearchResults(){
