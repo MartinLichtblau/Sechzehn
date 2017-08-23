@@ -62,7 +62,10 @@ public class OwnerViewModel extends ViewModel {
     }
 
     public LatLng getLatLng(){
-        return new LatLng(owner.getValue().getLat(),owner.getValue().getLng());
+        if(null == owner.getValue().getLat())
+            return null;
+        else
+            return new LatLng(owner.getValue().getLat(),owner.getValue().getLng());
     }
 
     public LiveData<String> receiveToast(){

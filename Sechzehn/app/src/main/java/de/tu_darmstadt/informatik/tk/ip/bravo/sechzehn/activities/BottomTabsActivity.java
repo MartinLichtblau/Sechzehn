@@ -10,6 +10,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +27,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 import com.ncapdevi.fragnav.FragNavController;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController;
@@ -187,7 +190,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.show();
-        ownerVM.initOwner(SzUtils.getOwnername()).observeForever(new Observer<Resource>() {
+        ownerVM.initOwner(SzUtils.getOwnername()).observe(this, new Observer<Resource>() {
             @Override
             public void onChanged(@Nullable Resource resource) {
                 if (resource.status == Resource.Status.LOADING) {
@@ -200,20 +203,38 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                         }
                     }, 3000);
                 } else if (resource.status == Resource.Status.SUCCESS) {
-                    if (ownerVM.getLatLng() == null) {
-                        progressDialog.setMessage("Waiting for your GPS-Location");
-                        new Handler().postDelayed(new Runnable() { //Test every 3 second again
-                            public void run() {
-                                BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
-                            }
-                        }, 3000);
-                    } else {
+                    //received owner/user object: check GPS
+                    if (isGPSOk()) {
                         progressDialog.dismiss();
                         checkStages.setValue(checkStages.getValue() + 1);
+                    } else {
+                        progressDialog.setMessage("Waiting for your GPS-Location");
                     }
                 }
             }
         });
+    }
+
+    private Boolean isGPSOk(){
+        Location localLoc = LocationService.getPreviousBestLocation();
+        LatLng remoteLatLng = ownerVM.getLatLng();
+/*        Toast.makeText(this, "LocalLoc: "+localLoc.getLatitude()+" "+localLoc.getLatitude()+
+                "RemoteLoc: "+remoteLoc.latitude+" "+remoteLoc.longitude, Toast.LENGTH_SHORT).show();*/
+        //Toast.makeText(this, "isGPSOk", Toast.LENGTH_SHORT).show();
+
+        if(null != localLoc && null != remoteLatLng){
+            Double distInMeter = SphericalUtil.computeDistanceBetween(new LatLng(localLoc.getLatitude(),localLoc.getLongitude()), remoteLatLng);
+            if(distInMeter < 100)
+                return true;
+        }
+        //else try again
+        new Handler().postDelayed(new Runnable() { //Test every 3 second again
+            public void run() {
+                //try every 3seconds again till isGPSOk() == true
+                BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
+            }
+        }, 3000);
+        return false;
     }
 
     @NeedsPermission({

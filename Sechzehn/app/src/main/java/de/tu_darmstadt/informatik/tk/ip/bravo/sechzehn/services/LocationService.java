@@ -181,7 +181,7 @@ public class LocationService extends Service implements
         Log.d(TAG, "onLocationChanged");
         //Update only if new location is better and moved more than 100 meters
         if(isBetterLocation(location,previousBestLocation)){
-            if(previousBestLocation == null || location.distanceTo(previousBestLocation) > 50){
+            if(previousBestLocation == null || location.distanceTo(previousBestLocation) > 25){
                 updateLocation(location);
             }
         }
