@@ -2,10 +2,9 @@
 
 const Comment = use('App/Model/Comment')
 const Photo = use('App/Model/Photo')
-const Storage = use('Storage')
 const User = use('App/Model/User')
-const Venue = use('App/Model/Venue')
 const Validator = use('Validator')
+const Venue = use('App/Model/Venue')
 
 class CommentController {
   * indexForUser (request, response) {
@@ -50,6 +49,7 @@ class CommentController {
 
     const comments = yield Comment.query()
       .with('user', 'photo')
+      .leftOuterJoin(Comment.ratingQuery, 'rating_query.comment_id', 'comments.id')
       .where('venue_id', venue.id)
       .orderBy('created_at', 'desc')
       .paginate(page, perPage)

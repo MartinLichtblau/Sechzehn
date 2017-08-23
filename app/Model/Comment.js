@@ -1,6 +1,7 @@
 'use strict'
 
 const Lucid = use('Lucid')
+const Database = use('Database')
 
 class Comment extends Lucid {
   static get hidden () {
@@ -8,7 +9,8 @@ class Comment extends Lucid {
       'updated_at',
       'venue_id',
       'username',
-      'photo_id'
+      'photo_id',
+      'ratingsPositive_count'
     ]
   }
 
@@ -24,12 +26,8 @@ class Comment extends Lucid {
     return this.belongsTo('App/Model/Photo')
   }
 
-  commentRatingsPositive () {
-    return this.hasMany('App/Model/CommentRating').where('thumbs_up', true)
-  }
-
-  commentRatingsNegative () {
-    return this.hasMany('App/Model/CommentRating').where('thumbs_up', false)
+  static get ratingQuery () {
+    return Database.select('comment_id', Database.raw('sum(rating) as rating')).from('comment_ratings').groupBy('comment_id').as('rating_query')
   }
 }
 

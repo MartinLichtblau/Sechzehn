@@ -8,10 +8,10 @@ class CommenRatingController {
   * store (request, response) {
     const user = request.authUser
     const comment = yield Comment.findOrFail(request.param('comment_id'))
-    let thumbsUp = request.input('thumbs_up')
+    const rating = Number(request.input('rating', 0))
 
-    const validation = yield Validator.validate({thumbsUp}, {
-      thumbsUp: 'required'
+    const validation = yield Validator.validate({rating}, {
+      rating: 'required|integer|range:-2,2'
     })
 
     if (validation.fails()) {
@@ -19,18 +19,16 @@ class CommenRatingController {
       return
     }
 
-    thumbsUp = Validator.sanitizor.toBoolean(thumbsUp)
-
     const oldCommentRating = yield CommentRating.query().where('username', user.username).where('comment_id', comment.id).first()
 
     if (oldCommentRating) {
-      oldCommentRating.thumbs_up = thumbsUp
+      oldCommentRating.rating = rating
       yield oldCommentRating.save()
     } else {
       yield CommentRating.create({
         username: user.username,
         comment_id: comment.id,
-        thumbs_up: thumbsUp
+        rating
       })
     }
 

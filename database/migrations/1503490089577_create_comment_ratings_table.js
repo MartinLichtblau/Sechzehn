@@ -7,7 +7,7 @@ class CommentRatingsTableSchema extends Schema {
     this.create('comment_ratings', (table) => {
       table.increments()
       table.timestamps()
-      table.boolean('thumbs_up')
+      table.specificType('rating', 'smallint')
       table.string('username', 80).notNullable()
       table.integer('comment_id').unsigned().notNullable()
       table.foreign('username').references('users.username')
