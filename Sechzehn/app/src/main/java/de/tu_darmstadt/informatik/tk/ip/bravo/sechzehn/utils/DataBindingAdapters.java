@@ -21,4 +21,14 @@ public class DataBindingAdapters {
                 .transform(SzUtils.CROP_CIRCLE_TRANSFORMATION)
                 .into(view);
     }
+
+    @BindingAdapter({"kingPictureUrl"})
+    public static void loadKingPicture(ImageView view, String url) {
+        Picasso.with(view.getContext())
+                .load(url)
+                .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
+                .centerCrop().resize(80, 80)
+                .transform(SzUtils.CROP_CIRCLE_TRANSFORMATION)
+                .into(view);
+    }
 }

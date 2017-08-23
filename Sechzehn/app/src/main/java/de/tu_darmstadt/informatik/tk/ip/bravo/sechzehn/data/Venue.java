@@ -61,11 +61,11 @@ public class Venue {
         if (address == null) {
             return null;
         }
-        int endOfFirstPart = address.indexOf(';');
-        if (endOfFirstPart < 1) {
+        int endOfPart1 = address.indexOf(';');
+        if (endOfPart1 < 1) {
             return null;
         }
-        return address.substring(0, endOfFirstPart);
+        return address.substring(0, endOfPart1).trim();
     }
 
     public String getAddressPart2() {
@@ -76,11 +76,12 @@ public class Venue {
         if (endOfPart1 < 1) {
             return null;
         }
+        endOfPart1++;
         int endOfPart2 = address.indexOf(';', endOfPart1);
         if (endOfPart2 < 1) {
             return null;
         }
-        return address.substring(0, endOfPart2);
+        return address.substring(endOfPart1, endOfPart2).trim();
     }
 
     public String description;
@@ -121,6 +122,17 @@ public class Venue {
      */
     @SerializedName("top_visitors")
     public List<UserVisit> topVisitors;
+
+    public String getTopVisitorPictureUrl(int place) {
+        if (topVisitors.size() <= place) return null;
+        return topVisitors.get(place).user.getProfilePicture();
+    }
+
+    public String getTopVisitorName(int place) {
+        if (topVisitors.size() <= place) return null;
+        return topVisitors.get(place).user.getOptionalRealName();
+    }
+
     /**
      * The opening hours.
      */
@@ -129,6 +141,8 @@ public class Venue {
      * The last checkins.
      */
     public List<CheckIn> checkins;
+    @SerializedName("checkins_count")
+    public Integer checkinsCount;
 
     /**
      * This class represents a venue's section.

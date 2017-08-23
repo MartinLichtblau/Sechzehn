@@ -74,122 +74,139 @@
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="@dimen/dim_normal">
+                    android:layout_marginLeft="@dimen/dim_small"
+                    android:layout_marginRight="@dimen/dim_small"
+                    android:layout_marginTop="@dimen/dim_small">
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <TextView style="@style/TextAppearance.AppCompat.Title"
+                        <TextView
                             android:id="@+id/Profile"
+                            style="@style/TextAppearance.AppCompat.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
                             android:text="Profile"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginLeft="16dp"
                             app:layout_constraintLeft_toLeftOf="parent"
-                            android:layout_marginStart="16dp" />
+                            app:layout_constraintTop_toTopOf="parent"/>
 
-                        <TextView style="@style/TextAppearance.AppCompat.Caption"
+                        <TextView
                             android:id="@+id/user_realname_header"
+                            style="@style/TextAppearance.AppCompat.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
                             android:text="Name"
-                            android:layout_marginLeft="16dp"
                             app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/user_realname"
-                            android:layout_marginStart="16dp" />
-                        <TextView style="@style/TextAppearance.AppCompat.Menu"
-                            android:id="@+id/user_realname"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{user.realName,default=`Max Mustermann`}"
-                            android:layout_marginTop="16dp"
-                            app:layout_constraintTop_toBottomOf="@+id/Profile"
-                            android:layout_marginLeft="16dp"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            android:layout_marginStart="16dp" />
+                            app:layout_constraintTop_toBottomOf="@+id/user_realname"/>
 
-                        <TextView style="@style/TextAppearance.AppCompat.Caption"
-                            android:id="@+id/user_age_header"
+                        <TextView
+                            android:id="@+id/user_realname"
+                            style="@style/TextAppearance.AppCompat.Menu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
-                            android:text="Age"
                             android:layout_marginLeft="16dp"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/user_age"
-                            android:layout_marginStart="16dp" />
-                        <TextView style="@style/TextAppearance.AppCompat.Menu"
-                            android:id="@+id/user_age"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
-                            android:text="@{frag.getAge(user.dateOfBirth),default=99}"
-                            android:layout_marginLeft="16dp"
-                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
-                            app:layout_constraintTop_toBottomOf="@+id/user_realname_header"
-                            android:layout_marginStart="16dp" />
+                            android:text="@{user.realName,default=`Max Mustermann`}"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/Profile"/>
+
+                        <TextView
+                            android:id="@+id/user_age_header"
+                            style="@style/TextAppearance.AppCompat.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                            android:text="Age"
+                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/user_age"/>
+
+                        <TextView
+                            android:id="@+id/user_age"
+                            style="@style/TextAppearance.AppCompat.Menu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:text="@{frag.getAge(user.dateOfBirth),default=99}"
+                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/user_realname_header"/>
                         <!--android:text="@{senderUser.dateOfBirth != null ? frag.getAge() : 99}"-->
 
-                        <TextView style="@style/TextAppearance.AppCompat.Caption"
+                        <TextView
                             android:id="@+id/user_birthday_header"
+                            style="@style/TextAppearance.AppCompat.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
                             android:text="Birthday"
-                            app:layout_constraintLeft_toRightOf="@+id/user_age_header"
-                            android:layout_marginLeft="16dp"
-                            android:layout_marginStart="16dp"
-                            app:layout_constraintTop_toBottomOf="@+id/user_birthday" />
-                        <TextView style="@style/TextAppearance.AppCompat.Menu"
-                            android:id="@+id/user_birthday"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
-                            android:text="@{user.dateOfBirth,default=`31.12.1999`}"
-                            android:layout_marginStart="16dp"
-                            app:layout_constraintLeft_toRightOf="@+id/user_age"
-                            android:layout_marginLeft="16dp"
-                            android:layout_marginTop="16dp"
-                            app:layout_constraintTop_toBottomOf="@+id/user_realname_header" />
+                            app:layout_constraintLeft_toRightOf="@+id/user_age_header"
+                            app:layout_constraintTop_toBottomOf="@+id/user_birthday"/>
 
-                        <TextView  style="@style/TextAppearance.AppCompat.Caption"
-                            android:id="@+id/user_address_header"
+                        <TextView
+                            android:id="@+id/user_birthday"
+                            style="@style/TextAppearance.AppCompat.Menu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="City"
                             android:layout_marginLeft="16dp"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/user_address"
-                            android:layout_marginStart="16dp" />
-                        <TextView style="@style/TextAppearance.AppCompat.Menu"
-                            android:id="@+id/user_address"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{user.city,default=`New York`}"
-                            android:layout_marginLeft="16dp"
-                            app:layout_constraintLeft_toLeftOf="parent"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
-                            app:layout_constraintTop_toBottomOf="@+id/user_age_header" />
+                            android:text="@{user.dateOfBirth,default=`31.12.1999`}"
+                            android:visibility="@{user.friendshipStatus == Friendship.Status.CONFIRMED ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintLeft_toRightOf="@+id/user_age"
+                            app:layout_constraintTop_toBottomOf="@+id/user_realname_header"/>
+
+                        <TextView
+                            android:id="@+id/user_address_header"
+                            style="@style/TextAppearance.AppCompat.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                            android:text="City"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/user_address"/>
+
+                        <TextView
+                            android:id="@+id/user_address"
+                            style="@style/TextAppearance.AppCompat.Menu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:text="@{user.city,default=`New York`}"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/user_age_header"/>
 
                         <Space
-                            android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:layout_marginTop="16dp"
-                            app:layout_constraintTop_toBottomOf="@+id/user_address_header"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
-                            app:layout_constraintLeft_toLeftOf="parent" />
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/user_address_header"/>
                     </android.support.constraint.ConstraintLayout>
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/dim_normal">
+                    android:layout_marginLeft="@dimen/dim_small"
+                    android:layout_marginRight="@dimen/dim_small"
+                    android:layout_marginTop="@dimen/dim_small">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -197,7 +214,8 @@
                         android:layout_marginTop="@dimen/dim_normal"
                         android:orientation="vertical">
 
-                        <TextView style="@style/TextAppearance.AppCompat.Title"
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/dim_small"
@@ -205,17 +223,17 @@
                             android:text="Location"/>
 
                         <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
-                            android:id="@+id/map"
-                            android:name="com.google.android.gms.maps.SupportMapFragment"
-                            android:layout_width="match_parent"
-                            android:layout_height="160dp"
-                            map:liteMode="true"/>
+                                  android:id="@+id/map"
+                                  android:name="com.google.android.gms.maps.SupportMapFragment"
+                                  android:layout_width="match_parent"
+                                  android:layout_height="160dp"
+                                  map:liteMode="true"/>
 
 
                         <Space
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/dim_normal" />
+                            android:layout_marginBottom="@dimen/dim_normal"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 

@@ -20,6 +20,7 @@ import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import java.text.DecimalFormat;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFAB;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Hour;
@@ -41,9 +42,11 @@ import retrofit2.Response;
 public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> implements OnMapReadyCallback, RatingBar.OnRatingBarChangeListener {
     private static final String ARG_PARAM1 = "venueId";
     public static final HourItem UNKNOWN_HOUR = new HourItem(new Hour(Hour.Day.UNKNOWN, null, null));
+    public static final User EMPTY_USER = new User();
 
     private String venueId;
     private Venue venue;
+    private User[] topVisitors = {EMPTY_USER, EMPTY_USER, EMPTY_USER};
     private MaterialSheetFab<AnimatedFAB> fabSheet;
 
     /**
@@ -93,7 +96,7 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                     venue = response.body();
                     binding.setVenue(venue);
                     binding.mapView.getMapAsync(VenueFragment.this);
-                    for (int i = 0; i < 12; i++) {
+                    for (int i = 0; i < 5; i++) {
                         binding.comments.add(new CommentItem());
                     }
                     displayHours();
@@ -169,10 +172,18 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     }
 
     public static int objectToVisibility(Object obj) {
-        return booleanToVisibility(obj == null);
+        return booleanToVisibility(obj != null);
     }
 
     public static int booleanToVisibility(boolean bool) {
-        return bool ? View.GONE : View.VISIBLE;
+        return bool ? View.VISIBLE : View.GONE;
     }
+
+    public static int booleanToVisibility(boolean bool, boolean invisibleInsteadOfGone) {
+        if (invisibleInsteadOfGone)
+            return bool ? View.VISIBLE : View.INVISIBLE;
+        else
+            return bool ? View.VISIBLE : View.GONE;
+    }
+
 }
