@@ -181,19 +181,6 @@ class User extends Lucid {
    * @param val
    * @returns {*}
    */
-  getIncognito (val) {
-    if (this.attributes.isOwner) {
-      return val
-    } else {
-      return null
-    }
-  }
-
-  /**
-   * Restrict the access to this field.
-   * @param val
-   * @returns {*}
-   */
   getConfirmed (val) {
     if (this.attributes.isOwner) {
       return val

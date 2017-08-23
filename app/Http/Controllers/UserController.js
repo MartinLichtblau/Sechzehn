@@ -143,21 +143,22 @@ class UserController {
       throw new Exceptions.ModelNotFoundException()
     }
 
-    yield user
-      .related('photos', 'checkins', 'checkins.venue')
-      .scope('photos', builder => {
-        builder.orderBy('created_at', 'desc')
-        builder.limit(3)
-      })
-      .scope('checkins', builder => {
-        builder.orderBy('created_at', 'desc')
-        builder.limit(10)
-      })
-      .scope('checkins.venue', builder => {
-        builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
-      })
-      .load()
-
+    if (!user.incognito || user.getFriendshipStatus() === 'CONFIRMED' || user.getFriendshipStatus() === 'SELF') {
+      yield user
+        .related('photos', 'checkins', 'checkins.venue')
+        .scope('photos', builder => {
+          builder.orderBy('created_at', 'desc')
+          builder.limit(3)
+        })
+        .scope('checkins', builder => {
+          builder.orderBy('created_at', 'desc')
+          builder.limit(10)
+        })
+        .scope('checkins.venue', builder => {
+          builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
+        })
+        .load()
+    }
     response.ok(user)
   }
 
