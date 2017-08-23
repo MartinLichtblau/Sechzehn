@@ -87,7 +87,7 @@ class VenueController {
       currentPageQuery.innerJoin('venue_section', 'venues.id', 'venue_section.venue_id')
       currentPageQuery.where('section', section)
 
-      totalQuery.innerJoin('venue_section', 'venues.id', 'venue_id')
+      totalQuery.innerJoin('venue_section', 'venues.id', 'venue_section.venue_id')
       totalQuery.where('section', section)
     }
 
