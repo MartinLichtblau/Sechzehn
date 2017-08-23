@@ -359,6 +359,10 @@ class UserController {
     const token = yield TokenGenerator.make('hex', 16)
     user.confirmation_token = token
 
+    user.isOwner = true
+
+    console.log(user.email)
+
     // Send the confirmation email
     yield Mail.send('emails.confirmation', {
       username: user.username,

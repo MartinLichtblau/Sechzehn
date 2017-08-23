@@ -51,12 +51,22 @@ class User extends Lucid {
     super.boot()
 
     /**
-     * Hashing password before storing to the
-     * database.
+     * Hash the password and make the username lowercase
+     * before storing the User in the database.
      */
     this.addHook('beforeCreate', function * (next) {
       this.username = this.username.toLowerCase()
       this.password = yield Hash.make(this.password)
+      yield next
+    })
+
+    /**
+     * Remove the temporary property isOwner before updating the User
+     * in the database.
+     */
+    this.addHook('beforeUpdate', function * (next) {
+      delete this.attributes.isOwner
+      console.log(this.isOwner)
       yield next
     })
   }
@@ -91,6 +101,10 @@ class User extends Lucid {
     ]
   }
 
+  /**
+   * The fields that are visible in lists of Users.
+   * @returns {[string,string,string,string,string,string]}
+   */
   static get visibleList () {
     return [
       'username',
@@ -102,6 +116,11 @@ class User extends Lucid {
     ]
   }
 
+  /**
+   * Restrict the access to this field.
+   * @param lat
+   * @returns {*}
+   */
   getLat (lat) {
     if (!this.attributes.incognito || this.attributes.isOwner) {
       return lat
@@ -110,6 +129,11 @@ class User extends Lucid {
     }
   }
 
+  /**
+   * Restrict the access to this field.
+   * @param lng
+   * @returns {*}
+   */
   getLng (lng) {
     if (!this.attributes.incognito || this.attributes.isOwner) {
       return lng
@@ -132,6 +156,11 @@ class User extends Lucid {
     }
   }
 
+  /**
+   * Restrict the access to this field.
+   * @param email
+   * @returns {*}
+   */
   getEmail (email) {
     if (this.attributes.isOwner) {
       return email
@@ -140,6 +169,11 @@ class User extends Lucid {
     }
   }
 
+  /**
+   * Restrict the access to this field.
+   * @param val
+   * @returns {*}
+   */
   getIncognito (val) {
     if (this.attributes.isOwner) {
       return val
@@ -148,6 +182,11 @@ class User extends Lucid {
     }
   }
 
+  /**
+   * Restrict the access to this field.
+   * @param val
+   * @returns {*}
+   */
   getConfirmed (val) {
     if (this.attributes.isOwner) {
       return val
@@ -160,6 +199,10 @@ class User extends Lucid {
     return ['friendship_status']
   }
 
+  /**
+   * Determine the friendship status and restrict the access to this field.
+   * @returns {*}
+   */
   getFriendshipStatus () {
     if (this.status) {
       return this.status
@@ -194,5 +237,4 @@ class User extends Lucid {
   }
 }
 
-module
-  .exports = User
+module.exports = User
