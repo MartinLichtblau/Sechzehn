@@ -260,7 +260,7 @@ public class SearchFragment extends BaseFragment {
                         // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
                         @Override
                         public void run() {
-                            binding.research.setVisibility(View.VISIBLE);
+                            binding.searchAgainHere.setVisibility(View.VISIBLE);
                         }
                     }, 500);
                 }
@@ -317,7 +317,7 @@ public class SearchFragment extends BaseFragment {
                 switch (resource.status){
                     case LOADING:
                         Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
-                        binding.research.setVisibility(View.INVISIBLE);
+                        binding.searchAgainHere.setVisibility(View.INVISIBLE);
                         //@TODO show loading dialog progress bar
                         break;
                     case ERROR:

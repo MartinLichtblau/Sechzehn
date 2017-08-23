@@ -125,7 +125,7 @@ public class SearchViewModel extends ViewModel{
         lastVS = vs;
     }
 
-    public void researchHere(View view){
+    public void searchHere(View view){
         LatLng center = map.getCameraPosition().target;
         Double radius = getVisibleRadius();
         VenueSearch vs = lastVS;
