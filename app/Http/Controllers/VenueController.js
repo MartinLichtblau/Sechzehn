@@ -188,6 +188,18 @@ class VenueController {
 
     response.ok(venue)
   }
+
+  * detailsForAll (request, response) {
+    const venues = yield Venue.all()
+
+    for (let venue of venues) {
+      if (!venue.details_fetched) {
+        yield VenueRetriever.retrieveDetails(venue)
+      }
+    }
+
+    response.ok(venues)
+  }
 }
 
 module.exports = VenueController
