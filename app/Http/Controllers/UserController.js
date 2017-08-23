@@ -27,10 +27,10 @@ class UserController {
     const pagination = new Pagination(request)
 
     // The main query
-    const query = User.query().column(User.visibleList).whereNull('deleted_at')
+    const query = User.query().column(User.visibleList)
 
     // The query for calculation the total count
-    const totalQuery = User.query().whereNotNull('deleted_at')
+    const totalQuery = User.query()
 
     // Get the friends list
     const friendsQuery = Database.from('friendships').select('relating_user as username')
@@ -349,6 +349,49 @@ class UserController {
       ])
       return
     }
+
+    // Delete all related stuff of the User
+    yield Database
+      .table('check_ins')
+      .where('username', user.username)
+      .delete()
+
+    yield Database
+      .table('comment_ratings')
+      .where('username', user.username)
+      .delete()
+
+    yield Database
+      .table('comment_ratings')
+      .whereIn('comment_id', Database.select('id').from('comments').where('username', user.username))
+      .delete()
+
+    yield Database
+      .table('comments')
+      .where('username', user.username)
+      .delete()
+
+    yield Database
+      .table('photos')
+      .where('username', user.username)
+      .update({username: null})
+
+    yield Database
+      .table('friendships')
+      .where('related_user', user.username).orWhere('relating_user', user.username)
+      .delete()
+
+    yield Database
+      .table('messages')
+      .where('sender', user.username).orWhere('receiver', user.username)
+      .delete()
+
+    yield Database
+      .table('reset_tokens')
+      .where('user', user.username)
+      .delete()
+
+    yield Storage.delete(user.profile_picture)
 
     yield user.delete()
     response.ok({

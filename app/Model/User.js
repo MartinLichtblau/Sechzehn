@@ -6,14 +6,6 @@ const Moment = require('moment')
 
 class User extends Lucid {
   /**
-   * Enable soft deletes.
-   * @returns {string}
-   */
-  static get deleteTimestamp () {
-    return 'deleted_at'
-  }
-
-  /**
    * The validation rules for creating a User.
    * @returns {{username: string, email: string, password: string}}
    */

@@ -17,7 +17,6 @@ class UsersTableSchema extends Schema {
       table.float('lat', 10, 6)
       table.float('lng', 10, 6)
       table.timestamps()
-      table.softDeletes()
     })
   }
 
