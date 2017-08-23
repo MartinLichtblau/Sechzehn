@@ -26,6 +26,7 @@ class CommentController {
       .scope('venue', builder => {
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       })
+      .leftOuterJoin(Comment.ratingQuery, 'rating_query.comment_id', 'comments.id')
       .where('username', user.username)
       .orderBy('created_at', 'desc')
       .paginate(page, perPage)
