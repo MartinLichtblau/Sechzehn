@@ -168,14 +168,15 @@ class VenueRetriever {
 
     venue.phone = details.contact.formattedPhone
 
-    const photoUrls = response.response.venue.photos.groups[0].items.map(photo => {
-      return {
-        url: photo.prefix + 'original' + photo.suffix,
-        venue_id: venue.id
-      }
-    })
-
-    yield Photo.createMany(photoUrls)
+    if (response.response.venue.photos && response.response.venue.photos.groups[0] && response.response.venue.photos.groups[0].items) {
+      const photoUrls = response.response.venue.photos.groups[0].items.map(photo => {
+        return {
+          url: photo.prefix + 'original' + photo.suffix,
+          venue_id: venue.id
+        }
+      })
+      yield Photo.createMany(photoUrls)
+    }
 
     venue.details_fetched = true
 
