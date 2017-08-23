@@ -23,6 +23,14 @@ class Comment extends Lucid {
   photo () {
     return this.belongsTo('App/Model/Photo')
   }
+
+  commentRatingsPositive () {
+    return this.hasMany('App/Model/CommentRating').where('thumbs_up', true)
+  }
+
+  commentRatingsNegative () {
+    return this.hasMany('App/Model/CommentRating').where('thumbs_up', false)
+  }
 }
 
 module.exports = Comment

@@ -146,9 +146,11 @@ class UserController {
     yield user
       .related('photos', 'checkins', 'checkins.venue')
       .scope('photos', builder => {
+        builder.orderBy('created_at', 'desc')
         builder.limit(3)
       })
       .scope('checkins', builder => {
+        builder.orderBy('created_at', 'desc')
         builder.limit(10)
       })
       .scope('checkins.venue', builder => {
