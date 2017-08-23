@@ -48,8 +48,8 @@ class VenueRetriever {
    */
   roundRadius (radius) {
     let exp = Math.ceil(Math.log2(radius))
-    // The greatest radius that Foursquare supports is 100km
-    return Math.min(Math.pow(2, exp), 100)
+    // The greatest radius that Foursquare supports is 100km, the minimum radius is 1km
+    return Math.max(Math.min(Math.pow(2, exp), 100), 1)
   }
 
   /**
