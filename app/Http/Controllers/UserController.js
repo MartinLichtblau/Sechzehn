@@ -27,10 +27,10 @@ class UserController {
     const pagination = new Pagination(request)
 
     // The main query
-    const query = User.query().column(User.visibleList)
+    const query = User.query().column(User.visibleList).whereNull('deleted_at')
 
     // The query for calculation the total count
-    const totalQuery = User.query()
+    const totalQuery = User.query().whereNotNull('deleted_at')
 
     // Get the friends list
     const friendsQuery = Database.from('friendships').select('relating_user as username')
@@ -331,6 +331,8 @@ class UserController {
       response.unprocessableEntity(validation.messages())
       return
     }
+
+    user.isOwner = true
 
     try {
       yield request.auth.validate(user.email, userData.password)
