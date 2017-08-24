@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -84,6 +85,7 @@ public class SearchFragment extends BaseFragment {
         binding.setFrag(this);
         binding.setSearchVM(searchVM);
         //binding.setActiveSearch(new VenueSearch()); //@TODO remove since not needed when using Livedata
+        //Initialize first venueSearch object for proper functioning of UI(altough the initialSearch() will come shortly after)
         searchVM.lastVS.setValue(new VenueSearch());
 
         mapView = binding.mapView;
@@ -169,7 +171,11 @@ public class SearchFragment extends BaseFragment {
     }
 
     public void alterSearchOpennow(View view){
-        Boolean opennow = binding.bottomsheetSearch.opennow.isChecked();
+        Boolean opennow;
+        if(view instanceof CheckBox)
+            opennow = ((CheckBox) view).isChecked();
+        else
+            opennow = ((ToggleButton) view).isChecked();
         String nowDate = null;
         VenueSearch alteredVS = searchVM.lastVS.getValue();
         Toast.makeText(getActivity(), "alterSearchOpennow: "+opennow.toString(), Toast.LENGTH_SHORT).show();
@@ -252,10 +258,11 @@ public class SearchFragment extends BaseFragment {
                 if(vs.getQuery() != null){
                     bss.activeQuery.setText(vs.getQuery());
                     bss.activeQuery.setChecked(true);
+                    bss.activeQuery.setClickable(true);
                 }else{
-                    bss.activeQuery.setText("");
+                    //bss.activeQuery.setText(" ");
                     bss.activeQuery.setChecked(false);
-                    bss.activeQuery.setClickable(false);
+                    //bss.activeQuery.setClickable(false);
                 }
 
                 //Active Section
@@ -276,10 +283,12 @@ public class SearchFragment extends BaseFragment {
                     String s = "$";
                     Integer n = vs.price;
                     bss.activePrice.setText(String.format("%0" + n + "d", 0).replace("0",s));
+                    bss.activePrice.setTag(vs.price);
                     bss.activePrice.setChecked(true);
                 }else{
+                    bss.activePrice.setText("$"); //If any price is set show cheapest but deactivated
+                    bss.activePrice.setTag("1");
                     bss.activePrice.setChecked(false);
-                    bss.activePrice.setText("");
                 }
 
                 //Active Opennow

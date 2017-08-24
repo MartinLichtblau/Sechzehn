@@ -216,6 +216,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/TextAppearance.AppCompat.Medium"
+                        android:textColor="@color/colorAccent"
                         android:text="Active: "/>
 
                     <android.support.v7.widget.ToggleGroup
@@ -234,7 +235,8 @@
                         <android.support.v7.widget.ToggleButton
                             android:id="@+id/active_query"
                             android:layout_weight="1"
-                            android:button="@drawable/ic_search_normal"
+                            android:drawableLeft="@drawable/ic_search_normal"
+                            android:paddingLeft="@dimen/dim_small"
                             style="@style/PinkToggle"/>
                         <android.support.v7.widget.ToggleButton
                             android:id="@+id/active_section"
@@ -243,12 +245,15 @@
                             style="@style/PinkToggle"/>
                         <android.support.v7.widget.ToggleButton
                             android:id="@+id/active_price"
-                            style="@style/PinkToggle"/>
+                            style="@style/PinkToggle"
+                            android:tag=""
+                            android:onClick="@{frag::alterSearchPrice}"/>
                         <android.support.v7.widget.ToggleButton
                             android:id="@+id/active_opennow"
                             style="@style/PinkToggle"
                             android:layout_width="80dp"
-                            android:text="Open now"/>
+                            android:text="Open now"
+                            android:onClick="@{frag::alterSearchOpennow}"/>
                     </android.support.v7.widget.ToggleGroup>
                   <!--  <LinearLayout
                         android:id="@+id/active_search_layout"
