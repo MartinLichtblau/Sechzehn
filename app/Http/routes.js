@@ -22,7 +22,6 @@ const Route = use('Route')
  */
 Route.on('/').render('welcome')
 Route.on('/chat').render('chat')
-Route.get('/venues', 'VenueController.detailsForAll')
 
 /**
  * Media handling

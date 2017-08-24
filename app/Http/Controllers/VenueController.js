@@ -19,6 +19,7 @@ class VenueController {
     const section = request.input('section', '')
     const price = Number(request.input('price'))
     const sortByDistance = Validator.sanitizor.toBoolean(request.input('sort_by_distance'))
+    const details = Validator.sanitizor.toBoolean(request.input('details'))
 
     const validation = yield Validator.validate({section, searchQuery, lat, lng, radius, price}, {
       section: 'string|in:food,drinks,coffee,shops,arts,outdoors,sights',
@@ -37,6 +38,7 @@ class VenueController {
     const pagination = new Pagination(request)
 
     const cols = Venue.visibleList
+    cols.push('details_fetched')
     cols.push('venue_categories.name as category_name')
     cols.push('venue_categories.icon as category_icon')
     // Calculate the rating based on the foursquare rating and the ratings from the CheckIns
@@ -117,6 +119,17 @@ class VenueController {
     // Fetch the actual data and complete the Pagination object
     const totalResult = yield totalQuery.count().first()
     pagination.data = yield currentPageQuery.forPage(pagination.page, pagination.perPage)
+
+    // Fetch details if requested
+    if (details) {
+      for (let venue of pagination.data) {
+        if (!venue.details_fetched) {
+          const realVenue = yield Venue.find(venue.id)
+          yield VenueRetriever.retrieveDetails(realVenue)
+        }
+      }
+    }
+
     pagination.data.map(item => {
       item.rating = Number(item.rating)
       item.rating_count = Number(item.rating_count)
@@ -127,6 +140,7 @@ class VenueController {
 
       delete item.category_name
       delete item.category_icon
+      delete item.details_fetched
     })
 
     pagination.total = Number(totalResult.count)
@@ -177,6 +191,7 @@ class VenueController {
       const visitCount = Number(item.visit_count)
       delete item.visit_count
       delete item.incognito
+      delete item.details_fetched
 
       return {
         user: item,
@@ -187,18 +202,6 @@ class VenueController {
     venue.checkins_count = Number(venue.checkins_count)
 
     response.ok(venue)
-  }
-
-  * detailsForAll (request, response) {
-    const venues = yield Venue.all()
-
-    for (let venue of venues) {
-      if (!venue.details_fetched) {
-        yield VenueRetriever.retrieveDetails(venue)
-      }
-    }
-
-    response.ok(venues)
   }
 }
 

@@ -17,6 +17,7 @@ class VenueRetriever {
    * @param lat the latitude
    * @param lng the longitude
    * @param radius the radius in km
+   * @param details a boolean to determine if the details should also be fetched
    */
   * retrieve (lat, lng, radius, section) {
     if (lat === null || lng === null || radius === null) {
