@@ -63,6 +63,7 @@ public class SearchFragment extends BaseFragment {
     Boolean userMovedCamera = false;
     Float bsCollapsed;
     Float bsExpanded;
+    BottomsheetSearchBinding bss;
     BottomSheetBehavior bottomSheetBehavior;
 
     public static SearchFragment newInstance() {
@@ -100,97 +101,14 @@ public class SearchFragment extends BaseFragment {
         //binding.setActiveSearch(new VenueSearch()); //@TODO remove since not needed when using Livedata
         //Initialize first venueSearch object for proper functioning of UI(altough the initialSearch() will come shortly after)
         setupBottomSheet();
-        //setupSearchbarViews();  now in
+        //setupSearchbarViews();  now in on Resume because of Bug
 
         return binding.getRoot();
     }
 
-    private void setupSearchbarViews(){
-        Log.d(TAG,"setupSearchbarViews");
-        final SearchView searchviewVenue = binding.bottomsheetSearch.searchviewVenue;
-        searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Log.d(TAG,"onQueryTextChange");
-                if (newText.length() == 0) {
-                    alterSearchQuery(null);
-                    searchviewVenue.clearFocus();
-                }
-                return false;
-            }
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                alterSearchQuery(query);
-                return false;
-            }
-        });
-
-        // Catch event on [x] button inside search view
-        int searchCloseButtonId = searchviewVenue.getContext().getResources()
-                .getIdentifier("android:id/search_close_btn", null, null);
-        ImageView closeButton = (ImageView) searchviewVenue.findViewById(searchCloseButtonId);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchviewVenue.setQuery(null,true);
-                //alterSearchQuery(null); //Now that I know that's redundant: onQueryTextChange gets called also when (x) button clears text
-            }
-        });
-
-    }
-
-/*    private void hideKeyBoard(){
-        // Check if no view has focus:
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }*/
-
-    public void alterSearchQuery(String query){
-        //Toast.makeText(getActivity(), "alterSearchQuery: "+query, Toast.LENGTH_SHORT).show();
-        VenueSearch alteredVS = searchVM.lastVS.getValue();
-        alteredVS.setQuery(query);
-        searchVM.getVenues(alteredVS);
-    }
-
-    public void alterSearchSection(View view) {
-        String section = null;
-        VenueSearch alteredVS = searchVM.lastVS.getValue();
-        ToggleButton toggleButton = (ToggleButton) view;
-        if(toggleButton.isChecked())
-            section = view.getTag().toString();
-        alteredVS.setSection(section);
-        searchVM.getVenues(alteredVS);
-    }
-
-    public void alterSearchPrice(View view){
-        Integer price = Integer.valueOf(view.getTag().toString());
-        VenueSearch alteredVS = searchVM.lastVS.getValue();
-        if(price == 0) //price 0 is Any price > means price is null
-            price = null;
-        alteredVS.setPrice(price);
-        searchVM.getVenues(alteredVS);
-    }
-
-    public void alterSearchOpennow(View view){
-        Boolean opennow;
-        if(view instanceof CheckBox)
-            opennow = ((CheckBox) view).isChecked();
-        else
-            opennow = ((ToggleButton) view).isChecked();
-        String nowDate = null;
-        VenueSearch alteredVS = searchVM.lastVS.getValue();
-        //Toast.makeText(getActivity(), "alterSearchOpennow: "+opennow.toString(), Toast.LENGTH_SHORT).show();
-        if(opennow)
-            nowDate = SzUtils.getNowDate("yyyy-MM-dd hh:mm");
-        alteredVS.setTime(nowDate);
-        searchVM.getVenues(alteredVS);
-    }
-
     private void setupBottomSheet(){
         Log.d(TAG,"setupBottomSheet");
+        bss = binding.bottomsheetSearch;
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomsheetSearch.getRoot());
         bsCollapsed = getActivity().getResources().getDimension(R.dimen.search_bottomsheet_collapsed);
         bsExpanded = getActivity().getResources().getDimension(R.dimen.search_bottomsheet_expanded);
@@ -248,11 +166,44 @@ public class SearchFragment extends BaseFragment {
         });*/
     }
 
+    private void setupSearchbarViews(){
+        Log.d(TAG,"setupSearchbarViews");
+        final SearchView searchviewVenue = binding.bottomsheetSearch.searchviewVenue;
+        searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d(TAG,"onQueryTextChange");
+                if (newText.length() == 0) {
+                    alterSearchQuery(searchviewVenue);
+                    searchviewVenue.clearFocus();
+                }
+                return false;
+            }
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                alterSearchQuery(searchviewVenue);
+                return false;
+            }
+        });
+
+        // Catch event on [x] button inside search view
+        int searchCloseButtonId = searchviewVenue.getContext().getResources()
+                .getIdentifier("android:id/search_close_btn", null, null);
+        ImageView closeButton = (ImageView) searchviewVenue.findViewById(searchCloseButtonId);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchviewVenue.setQuery(null,true);
+                //alterSearchQuery(null); //Now that I know that's redundant: onQueryTextChange gets called also when (x) button clears text
+            }
+        });
+
+    }
+
     private void updateActiveSearchHint(VenueSearch vs){
         Log.d(TAG,"updateActiveSearchHint");
-        final BottomsheetSearchBinding bss = binding.bottomsheetSearch;
 
-        //Active Query
+/*        //Active Query
         if(vs.getQuery() != null){
             bss.activeQuery.setText(vs.getQuery());
             bss.activeQuery.setChecked(true);
@@ -261,9 +212,9 @@ public class SearchFragment extends BaseFragment {
             //bss.activeQuery.setText(" ");
             bss.activeQuery.setChecked(false);
             //bss.activeQuery.setClickable(false);
-        }
+        }*/
 
-        //Active Section
+/*        //Active Section
         String selectedSection = vs.getSection();
         if(! TextUtils.isEmpty(selectedSection)){
             View rootView = bss.getRoot();
@@ -273,29 +224,36 @@ public class SearchFragment extends BaseFragment {
             bss.activeSection.setChecked(true);
         }else{
             bss.activeSection.setChecked(false);
-            bss.activeSection.setButtonDrawable(null);
-        }
+            //Leave the old ButtonDrawable
+        }*/
 
-        //Active Price
+/*        //Active Price
+        Integer price = (vs.price == null ? 0 : vs.price);
+        ToggleButton detailedPrice = (ToggleButton) getView().findViewWithTag(price.toString());
+        ToggleButton activePrice = bss.activePrice;
         if(vs.getPrice() != null){
             // create a string made up of n copies of string s
             String s = "$";
-            Integer n = vs.price;
-            bss.activePrice.setText(String.format("%0" + n + "d", 0).replace("0",s));
-            bss.activePrice.setTag(vs.price);
-            bss.activePrice.setChecked(true);
+            Integer n = price;
+            activePrice.setText(String.format("%0" + n + "d", 0).replace("0",s));
+            activePrice.setTag(vs.price);
+            activePrice.setChecked(true);
+            detailedPrice.setChecked(true);
         }else{
-            bss.activePrice.setText("$"); //If any price is set show cheapest but deactivated
-            bss.activePrice.setTag("1");
-            bss.activePrice.setChecked(false);
-        }
+            activePrice.setText("$"); //If any price is set show cheapest but deactivated
+            activePrice.setTag("1");
+            activePrice.setChecked(false);
+            detailedPrice.setChecked(false);
+        }*/
 
-        //Active Opennow
+/*        //Active Opennow
         if(null != vs.getTime()){
             bss.activeOpennow.setChecked(true);
+            bss.detailedOpennow.setChecked(true);
         }else{
             bss.activeOpennow.setChecked(false);
-        }
+            bss.detailedOpennow.setChecked(false);
+        }*/
     }
 
     public void setupMap(GoogleMap googleMap){
@@ -504,6 +462,130 @@ public class SearchFragment extends BaseFragment {
                             searchVM.venuesOnMap.setValue(tempMarkerMap);
                     }
                 });
+        }
+    }
+
+    public void alterSearchQuery(View view){
+        ToggleButton activeQuery = bss.activeQuery;
+        SearchView detailedQuery = bss.searchviewVenue;
+        Boolean activeCalls = (view == activeQuery); //Did Active (Toggle button) or Detailed (SearchView) made the call?
+        String query;
+
+        //Adapt activeQuery and Sync Detailed~Active
+        if(activeCalls){
+            if(activeQuery.isChecked()){
+                query = activeQuery.getText().toString();
+            }else{
+                query = null;
+            }
+            detailedQuery.setQuery(query,false);
+        }else{
+            query = detailedQuery.getQuery().toString();
+            if(TextUtils.isEmpty(query)){
+                //bss.activeQuery.setText(" ");
+                activeQuery.setChecked(false);
+                //bss.activeQuery.setClickable(false);
+            }else{
+                activeQuery.setText(query);
+                activeQuery.setChecked(true);
+                activeQuery.setClickable(true);
+            }
+        }
+
+        //make the search
+        VenueSearch alteredVS = searchVM.lastVS.getValue();
+        alteredVS.setQuery(query);
+        searchVM.getVenues(alteredVS);
+    }
+
+    public void alterSearchSection(View view) {
+        String section = view.getTag().toString();
+
+        //Sync detailed_view and active_view
+        ToggleButton activeSection = bss.activeSection;
+        ToggleButton detailedSection = (ToggleButton) bss.getRoot().findViewWithTag(section);
+        if(view == activeSection){
+            //Sync Detailed
+            if(activeSection.isChecked())
+                detailedSection.setChecked(true);
+            else{
+                section = null;
+                detailedSection.setChecked(false);
+            }
+
+        }else{
+            //Sync Active
+            if(detailedSection.isChecked()){
+                activeSection.setTag(section);
+                Drawable relatedDrawable = detailedSection.getButtonDrawable();
+                activeSection.setButtonDrawable(relatedDrawable);
+                activeSection.setChecked(true);
+            }else{
+                section = null;
+                activeSection.setChecked(false);
+                //Leave the old ButtonDrawable and Tag as is
+            }
+        }
+
+        //make Search
+        VenueSearch alteredVS = searchVM.lastVS.getValue();
+        alteredVS.setSection(section);
+        searchVM.getVenues(alteredVS);
+    }
+
+    public void alterSearchPrice(View view){
+        Integer price = Integer.valueOf(view.getTag().toString());
+        VenueSearch alteredVS = searchVM.lastVS.getValue();
+        ToggleButton activePrice = bss.activePrice;
+        ToggleButton detailedPrice;
+
+        //Sync detailed_view and active_view
+        if(view == activePrice){
+            //Update active according and sync Detailed
+            if(!activePrice.isChecked())
+                price = 0; //Set price tag only if activeButton is checked
+            detailedPrice = (ToggleButton) getView().findViewWithTag(price.toString()); //check according detailedPrice
+            detailedPrice.setChecked(true);
+        }else{
+            //Sync active
+            Integer newPrice = (price == null || price == 0 ? 0 : price); //Never show price 0 / Any at least show 1
+            if(price != 0){
+                // create a string made up of n copies of string s
+                activePrice.setText(String.format("%0" + newPrice + "d", 0).replace("0","$"));
+                activePrice.setTag(newPrice);
+                activePrice.setChecked(true);
+            }else{
+                activePrice.setText("$"); //If any price is set show cheapest but deactivated
+                activePrice.setTag("1");
+                activePrice.setChecked(false);
+            }
+        }
+
+        alteredVS.setPrice(price);
+        searchVM.getVenues(alteredVS);
+    }
+
+    public void alterSearchOpennow(View view){
+        Boolean opennow;
+        if(view instanceof CheckBox)
+            opennow = ((CheckBox) view).isChecked();
+        else
+            opennow = ((ToggleButton) view).isChecked();
+        String nowDate = null;
+        VenueSearch alteredVS = searchVM.lastVS.getValue();
+        //Toast.makeText(getActivity(), "alterSearchOpennow: "+opennow.toString(), Toast.LENGTH_SHORT).show();
+        if(opennow)
+            nowDate = SzUtils.getNowDate("yyyy-MM-dd hh:mm");
+        alteredVS.setTime(nowDate);
+        searchVM.getVenues(alteredVS);
+
+        //Sync detailed_view and active_view
+        if(view == bss.activeOpennow){
+            //Update detailed
+            //Toast.makeText(getActivity(), "view == binding.bottomsheetSearch.activeOpennow: ", Toast.LENGTH_SHORT).show();
+            bss.detailedOpennow.setChecked(opennow);
+        }else{
+            bss.activeOpennow.setChecked(opennow);
         }
     }
 

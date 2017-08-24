@@ -188,7 +188,7 @@
                         android:layout_height="@dimen/dim_normal"/>
 
                     <CheckBox
-                        android:id="@+id/opennow"
+                        android:id="@+id/detailed_opennow"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Open now"
@@ -237,16 +237,20 @@
                             android:layout_weight="1"
                             android:drawableLeft="@drawable/ic_search_normal"
                             android:paddingLeft="@dimen/dim_small"
-                            style="@style/PinkToggle"/>
+                            android:text=" "
+                            style="@style/PinkToggle"
+                            android:onClick="@{frag::alterSearchQuery}"/>
                         <android.support.v7.widget.ToggleButton
                             android:id="@+id/active_section"
                             android:button="@drawable/ic_food"
+                            android:tag="food"
                             android:onClick="@{frag::alterSearchSection}"
                             style="@style/PinkToggle"/>
                         <android.support.v7.widget.ToggleButton
                             android:id="@+id/active_price"
                             style="@style/PinkToggle"
-                            android:tag=""
+                            android:text="$"
+                            android:tag="1"
                             android:onClick="@{frag::alterSearchPrice}"/>
                         <android.support.v7.widget.ToggleButton
                             android:id="@+id/active_opennow"
