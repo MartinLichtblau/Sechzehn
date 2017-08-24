@@ -254,7 +254,7 @@ class VenueController {
       .whereIn('venue_id', venuesToDelete)
       .delete()
 
-    yield Database
+    const affectedRows = yield Database
       .table('venues')
       .whereRaw(notInRadiusQuery, [lat, lng, radius * 1000])
       .delete()
@@ -264,7 +264,7 @@ class VenueController {
       .whereRaw('NOT earth_box(ll_to_earth(?, ?), ?) && earth_box(ll_to_earth(lat, lng), radius * 1000)', [lat, lng, radius * 1000])
       .delete()
 
-    response.noContent()
+    response.ok(affectedRows)
   }
 }
 
