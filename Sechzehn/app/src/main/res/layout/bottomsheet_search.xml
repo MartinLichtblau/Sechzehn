@@ -13,10 +13,12 @@
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="@dimen/search_bottomsheet_expanded"
-        app:behavior_peekHeight="@dimen/search_bottomsheet_collapsed"
+        android:paddingTop="5dp"
+        app:behavior_peekHeight="@dimen/search_bottomsheet_collapsed_including_half_shadow_height"
         app:layout_behavior="@string/bottom_sheet_behavior"
-        app:behavior_hideable="false"
-        android:elevation="12dp">
+        app:behavior_hideable="false">
+        <!--android:paddingTop="5dp" is half shadow height-->
+
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/search_bottomsheet_bar"
