@@ -203,6 +203,69 @@ class VenueController {
 
     response.ok(venue)
   }
+
+  * destroy (request, response) {
+    const lat = request.input('lat')
+    const lng = request.input('lng')
+    const radius = request.input('radius')
+
+    const validation = yield Validator.validate({lat, lng, radius}, {
+      lat: 'required|range:-180,180',
+      lng: 'required|range:-180,180',
+      radius: 'required|range:0,6371'
+    })
+
+    if (validation.fails()) {
+      response.unprocessableEntity(validation.messages())
+      return
+    }
+
+    const notInRadiusQuery = 'NOT earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(lat, lng)'
+    const venuesToDelete = Database.table('venues').select('id').whereRaw(notInRadiusQuery, [lat, lng, radius * 1000])
+
+    // Delete all related stuff of the Venue
+    yield Database
+      .table('check_ins')
+      .whereIn('venue_id', venuesToDelete)
+      .delete()
+
+    yield Database
+      .table('comment_ratings')
+      .whereIn('comment_id', Database.select('id').from('comments').whereIn('venue_id', venuesToDelete))
+      .delete()
+
+    yield Database
+      .table('comments')
+      .whereIn('venue_id', venuesToDelete)
+      .delete()
+
+    yield Database
+      .table('photos')
+      .whereIn('venue_id', venuesToDelete)
+      .delete()
+
+    yield Database
+      .table('venue_section')
+      .whereIn('venue_id', venuesToDelete)
+      .delete()
+
+    yield Database
+      .table('venue_hours_ranges')
+      .whereIn('venue_id', venuesToDelete)
+      .delete()
+
+    yield Database
+      .table('venues')
+      .whereRaw(notInRadiusQuery, [lat, lng, radius * 1000])
+      .delete()
+
+    yield Database
+      .table('venue_retrievals')
+      .whereRaw('NOT earth_box(ll_to_earth(?, ?), ?) && earth_box(ll_to_earth(lat, lng), radius * 1000)', [lat, lng, radius * 1000])
+      .delete()
+
+    response.noContent()
+  }
 }
 
 module.exports = VenueController

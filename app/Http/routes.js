@@ -77,6 +77,8 @@ Route.group('api', function () {
 
   Route.post('comments/:comment_id/rating', 'CommentRatingController.store').middleware('auth')
 
+  Route.delete('venues', 'VenueController.destroy').middleware('auth')
+
   Route
     .resource('comments', 'CommentController')
     .only('update', 'destroy')
