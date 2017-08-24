@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -100,10 +101,14 @@ public class SearchFragment extends BaseFragment {
     }
 
     private void setupSearchbarViews(){
-        binding.bottomsheetSearch.searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        final SearchView searchviewVenue = binding.bottomsheetSearch.searchviewVenue;
+        searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
-                //Log.e("onQueryTextChange", "called");
+                if (newText.length() == 0) {
+                    alterSearchQuery(null);
+                    searchviewVenue.clearFocus();
+                }
                 return false;
             }
             @Override
@@ -112,7 +117,30 @@ public class SearchFragment extends BaseFragment {
                 return false;
             }
         });
+
+        // Catch event on [x] button inside search view
+        int searchCloseButtonId = searchviewVenue.getContext().getResources()
+                .getIdentifier("android:id/search_close_btn", null, null);
+        ImageView closeButton = (ImageView) searchviewVenue.findViewById(searchCloseButtonId);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchviewVenue.setQuery(null,true);
+                alterSearchQuery(null);
+            }
+        });
+
     }
+
+/*    private void hideKeyBoard(){
+        // Check if no view has focus:
+
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }*/
 
     public void alterSearchQuery(String query){
         Toast.makeText(getActivity(), "alterSearchQuery: "+query, Toast.LENGTH_SHORT).show();
