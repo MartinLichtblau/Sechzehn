@@ -6,7 +6,7 @@
 
         <variable
             name="comment"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Comment"/>
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment"/>
 
         <variable
             name="self"
@@ -27,21 +27,26 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:onClick="@{self::showUserProfile}"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp">
 
                 <ImageView
                     android:id="@+id/imageView5"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    app:profilePictureUrl="@{comment.user.profilePicture}"
                     app:srcCompat="@drawable/ic_owner"/>
 
                 <TextView
@@ -50,7 +55,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_weight="1"
-                    android:textAppearance="@android:style/TextAppearance.Material.Title"
+                    android:text="@{comment.user.optionalRealName}"
+                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
                     tools:text="{realname}"/>
 
             </LinearLayout>
@@ -59,23 +65,17 @@
                 android:id="@+id/textView15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:layout_marginTop="8dp"
+                android:text="@{comment.body}"
                 tools:text="{text}"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/button4"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reply"/>
 
             </LinearLayout>
         </LinearLayout>

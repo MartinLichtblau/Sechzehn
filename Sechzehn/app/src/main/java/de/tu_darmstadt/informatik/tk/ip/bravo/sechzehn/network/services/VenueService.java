@@ -1,12 +1,16 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services;
 
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
@@ -45,6 +49,19 @@ public interface VenueService {
      */
     @GET("venues/{id}")
     Call<Venue> getVenue(@Path("id") String id);
+
+    /**
+     * Check-in into Venue.
+     *
+     * @param venueId The id of the venue.
+     * @param checkIn A {@link CheckIn} object with rating set.
+     * @return Call which results in a {@link CheckIn} object.
+     */
+    @POST("venues/{venue_id}/check-ins")
+    Call<CheckIn> checkIn(
+            @NonNull @Path("venue_id") String venueId,
+            @NonNull @Body CheckIn checkIn
+    );
 
     /**
      * An instance of the {@link VenueService}.

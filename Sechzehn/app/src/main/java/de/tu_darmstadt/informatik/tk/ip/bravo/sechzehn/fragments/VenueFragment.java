@@ -23,16 +23,17 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFAB;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Hour;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentVenueBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.CommentItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.HourItem;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.CheckInService;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
 import retrofit2.Response;
+
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService.VenueService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,12 +42,11 @@ import retrofit2.Response;
  */
 public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> implements OnMapReadyCallback, RatingBar.OnRatingBarChangeListener {
     private static final String ARG_PARAM1 = "venueId";
-    public static final HourItem UNKNOWN_HOUR = new HourItem(new Hour(Hour.Day.UNKNOWN, null, null));
+    public final HourItem UNKNOWN_HOUR = new HourItem(new Hour(Hour.Day.UNKNOWN, null, null));
     public static final User EMPTY_USER = new User();
 
     private String venueId;
     private Venue venue;
-    private User[] topVisitors = {EMPTY_USER, EMPTY_USER, EMPTY_USER};
     private MaterialSheetFab<AnimatedFAB> fabSheet;
 
     /**
@@ -89,15 +89,15 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                 SzUtils.getThemeColor(getActivityEx(), R.attr.colorAccent));
 
 
-        VenueService.VenueService.getVenue(venueId).enqueue(new DefaultCallback<Venue>(getActivityEx()) {
+        VenueService.getVenue(venueId).enqueue(new DefaultCallback<Venue>(getActivityEx()) {
             @Override
             public void onResponse(Call<Venue> call, Response<Venue> response) {
                 if (response.isSuccessful()) {
                     venue = response.body();
                     binding.setVenue(venue);
                     binding.mapView.getMapAsync(VenueFragment.this);
-                    for (int i = 0; i < 5; i++) {
-                        binding.comments.add(new CommentItem());
+                    for (Comment comment : venue.comments) {
+                        binding.comments.add(new CommentItem(comment, fragNavController()));
                     }
                     displayHours();
                 }
@@ -131,7 +131,7 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
         if (fromUser) {
             fabSheet.hideSheet();
-            CheckInService.CheckInService.checkIn(venueId, new CheckIn((int) rating))
+            VenueService.checkIn(venueId, new CheckIn((int) rating))
                     .enqueue(new DefaultCallback<CheckIn>(getActivityEx()) {
                                  @Override
                                  public void onResponse(Call<CheckIn> call, Response<CheckIn> response) {

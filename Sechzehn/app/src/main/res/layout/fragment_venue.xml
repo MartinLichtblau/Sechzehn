@@ -90,6 +90,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
+                            android:drawablePadding="8dp"
                             android:drawableStart="@drawable/ic_notification"
                             android:fontFamily="sans-serif"
                             android:text="@{venue.checkinsCount.toString()}"
@@ -400,11 +401,9 @@
                                                              map:uiCompass="false"
                                                              map:uiRotateGestures="false"
                                                              map:uiTiltGestures="false"
-
                                                              tools:background="@drawable/profile_coverfoto_default"/>
 
                         <TextView
-
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
@@ -417,102 +416,84 @@
                             tools:text="{address1}"/>
 
                         <TextView
-
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-
                             android:layout_marginBottom="16dp"
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
                             android:text="@{venue.addressPart2}"
                             android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                            android:visibility="@{VenueFragment.objectToVisibility(venue.addressPart2)}"
                             tools:text="{address2}"/>
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:autoLink="phone"
+                            android:drawablePadding="8dp"
+                            android:drawableStart="@drawable/ic_phone_black_24dp"
+                            android:focusable="true"
+                            android:text="@{venue.phone}"
+                            android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                            android:visibility="@{VenueFragment.objectToVisibility(venue.phone)}"
+                            tools:text="012341234"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:autoLink="web"
+                            android:drawablePadding="8dp"
+                            android:drawableStart="@drawable/ic_public_black_24dp"
+                            android:focusable="true"
+                            android:text="@{venue.url}"
+                            android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                            android:visibility="@{VenueFragment.objectToVisibility(venue.url)}"
+                            tools:text="www.test.de"/>
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
                 <!-- Opening Hours Card -->
-                <android.support.constraint.ConstraintLayout
+
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/hoursCard"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:visibility="@{VenueFragment.booleanToVisibility(!venue.hours.isEmpty())}"
                     >
 
-                    <android.support.v7.widget.CardView
-                        android:id="@+id/hoursCard"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
 
-                        android:layout_marginTop="4dp"
-                        android:minHeight="172dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintHorizontal_bias="1.0"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toLeftOf="@+id/checkinCard"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0">
+                    <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView
 
+                        android:id="@+id/hours"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="16dp"
+                        android:orientation="vertical">
 
-                        <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView
-
-                            android:id="@+id/hours"
+                        <TextView
+                            android:id="@+id/textView7"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="16dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/textView7"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:text="Opening Hours"
-                                android:textAppearance="@android:style/TextAppearance.Material.Title"/>
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:text="Opening Hours"
+                            android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
 
-                        </de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView>
+                    </de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView>
 
 
-                    </android.support.v7.widget.CardView>
-
-                    <android.support.v7.widget.CardView
-                        android:id="@+id/checkinCard"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/hoursCard"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/hoursCard"
-                        app:layout_constraintVertical_bias="1.0">
-
-
-                        <android.support.constraint.ConstraintLayout
-
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_margin="16dp"
-                            android:orientation="vertical">
-
-                            <TextView
-
-                                android:id="@+id/textView6"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:text="Last Check Ins"
-                                android:textAppearance="@android:style/TextAppearance.Material.Title"
-                                app:layout_constraintLeft_toLeftOf="parent"
-                                app:layout_constraintRight_toRightOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"/>
-
-
-                        </android.support.constraint.ConstraintLayout>
-
-
-                    </android.support.v7.widget.CardView>
-                </android.support.constraint.ConstraintLayout>
+                </android.support.v7.widget.CardView>
 
 
                 <TextView

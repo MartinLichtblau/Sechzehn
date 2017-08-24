@@ -10,7 +10,9 @@ import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Category;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Hour;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Photo;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.UserVisit;
 
 /**
@@ -40,6 +42,62 @@ public class Venue {
      * @see #getPosition()
      */
     public Double lng;
+    /**
+     * The url to the venue website.
+     */
+    public String url;
+    public String phone;
+    public String address;
+    public String description;
+
+    public List<Comment> comments;
+    public List<Photo> photos;
+
+    /**
+     * The price category.
+     * Must be between 1 and 5, including those.
+     */
+    @IntRange(from = 1, to = 5)
+    public Integer price;
+    /**
+     * The rating.
+     * Must be between 0 and 10.
+     */
+    @SerializedName("rating")
+    @FloatRange(from = 0.0, to = 10.0)
+    public Double rating;
+    /**
+     * The number of ratings.
+     */
+    @SerializedName("rating_count")
+    public Integer ratingCount;
+    /**
+     * The category of the venue.
+     */
+    public Category category;
+    /**
+     * The similarity to the search query.
+     */
+    public Double similarity;
+    /**
+     * The distance from the search location.
+     */
+    public Double distance;
+    /**
+     * The top visitors of this location.
+     */
+    @SerializedName("top_visitors")
+    public List<UserVisit> topVisitors;
+    /**
+     * The opening hours.
+     */
+    public List<Hour> hours;
+    /**
+     * The last checkins.
+     */
+    public List<CheckIn> checkins;
+    @SerializedName("checkins_count")
+    public Integer checkinsCount;
 
     /**
      * @return The position of the venue.
@@ -48,14 +106,6 @@ public class Venue {
         if (lat == null || lng == null) return null;
         return new LatLng(lat, lng);
     }
-
-    /**
-     * The url to the venue website.
-     */
-    public String url;
-
-    public String phone;
-    public String address;
 
     public String getAddressPart1() {
         if (address == null) {
@@ -84,45 +134,6 @@ public class Venue {
         return address.substring(endOfPart1, endOfPart2).trim();
     }
 
-    public String description;
-
-    /**
-     * The price category.
-     * Must be between 1 and 5, including those.
-     */
-    @IntRange(from = 1, to = 5)
-    public Integer price;
-    /**
-     * The rating.
-     * Must be between 0 and 10.
-     */
-    @SerializedName("rating")
-    @FloatRange(from = 0.0, to = 10.0)
-    public Double rating;
-    /**
-     * The number of ratings.
-     */
-    @SerializedName("rating_count")
-    public Integer ratingCount;
-
-    /**
-     * The category of the venue.
-     */
-    public Category category;
-    /**
-     * The similarity to the search query.
-     */
-    public Double similarity;
-    /**
-     * The distance from the search location.
-     */
-    public Double distance;
-    /**
-     * The top visitors of this location.
-     */
-    @SerializedName("top_visitors")
-    public List<UserVisit> topVisitors;
-
     public String getTopVisitorPictureUrl(int place) {
         if (topVisitors.size() <= place) return null;
         return topVisitors.get(place).user.getProfilePicture();
@@ -132,17 +143,6 @@ public class Venue {
         if (topVisitors.size() <= place) return null;
         return topVisitors.get(place).user.getOptionalRealName();
     }
-
-    /**
-     * The opening hours.
-     */
-    public List<Hour> hours;
-    /**
-     * The last checkins.
-     */
-    public List<CheckIn> checkins;
-    @SerializedName("checkins_count")
-    public Integer checkinsCount;
 
     /**
      * This class represents a venue's section.
