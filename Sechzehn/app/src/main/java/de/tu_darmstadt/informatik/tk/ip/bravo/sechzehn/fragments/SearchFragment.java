@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +44,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.VenueSearch;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.BottomsheetSearchBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentSearchBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
@@ -92,12 +94,12 @@ public class SearchFragment extends BaseFragment {
             }
         });
         setupBottomSheet();
-        setupSearch();
+        setupSearchbarViews();
 
         return binding.getRoot();
     }
 
-    private void setupSearch(){
+    private void setupSearchbarViews(){
         binding.bottomsheetSearch.searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -198,12 +200,69 @@ public class SearchFragment extends BaseFragment {
             }
         });
 
-        AppBarLayout appBarLayout = binding.bottomsheetSearch.searchBottomsheetAppbarlayout;
+        /*AppBarLayout appBarLayout = binding.bottomsheetSearch.searchBottomsheetAppbarlayout;
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
                 if(verticalOffset == 0)
                     Toast.makeText(getContext(), "onOffsetChanged", Toast.LENGTH_SHORT).show();
+            }
+        });*/
+
+        updateActiveSearchHint();
+    }
+
+    private void updateActiveSearchHint(){
+        final BottomsheetSearchBinding bss = binding.bottomsheetSearch;
+        //observe the currenlty active Venue Search to dynamically adapt the active_search_layout
+        searchVM.lastVS.observe(this, new Observer<VenueSearch>() {
+            @Override
+            public void onChanged(@Nullable VenueSearch vs) {
+                Toast.makeText(getActivity(), "venueSearch onChanged: ", Toast.LENGTH_SHORT).show();
+
+                //Active Query
+                if(vs.getQuery() != null){
+                    bss.activeQuery.setText(vs.getQuery());
+                    bss.activeQuery.setChecked(true);
+                }else{
+                    bss.activeQuery.setText("");
+                    bss.activeQuery.setChecked(false);
+                    bss.activeQuery.setClickable(false);
+                }
+
+                //Active Section
+                String selectedSection = vs.getSection();
+                if(! TextUtils.isEmpty(selectedSection)){
+                    ToggleButton selectedToggleButton = (ToggleButton) getView().findViewWithTag(selectedSection);
+                    Drawable relatedDrawable = selectedToggleButton.getButtonDrawable();
+                    bss.activeSection.setButtonDrawable(relatedDrawable);
+                    bss.activeSection.setChecked(true);
+                }else{
+                    bss.activeSection.setChecked(false);
+                    bss.activeSection.setButtonDrawable(null);
+                }
+
+                //Active Price
+                if(vs.getPrice() != null){
+                    // create a string made up of n copies of string s
+                    String s = "$";
+                    Integer n = vs.price;
+                    bss.activePrice.setText(String.format("%0" + n + "d", 0).replace("0",s));
+                    bss.activePrice.setChecked(true);
+                }else{
+                    bss.activePrice.setChecked(false);
+                    bss.activePrice.setText("");
+                }
+
+                //Active Opennow
+                if(null != vs.getTime()){
+                    bss.activeOpennow.setChecked(true);
+                }else{
+                    bss.activeOpennow.setChecked(false);
+                }
+
+
+
             }
         });
     }

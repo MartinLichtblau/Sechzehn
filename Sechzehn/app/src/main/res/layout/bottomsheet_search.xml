@@ -31,8 +31,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-                app:contentScrim="@color/white"
-                app:statusBarScrim="@color/white"
                 android:background="@color/white"
                 app:expandedTitleTextAppearance="@style/my_toolbar_text">
 
@@ -210,8 +208,8 @@
                     android:id="@+id/active_search_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/search_bottomsheet_collapsed"
-                    app:title="Active Search Filter|ic|ic|"
                     app:layout_collapseMode="pin"
+                    android:background="@color/white"
                     android:clickable="true">
 
                     <TextView
@@ -230,20 +228,27 @@
                         app:orientation="horizontal"
                         app:exclusive="false"
                         app:allowUnselected="true"
+                        app:divider="@drawable/toggle_divider"
                         android:onClick="@{frag::fab}">
                     <!--or app:layout_collapseMode="none">-->
-                    <android.support.v7.widget.ToggleButton
-                        android:id="@+id/active_section"
-                        android:tag="food"
-                        android:button="@drawable/ic_food"
-                        android:onClick="@{frag::alterSearchSection}"
-                        style="@style/PinkToggle"/>
-                    <android.support.v7.widget.ToggleButton
-                        android:id="@+id/active_query"
-                        android:tag="drinks"
-                        android:button="@drawable/ic_drinks"
-                        android:onClick="@{frag::alterSearchSection}"
-                        style="@style/PinkToggle"/>
+                        <android.support.v7.widget.ToggleButton
+                            android:id="@+id/active_query"
+                            android:layout_weight="1"
+                            android:button="@drawable/ic_search_normal"
+                            style="@style/PinkToggle"/>
+                        <android.support.v7.widget.ToggleButton
+                            android:id="@+id/active_section"
+                            android:button="@drawable/ic_food"
+                            android:onClick="@{frag::alterSearchSection}"
+                            style="@style/PinkToggle"/>
+                        <android.support.v7.widget.ToggleButton
+                            android:id="@+id/active_price"
+                            style="@style/PinkToggle"/>
+                        <android.support.v7.widget.ToggleButton
+                            android:id="@+id/active_opennow"
+                            style="@style/PinkToggle"
+                            android:layout_width="80dp"
+                            android:text="Open now"/>
                     </android.support.v7.widget.ToggleGroup>
                   <!--  <LinearLayout
                         android:id="@+id/active_search_layout"
