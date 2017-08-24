@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.widget.ToggleButton;
 import android.text.TextUtils;
@@ -79,6 +80,8 @@ public class SearchFragment extends BaseFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         binding.setFrag(this);
         binding.setSearchVM(searchVM);
+        //binding.setActiveSearch(new VenueSearch()); //@TODO remove since not needed when using Livedata
+        searchVM.lastVS.setValue(new VenueSearch());
 
         mapView = binding.mapView;
         mapView.onCreate(savedInstanceState);
@@ -95,7 +98,6 @@ public class SearchFragment extends BaseFragment {
     }
 
     private void setupSearch(){
-        VenueSearch vs = new VenueSearch();
         binding.bottomsheetSearch.searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -112,14 +114,14 @@ public class SearchFragment extends BaseFragment {
 
     public void alterSearchQuery(String query){
         Toast.makeText(getActivity(), "alterSearchQuery: "+query, Toast.LENGTH_SHORT).show();
-        VenueSearch alteredVS = searchVM.lastVS;
+        VenueSearch alteredVS = searchVM.lastVS.getValue();
         alteredVS.setQuery(query);
         searchVM.getVenues(alteredVS);
     }
 
     public void alterSearchSection(View view) {
         String section = null;
-        VenueSearch alteredVS = searchVM.lastVS;
+        VenueSearch alteredVS = searchVM.lastVS.getValue();
         ToggleButton toggleButton = (ToggleButton) view;
         if(toggleButton.isChecked())
             section = view.getTag().toString();
@@ -129,7 +131,7 @@ public class SearchFragment extends BaseFragment {
 
     public void alterSearchPrice(View view){
         Integer price = Integer.valueOf(view.getTag().toString());
-        VenueSearch alteredVS = searchVM.lastVS;
+        VenueSearch alteredVS = searchVM.lastVS.getValue();
         if(price == 0) //price 0 is Any price > means price is null
             price = null;
         alteredVS.setPrice(price);
@@ -139,7 +141,7 @@ public class SearchFragment extends BaseFragment {
     public void alterSearchOpennow(View view){
         Boolean opennow = binding.bottomsheetSearch.opennow.isChecked();
         String nowDate = null;
-        VenueSearch alteredVS = searchVM.lastVS;
+        VenueSearch alteredVS = searchVM.lastVS.getValue();
         Toast.makeText(getActivity(), "alterSearchOpennow: "+opennow.toString(), Toast.LENGTH_SHORT).show();
         if(opennow)
             nowDate = SzUtils.getNowDate("yyyy-MM-dd hh:mm");
@@ -192,8 +194,16 @@ public class SearchFragment extends BaseFragment {
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         break;
-
                 }
+            }
+        });
+
+        AppBarLayout appBarLayout = binding.bottomsheetSearch.searchBottomsheetAppbarlayout;
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if(verticalOffset == 0)
+                    Toast.makeText(getContext(), "onOffsetChanged", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -266,7 +276,7 @@ public class SearchFragment extends BaseFragment {
                         public void run() {
                             binding.searchAgainHere.setVisibility(View.VISIBLE);
                         }
-                    }, 500);
+                    }, 1000);
                 }
             }
         });

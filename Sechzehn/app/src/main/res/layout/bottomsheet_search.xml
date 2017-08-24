@@ -7,6 +7,7 @@
     <data>
         <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment" />
         <variable name="searchVM" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel" />
+        <variable name="activeSearch" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.VenueSearch" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -21,7 +22,7 @@
 
 
         <android.support.design.widget.AppBarLayout
-            android:id="@+id/search_bottomsheet_bar"
+            android:id="@+id/search_bottomsheet_appbarlayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -45,7 +46,9 @@
                     app:orientation="horizontal"
                     app:exclusive="true"
                     app:allowUnselected="true"
-                    android:onClick="@{frag::fab}">
+                    android:onClick="@{frag::fab}"
+                    app:layout_collapseMode="none">
+                    <!--or app:layout_collapseMode="none">-->
                     <android.support.v7.widget.ToggleButton
                         android:id="@+id/section_food"
                         android:tag="food"
@@ -83,6 +86,7 @@
                         android:onClick="@{frag::alterSearchSection}"
                         style="@style/PinkToggle"/>
                 </android.support.v7.widget.ToggleGroup>
+
 
                 <LinearLayout
                     android:id="@+id/search_detailed"
@@ -203,12 +207,74 @@
                 </LinearLayout>
 
                 <android.support.v7.widget.Toolbar
-                    android:id="@+id/current_search_hint"
+                    android:id="@+id/active_search_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/search_bottomsheet_collapsed"
                     app:title="Active Search Filter|ic|ic|"
-                    android:titleTextColor="@color/white"
-                    app:layout_collapseMode="parallax">
+                    app:layout_collapseMode="pin"
+                    android:clickable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:text="Active: "/>
+
+                    <android.support.v7.widget.ToggleGroup
+                        android:id="@+id/active_search_layout"
+                        style="@style/Widget.Material.ToggleGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/search_bottomsheet_collapsed"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        app:orientation="horizontal"
+                        app:exclusive="false"
+                        app:allowUnselected="true"
+                        android:onClick="@{frag::fab}">
+                    <!--or app:layout_collapseMode="none">-->
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/active_section"
+                        android:tag="food"
+                        android:button="@drawable/ic_food"
+                        android:onClick="@{frag::alterSearchSection}"
+                        style="@style/PinkToggle"/>
+                    <android.support.v7.widget.ToggleButton
+                        android:id="@+id/active_query"
+                        android:tag="drinks"
+                        android:button="@drawable/ic_drinks"
+                        android:onClick="@{frag::alterSearchSection}"
+                        style="@style/PinkToggle"/>
+                    </android.support.v7.widget.ToggleGroup>
+                  <!--  <LinearLayout
+                        android:id="@+id/active_search_layout"
+                        style="@style/Widget.Material.ToggleGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/search_bottomsheet_collapsed"
+                        android:background="@color/white"
+                        android:orientation="horizontal"
+                        app:layout_collapseMode="pin">
+
+                        <TextView
+                            android:id="@+id/active_query"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TextView" />
+
+                        <Button
+                            android:id="@+id/button2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Button" />
+
+                        <CheckedTextView
+                            android:id="@+id/checkedTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="CheckedTextView" />
+                    </LinearLayout>-->
                 </android.support.v7.widget.Toolbar>
 
             </android.support.design.widget.CollapsingToolbarLayout>

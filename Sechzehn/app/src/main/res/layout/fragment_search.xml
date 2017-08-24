@@ -7,6 +7,7 @@
     <data>
         <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment" />
         <variable name="searchVM" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel" />
+        <variable name="activeSearch" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.VenueSearch" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -66,7 +67,8 @@
             android:id="@+id/bottomsheet_search"
             layout="@layout/bottomsheet_search"
             app:searchVM="@{searchVM}"
-            app:frag="@{frag}"/>
+            app:frag="@{frag}"
+            app:activeSearch="@{activeSearch}"/>
 
         <View
             android:id="@+id/bottomsheet_shadow"

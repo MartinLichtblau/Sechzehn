@@ -42,7 +42,8 @@ public class SearchViewModel extends ViewModel{
     public MutableLiveData<HashMap<Marker,MarkerOptions>> usersOnMap = new MutableLiveData<>();
     public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
     public MutableLiveData<HashMap<Marker,MarkerOptions>> venuesOnMap = new MutableLiveData<>();
-    public VenueSearch lastVS = new VenueSearch();
+    public MutableLiveData<VenueSearch> lastVS = new MutableLiveData<>();
+
 
     public Boolean lastStateSaved = false;
     public GoogleMap map;
@@ -81,7 +82,7 @@ public class SearchViewModel extends ViewModel{
     public void newSearchSectionHere (String section) {
         LatLng center = map.getCameraPosition().target;
         Double radius = getVisibleRadius();
-        VenueSearch vs = lastVS;
+        VenueSearch vs = lastVS.getValue();
         vs.setSection(section);
         vs.setLat(center.latitude); vs.setLng(center.longitude); vs.setRadius(radius);
         getVenues(vs);
@@ -122,13 +123,13 @@ public class SearchViewModel extends ViewModel{
                     venueResults.setValue(Resource.error(t.getCause().toString(), null));
             }
         });
-        lastVS = vs;
+        lastVS.setValue(vs);
     }
 
     public void searchHere(View view){
         LatLng center = map.getCameraPosition().target;
         Double radius = getVisibleRadius();
-        VenueSearch vs = lastVS;
+        VenueSearch vs = lastVS.getValue();
         vs.setLat(center.latitude); vs.setLng(center.longitude); vs.setRadius(radius);
         getVenues(vs);
     }
