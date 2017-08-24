@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.widget.ToggleButton;
 import android.text.TextUtils;
@@ -29,7 +28,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -76,7 +74,12 @@ public class SearchFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         searchVM = ViewModelProviders.of(this).get(SearchViewModel.class);
         ownerVM = BottomTabsActivity.getOwnerViewModel();
+
+        //Most IMPORTANT NOTE: Observer method must be called only once or multiple instances of the observer functions observe the same
+        //This is why they must be put in onCreate!! because here they only get called once onCreate (and this is as long as the existing Observer functions exists)
+        //@TODO check code where I fell for this tricky time dimension trap
         observeSearchResults();
+        observeVenueSearch();
     }
 
     @Override
@@ -84,9 +87,6 @@ public class SearchFragment extends BaseFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         binding.setFrag(this);
         binding.setSearchVM(searchVM);
-        //binding.setActiveSearch(new VenueSearch()); //@TODO remove since not needed when using Livedata
-        //Initialize first venueSearch object for proper functioning of UI(altough the initialSearch() will come shortly after)
-        searchVM.lastVS.setValue(new VenueSearch());
 
         mapView = binding.mapView;
         mapView.onCreate(savedInstanceState);
@@ -96,6 +96,9 @@ public class SearchFragment extends BaseFragment {
                 setupMap(googleMap);
             }
         });
+
+        //binding.setActiveSearch(new VenueSearch()); //@TODO remove since not needed when using Livedata
+        //Initialize first venueSearch object for proper functioning of UI(altough the initialSearch() will come shortly after)
         setupBottomSheet();
         setupSearchbarViews();
 
@@ -103,10 +106,12 @@ public class SearchFragment extends BaseFragment {
     }
 
     private void setupSearchbarViews(){
+        Log.d(TAG,"setupSearchbarViews");
         final SearchView searchviewVenue = binding.bottomsheetSearch.searchviewVenue;
         searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
+                Log.d(TAG,"onQueryTextChange");
                 if (newText.length() == 0) {
                     alterSearchQuery(null);
                     searchviewVenue.clearFocus();
@@ -136,7 +141,6 @@ public class SearchFragment extends BaseFragment {
 
 /*    private void hideKeyBoard(){
         // Check if no view has focus:
-
         View view = getActivity().getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -145,7 +149,7 @@ public class SearchFragment extends BaseFragment {
     }*/
 
     public void alterSearchQuery(String query){
-        Toast.makeText(getActivity(), "alterSearchQuery: "+query, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "alterSearchQuery: "+query, Toast.LENGTH_SHORT).show();
         VenueSearch alteredVS = searchVM.lastVS.getValue();
         alteredVS.setQuery(query);
         searchVM.getVenues(alteredVS);
@@ -178,7 +182,7 @@ public class SearchFragment extends BaseFragment {
             opennow = ((ToggleButton) view).isChecked();
         String nowDate = null;
         VenueSearch alteredVS = searchVM.lastVS.getValue();
-        Toast.makeText(getActivity(), "alterSearchOpennow: "+opennow.toString(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "alterSearchOpennow: "+opennow.toString(), Toast.LENGTH_SHORT).show();
         if(opennow)
             nowDate = SzUtils.getNowDate("yyyy-MM-dd hh:mm");
         alteredVS.setTime(nowDate);
@@ -186,6 +190,7 @@ public class SearchFragment extends BaseFragment {
     }
 
     private void setupBottomSheet(){
+        Log.d(TAG,"setupBottomSheet");
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomsheetSearch.getRoot());
         bsCollapsed = getActivity().getResources().getDimension(R.dimen.search_bottomsheet_collapsed);
         bsExpanded = getActivity().getResources().getDimension(R.dimen.search_bottomsheet_expanded);
@@ -233,7 +238,6 @@ public class SearchFragment extends BaseFragment {
                 }
             }
         });
-
         /*AppBarLayout appBarLayout = binding.bottomsheetSearch.searchBottomsheetAppbarlayout;
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
@@ -242,66 +246,56 @@ public class SearchFragment extends BaseFragment {
                     Toast.makeText(getContext(), "onOffsetChanged", Toast.LENGTH_SHORT).show();
             }
         });*/
-
-        updateActiveSearchHint();
     }
 
-    private void updateActiveSearchHint(){
+    private void updateActiveSearchHint(VenueSearch vs){
+        Log.d(TAG,"updateActiveSearchHint");
         final BottomsheetSearchBinding bss = binding.bottomsheetSearch;
-        //observe the currenlty active Venue Search to dynamically adapt the active_search_layout
-        searchVM.lastVS.observe(this, new Observer<VenueSearch>() {
-            @Override
-            public void onChanged(@Nullable VenueSearch vs) {
-                Toast.makeText(getActivity(), "venueSearch onChanged: ", Toast.LENGTH_SHORT).show();
 
-                //Active Query
-                if(vs.getQuery() != null){
-                    bss.activeQuery.setText(vs.getQuery());
-                    bss.activeQuery.setChecked(true);
-                    bss.activeQuery.setClickable(true);
-                }else{
-                    //bss.activeQuery.setText(" ");
-                    bss.activeQuery.setChecked(false);
-                    //bss.activeQuery.setClickable(false);
-                }
+        //Active Query
+        if(vs.getQuery() != null){
+            bss.activeQuery.setText(vs.getQuery());
+            bss.activeQuery.setChecked(true);
+            bss.activeQuery.setClickable(true);
+        }else{
+            //bss.activeQuery.setText(" ");
+            bss.activeQuery.setChecked(false);
+            //bss.activeQuery.setClickable(false);
+        }
 
-                //Active Section
-                String selectedSection = vs.getSection();
-                if(! TextUtils.isEmpty(selectedSection)){
-                    ToggleButton selectedToggleButton = (ToggleButton) getView().findViewWithTag(selectedSection);
-                    Drawable relatedDrawable = selectedToggleButton.getButtonDrawable();
-                    bss.activeSection.setButtonDrawable(relatedDrawable);
-                    bss.activeSection.setChecked(true);
-                }else{
-                    bss.activeSection.setChecked(false);
-                    bss.activeSection.setButtonDrawable(null);
-                }
+        //Active Section
+        String selectedSection = vs.getSection();
+        if(! TextUtils.isEmpty(selectedSection)){
+            View rootView = bss.getRoot();
+            ToggleButton selectedToggleButton = (ToggleButton) rootView.findViewWithTag(selectedSection);
+            Drawable relatedDrawable = selectedToggleButton.getButtonDrawable();
+            bss.activeSection.setButtonDrawable(relatedDrawable);
+            bss.activeSection.setChecked(true);
+        }else{
+            bss.activeSection.setChecked(false);
+            bss.activeSection.setButtonDrawable(null);
+        }
 
-                //Active Price
-                if(vs.getPrice() != null){
-                    // create a string made up of n copies of string s
-                    String s = "$";
-                    Integer n = vs.price;
-                    bss.activePrice.setText(String.format("%0" + n + "d", 0).replace("0",s));
-                    bss.activePrice.setTag(vs.price);
-                    bss.activePrice.setChecked(true);
-                }else{
-                    bss.activePrice.setText("$"); //If any price is set show cheapest but deactivated
-                    bss.activePrice.setTag("1");
-                    bss.activePrice.setChecked(false);
-                }
+        //Active Price
+        if(vs.getPrice() != null){
+            // create a string made up of n copies of string s
+            String s = "$";
+            Integer n = vs.price;
+            bss.activePrice.setText(String.format("%0" + n + "d", 0).replace("0",s));
+            bss.activePrice.setTag(vs.price);
+            bss.activePrice.setChecked(true);
+        }else{
+            bss.activePrice.setText("$"); //If any price is set show cheapest but deactivated
+            bss.activePrice.setTag("1");
+            bss.activePrice.setChecked(false);
+        }
 
-                //Active Opennow
-                if(null != vs.getTime()){
-                    bss.activeOpennow.setChecked(true);
-                }else{
-                    bss.activeOpennow.setChecked(false);
-                }
-
-
-
-            }
-        });
+        //Active Opennow
+        if(null != vs.getTime()){
+            bss.activeOpennow.setChecked(true);
+        }else{
+            bss.activeOpennow.setChecked(false);
+        }
     }
 
     public void setupMap(GoogleMap googleMap){
@@ -311,7 +305,9 @@ public class SearchFragment extends BaseFragment {
         searchVM.map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.search_map_style));
 
         if(searchVM.lastStateSaved){
-            searchVM.restoreLastState(); //show last state
+            Toast.makeText(getActivity(), "restore lastStateSaved", Toast.LENGTH_SHORT).show();
+            searchVM.restoreLastMapState(); //show last state
+            //updateActiveSearchHint(searchVM.lastVS.getValue()); //should go into restoreLastMapState but viewmodel can't reference activities/fragments
         }else{
             searchVM.map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
             userSetMapCenter = searchVM.map.getCameraPosition().target;
@@ -397,9 +393,9 @@ public class SearchFragment extends BaseFragment {
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
         //searchVM.searchXVenuesNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
-        /*searchVM.instantSearchVenues("coffee");*/
 
-        binding.bottomsheetSearch.sectionCoffee.performClick();
+        VenueSearch initialVS = new VenueSearch();
+        searchVM.getVenues(initialVS);
     }
 
     public void observeSearchResults(){
@@ -426,7 +422,7 @@ public class SearchFragment extends BaseFragment {
             public void onChanged(@Nullable Resource resource) {
                 switch (resource.status){
                     case LOADING:
-                        Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
                         binding.searchAgainHere.setVisibility(View.INVISIBLE);
                         //@TODO show loading dialog progress bar
                         break;
@@ -439,6 +435,16 @@ public class SearchFragment extends BaseFragment {
                         addVenues(venuePagination.data);
                         break;
                 }
+            }
+        });
+    }
+
+    private void observeVenueSearch(){
+        //observe the currenlty active Venue Search to dynamically adapt the active_search_layout
+        searchVM.lastVS.observe(this, new Observer<VenueSearch>() {
+            @Override
+            public void onChanged(@Nullable VenueSearch vs) {
+                updateActiveSearchHint(vs);
             }
         });
     }
@@ -528,7 +534,7 @@ public class SearchFragment extends BaseFragment {
     @Override
     public void onPause() {
         if (mapView != null) {
-            searchVM.saveCurrentState();
+            searchVM.saveCurrentMapState();
             mapView.onPause();
         }
         super.onPause();
