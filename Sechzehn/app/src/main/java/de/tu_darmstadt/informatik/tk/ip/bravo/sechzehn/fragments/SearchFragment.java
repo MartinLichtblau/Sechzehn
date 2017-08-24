@@ -100,7 +100,7 @@ public class SearchFragment extends BaseFragment {
         //binding.setActiveSearch(new VenueSearch()); //@TODO remove since not needed when using Livedata
         //Initialize first venueSearch object for proper functioning of UI(altough the initialSearch() will come shortly after)
         setupBottomSheet();
-        setupSearchbarViews();
+        //setupSearchbarViews();  now in
 
         return binding.getRoot();
     }
@@ -133,7 +133,7 @@ public class SearchFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 searchviewVenue.setQuery(null,true);
-                alterSearchQuery(null);
+                //alterSearchQuery(null); //Now that I know that's redundant: onQueryTextChange gets called also when (x) button clears text
             }
         });
 
@@ -306,7 +306,7 @@ public class SearchFragment extends BaseFragment {
 
         if(searchVM.lastStateSaved){
             Toast.makeText(getActivity(), "restore lastStateSaved", Toast.LENGTH_SHORT).show();
-            searchVM.restoreLastMapState(); //show last state
+            searchVM.restoreLastState(); //show last state
             //updateActiveSearchHint(searchVM.lastVS.getValue()); //should go into restoreLastMapState but viewmodel can't reference activities/fragments
         }else{
             searchVM.map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
@@ -529,12 +529,14 @@ public class SearchFragment extends BaseFragment {
         if (mapView != null) {
             mapView.onResume();
         }
+
+        setupSearchbarViews();
     }
 
     @Override
     public void onPause() {
         if (mapView != null) {
-            searchVM.saveCurrentMapState();
+            searchVM.saveCurrentState();
             mapView.onPause();
         }
         super.onPause();
