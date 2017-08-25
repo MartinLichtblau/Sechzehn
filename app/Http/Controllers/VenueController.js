@@ -16,7 +16,7 @@ class VenueController {
     const radius = request.input('radius', 10)
     const searchQuery = request.input('query')
     const time = Moment(request.input('time'))
-    const section = request.input('section', '')
+    const section = request.input('section', '').toLowerCase()
     const price = Number(request.input('price'))
     const sortByDistance = Validator.sanitizor.toBoolean(request.input('sort_by_distance'))
     const details = Validator.sanitizor.toBoolean(request.input('details'))
