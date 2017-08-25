@@ -9,7 +9,8 @@
 \documentclass[11pt, accentcolor=tud1c]{tudreport}	
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath, enumitem, graphicx, hyperref, lipsum, listings, mathtools, parcolumns, pdfpages, subcaption}
+\usepackage{amsmath, enumitem, graphicx, hyperref, lipsum, listings, mathtools, parcolumns, pdfpages, subcaption, parskip}
+\raggedbottom
 
 % https://scm.informatik.tu-darmstadt.de/news/129-technical-documentation-sample
 
@@ -71,21 +72,45 @@ In this section we present the architecture we used and thereby how our componen
 \section{Architecture}\label{sec:architecture}
 % components and their interaction
 \subsection{Interaction of Components}
-\includegraphics[scale=0.5]{./res/architecture.png}
-\subsection{ERM}
-\subsection{UML Diagram}
+\begin{figure}[ht]
+	\includegraphics[width=\textwidth]{./res/architecture.png}
+	\caption{Architecture}
+	\label{fig:architecture}
+\end{figure}
+The communication between the clients and our server is illustrated in \autoref{fig:architecture}.
+For their communication with our server, the clients access the RESTful endpoints or use WebSocket connections. The latter one is necessary to provide our real-time chat. Since we do not have a huge community that backs our app, we need to retrieve the data from other sources. Our server therefore connects to the Foursquare API and fetches the venues, venue details and photos dynamically.
+\subsection{Server API Documentation}
+To connect app and server, the app developers need the knowledge of endpoints, query parameters and the data structures of requests and responses. To prevent that they need to look through the server's code, an extensive documentation is provided using Apiary \cite{apiary}. An impression is given in \autoref{fig:apiary}.
+
+\begin{figure}[ht]
+	\includegraphics[width=\textwidth]{./res/apiary.png}
+	\caption{Screenshot of the Apiary Documentation}
+	\label{fig:apiary}
+\end{figure}
+\newpage
+\subsection{Database}
+\begin{figure}[ht]
+	\includegraphics[width=\textwidth]{./res/sechzehn-erm.pdf}
+	\caption{Database scheme}
+	\label{fig:database_scheme}
+\end{figure}
+
 \section{Server}\label{sec:server}
-To host our server we use the Heroku Cloud Application Platform\cite{heroku}. Heroku provides us a PostgreSQL\cite{postgresql} database service and an nodejs execution environment. Furthermore it offers access to Cloudinary\cite{cloudinary} image backend. The Cloudinary service can be used as plugin within heroku.
+To host our server we use the Heroku Cloud Application Platform\cite{heroku}. Heroku provides us a PostgreSQL\cite{postgresql} database service and an Node.js execution environment. Furthermore it offers access to Cloudinary\cite{cloudinary} image storage service that can be used as plugin within heroku. Heroku offers a free plan ``hobby-dev'' that we use.
+
 \subsection{Node.js}
-Node.js \cite{nodejs} is a cross-platform environment, that allows building web servers with JavaScript.
-This is contrary to the usual applications of JavaScript since it was firstly designed to be a client-side scripting language. Node.js in its current version also supports asynchronous execution and concepts like promises. This allows elegant code and increases the performance.
+
+Node.js \cite{Node.js} is a cross-platform environment that allows building web servers with JavaScript.
+This is contrary to the usual applications that are written in JavaScript since it was firstly designed to be a client-side scripting language for browsers. Node.js in its current version also supports asynchronous execution and concepts like generator functions. This allows easy-readable code on a high abstraction level with high-order functions and a good handling of asynchronous operations.
 
 \subsection{AdonisJs}\label{sec:adonisjs}
-AdonisJs \cite{adonisjs} is a MVC Framework for Node.js. It's focus is to be a stable framework and to offer a nice and clean API with a bunch of tested modules to make the development experience enjoyable. Some features are an API and Session based Authentication System, the validation and sanitization of every user’s input, and has an easy way to send emails via SMTP or Web Service.
+AdonisJs \cite{adonisjs} is a MVC framework for Node.js web applications. It offers a further layer of abstraction and handles HTTP routing, requests and responses, content negotitation and an object-relational mapping to persist and fetch models from the database. In addition, it provides APIs for user input validation and sanitization, mail sending with templates, omitting fields from JSON output and authentication middleware. Due to this abstration, it is not necessary to deal with unpretentious programming work that has been done mutliple times before and is always the same for web application (e.g. routing, templating, authentication). 
+
 \subsection{PostgreSQL}
-PostgreSQL\cite{postgresql} is an open-source relational database management system. It is possible to add new data types and functions in PostgreSQL. Amongst other things we implemented a function to compute the Great-circle distance\cite{greatcircledist}. The Great-circle distance is necessary to compute distances on spheres and therefore to compute distances on the earth. Moreover native programming interfaces exist for many languages. Since Heroku also has a PostgreSQL plugin, that was our way to go.
+PostgreSQL\cite{postgresql} is a powerful open-source relational database management system. It provides the ability to add useful extensions, new data types and functions. We use extensions to determine if a venue or another user is near to the user's current position and to compute a similarity metric on two strings. The latter is the basis of the venue and user search. PostgreSQL offers data types for time ranges that allow to search for open venues. In this context, a custom function is used to convert opening hours into an unambigous database represenation that prevent operlaps. Fortunately, heroku provides a PostgreSQL plugin.
+
 \subsection{JSON Web Tokens}\label{sec:json_web_tokens}
-The Authentication in our project is done with JSON Web Tokens(JWTs)\cite{jwt}.
+The authentication in our project is done with JSON Web Tokens (JWTs)\cite{jwt}. Given a secure connection, JWTs offer a secure, stateless authentication methods that renders sessions and cookies unnecessary.
 
 \section{Client}\label{sec:client}
 \subsection{Android Data Binding}
@@ -146,7 +171,7 @@ The venue search offers filtering for opening hours and price category.
 \item Caching
 \end{enumerate}
 
-\section{App Flow}
+\section{App Flow}[h]
 % system requirements, get started, functionalities, features, app flow, ...
 %%%LOGIN SCREEN%%%
 \begin{figure}
@@ -201,10 +226,18 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
 
 \chapter{Feature List}\label{ch:feature_list}
 % ! 1 page !
+\begin{itemize}
+\item Venue search by location with filters for price, currently opened, 
+
+\end{itemize}
 % pls only list the most relevant implemented features
 
 % Bibliography
 \begin{thebibliography}{9}
+	\bibitem{apiary}
+		\textit{Sechzehn API Documentation | Apiary}, 
+		Accessed: 2017-08-24, \\
+		\url{http://docs.iptk.apiary.io/}
 	\bibitem{heroku}
 		\textit{Heroku}, 
 		Accessed: 2017-08-09, \\
@@ -213,7 +246,7 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
 		\textit{Cloudinary Features}, 
 		Accessed: 2017-08-09 \\
 		\url{http://cloudinary.com/features}
-	\bibitem{nodejs}
+	\bibitem{Node.js}
 		\textit{API Reference Documentation}, 
 		Accessed: 2017-08-09, \\
 		\url{https://nodejs.org/en/docs/}
@@ -225,10 +258,6 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
 		\textit{PostgreSQL: Documentation}, 
 		Accessed: 2017-08-09, \\
 		\url{https://www.postgresql.org/docs/}
-	\bibitem{greatcircledist}
-		\textit{Great-Circle Distanz}, 
-		Accessed: 2017-08-09, \\
-		\url{https://en.wikipedia.org/wiki/Great-circle_distance}
 	\bibitem{jwt}
 		\textit{Introduction to JSON Web Tokens}, 
 		Accessed: 2017-08-09, \\
@@ -253,5 +282,6 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
 		\textit{download Sechzehn}, 
 		Accessed: 2017-08-15, \\
 		\url{https://iptk.herokuapp.com/downloads/Sechzehn.apk}	
+		% TODO
 \end{thebibliography}
 \end{document}
