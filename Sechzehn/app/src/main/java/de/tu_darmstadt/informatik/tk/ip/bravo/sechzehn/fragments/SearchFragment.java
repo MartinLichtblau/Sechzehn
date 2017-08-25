@@ -327,7 +327,7 @@ public class SearchFragment extends BaseFragment {
                         public void run() {
                             binding.searchAgainHere.setVisibility(View.VISIBLE);
                         }
-                    }, 1000);
+                    }, 750);
                 }
             }
         });

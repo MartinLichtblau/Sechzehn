@@ -148,8 +148,8 @@ public final class SzUtils {
     public static  Bitmap venuePinBackground = null;
     public static void checkInitDrawablesOnce(Context context){
         if(venuePinBackground == null){
-            //Alpha/Transparency is first two chars Ref.:
-            Integer color = Color.parseColor("#FFFFFFFF"); //BF Transparency is good
+            //Alpha/Transparency is first two chars Ref.: https://stackoverflow.com/a/17239853/3965610
+            Integer color = Color.parseColor("#D9FFFFFF"); //BF Transparency is good
             venuePinBackground = tintBitmap(Bitmap.createScaledBitmap(
                     BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_background), 120, 120, false),color);
         }
