@@ -352,7 +352,7 @@ public class SearchFragment extends BaseFragment {
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
         //searchVM.searchXVenuesNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
 
-        VenueSearch initialVS = new VenueSearch();
+        VenueSearch initialVS = new VenueSearch(25);
         searchVM.getVenues(initialVS);
     }
 

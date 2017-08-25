@@ -59,9 +59,10 @@ public final class SzUtils {
         userPinBackground = Bitmap.createScaledBitmap(
                 BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin_background), 120, 120, false);
 
+        Integer color = Color.parseColor("#80FFFFFF"); //Alpha/Transparency is first two chars Ref.: https://stackoverflow.com/questions/15852122/hex-transparency-in-colors
+
         venuePinBackground = tintBitmap(Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_background), 120, 120, false),
-                Color.GRAY);
+                BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_background), 120, 120, false),color);
     }
 
     public static String getToken(){
@@ -175,15 +176,6 @@ public final class SzUtils {
         return scaledImg;
     }
 
-    public static Bitmap tintBitmap(Bitmap bitmap, int color) {
-        Paint paint = new Paint();
-        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
-        Bitmap bitmapResult = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmapResult);
-        canvas.drawBitmap(bitmap, 0, 0, paint);
-        return bitmapResult;
-    }
-
     public static MutableLiveData<Bitmap> createVenuePin(Context context, Boolean highlight, @Nullable String url){
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
         final Bitmap background;
@@ -225,6 +217,15 @@ public final class SzUtils {
         }
 
         return scaledImg;
+    }
+
+    public static Bitmap tintBitmap(Bitmap bitmap, int color) {
+        Paint paint = new Paint();
+        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+        Bitmap bitmapResult = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmapResult);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return bitmapResult;
     }
 
     public static Bitmap mergeToPin(Bitmap back, Bitmap front) {

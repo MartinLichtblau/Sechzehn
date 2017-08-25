@@ -19,7 +19,7 @@ public class VenueSearch {
 
     public VenueSearch(Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time, Boolean sortByDistance) {
         this.page = page;
-        this.perPage = perPage;
+        this.perPage = (perPage == null ? 25 : perPage);
         this.lat = lat;
         this.lng = lng;
         this.radius = radius;
@@ -31,8 +31,8 @@ public class VenueSearch {
         this.searchHere = searchHere;
     }
 
-    public VenueSearch(){
-
+    public VenueSearch(Integer perPage){
+        this.perPage = (perPage == null ? 25 : perPage);
     }
 
     public Integer getPage() {
