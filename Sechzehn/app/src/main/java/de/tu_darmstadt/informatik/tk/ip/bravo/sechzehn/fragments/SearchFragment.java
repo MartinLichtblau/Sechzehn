@@ -1,5 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
@@ -423,7 +424,8 @@ public class SearchFragment extends BaseFragment {
             if (!TextUtils.equals(user.getUsername(), SzUtils.getOwnername())) {
                 if(user.getFriendshipStatus() == Friendship.Status.CONFIRMED)
                     highlight = true;
-                SzUtils.createUserPin(getContext(), highlight, user.getProfilePicture()).observe(this, new Observer<Bitmap>() {
+                final MutableLiveData liveBitmap = SzUtils.createUserPin(getContext(), highlight, user.getProfilePicture());
+                liveBitmap.observe(this, new Observer<Bitmap>() {
                     @Override
                     public void onChanged(@Nullable Bitmap bitmap) {
                         MarkerOptions markerOptions = new MarkerOptions()
@@ -437,6 +439,8 @@ public class SearchFragment extends BaseFragment {
                         tempMarkerMap.put(marker, markerOptions);
                         if (tempMarkerMap.size() >= (userList.size() - 1))
                             searchVM.usersOnMap.setValue(tempMarkerMap);
+
+                        liveBitmap.removeObserver(this);
                     }
                 });
             }
@@ -446,22 +450,25 @@ public class SearchFragment extends BaseFragment {
     private void createAddVenueMarkers(final List<Venue> venueList) {
         final HashMap<Marker,MarkerOptions> tempMarkerMap = new HashMap<>();
         for (final Venue venue :  venueList) {
-                SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon).observe(this, new Observer<Bitmap>() {
-                    @Override
-                    public void onChanged(@Nullable Bitmap bitmap) {
-                        MarkerOptions markerOptions = new MarkerOptions()
-                                .position(new LatLng(venue.lat, venue.lng))
-                                .title(venue.name)
-                                .snippet("View Venue")
-                                .infoWindowAnchor(0.5f, 0.5f)
-                                .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                        Marker marker = searchVM.map.addMarker(markerOptions);
-                        marker.setTag(venue);
-                        tempMarkerMap.put(marker, markerOptions);
-                        if (tempMarkerMap.size() >= (venueList.size()))
-                            searchVM.venuesOnMap.setValue(tempMarkerMap);
-                    }
-                });
+            final MutableLiveData liveBitmap = SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon);
+            liveBitmap.observe(this, new Observer<Bitmap>() {
+                @Override
+                public void onChanged(@Nullable Bitmap bitmap) {
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(new LatLng(venue.lat, venue.lng))
+                            .title(venue.name)
+                            .snippet("View Venue Rating: "+venue.rating)
+                            .infoWindowAnchor(0.5f, 0.5f)
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                    Marker marker = searchVM.map.addMarker(markerOptions);
+                    marker.setTag(venue);
+                    tempMarkerMap.put(marker, markerOptions);
+                    if (tempMarkerMap.size() >= (venueList.size()))
+                        searchVM.venuesOnMap.setValue(tempMarkerMap);
+
+                    liveBitmap.removeObserver(this);
+                }
+            });
         }
     }
 
