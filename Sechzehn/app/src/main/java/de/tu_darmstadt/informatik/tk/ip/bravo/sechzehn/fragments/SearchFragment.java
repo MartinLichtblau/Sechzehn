@@ -168,7 +168,7 @@ public class SearchFragment extends BaseFragment {
 
     private void setupSearchbarViews(){
         Log.d(TAG,"setupSearchbarViews");
-        final SearchView searchviewVenue = binding.bottomsheetSearch.searchviewVenue;
+        final SearchView searchviewVenue = binding.bottomsheetSearch.detailedQuery;
         searchviewVenue.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -467,7 +467,7 @@ public class SearchFragment extends BaseFragment {
 
     public void alterSearchQuery(View view){
         ToggleButton activeQuery = bss.activeQuery;
-        SearchView detailedQuery = bss.searchviewVenue;
+        SearchView detailedQuery = bss.detailedQuery;
         Boolean activeCalls = (view == activeQuery); //Did Active (Toggle button) or Detailed (SearchView) made the call?
         String query;
 
@@ -492,6 +492,8 @@ public class SearchFragment extends BaseFragment {
             }
         }
 
+        if(activeCalls && !activeQuery.isChecked())
+            return; //Or both activeQuery & detailed search, since the query was set empty and triggered the Searchviews onTextChangeListener
         //make the search
         VenueSearch alteredVS = searchVM.lastVS.getValue();
         alteredVS.setQuery(query);

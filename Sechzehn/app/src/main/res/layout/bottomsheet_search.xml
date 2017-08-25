@@ -35,7 +35,7 @@
                 app:expandedTitleTextAppearance="@style/my_toolbar_text">
 
                 <android.support.v7.widget.ToggleGroup
-                    android:id="@+id/search_instant"
+                    android:id="@+id/sections_togglegroup"
                     style="@style/Widget.Material.ToggleGroup"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/search_bottomsheet_collapsed"
@@ -87,7 +87,7 @@
 
 
                 <LinearLayout
-                    android:id="@+id/search_detailed"
+                    android:id="@+id/detailed_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="@dimen/dim_normal"
@@ -98,7 +98,7 @@
                     app:layout_collapseParallaxMultiplier="0.7">
 
                     <SearchView
-                        android:id="@+id/searchview_venue"
+                        android:id="@+id/detailed_query"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@color/md_grey_200"
@@ -134,7 +134,7 @@
                             android:visibility="gone"/>-->
 
                         <android.support.v7.widget.ToggleGroup
-                            android:id="@+id/prices"
+                            android:id="@+id/detailed_prices"
                             style="@style/Widget.Material.ToggleGroup"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -205,22 +205,30 @@
                 </LinearLayout>
 
                 <android.support.v7.widget.Toolbar
-                    android:id="@+id/active_search_toolbar"
+                    android:id="@+id/active_bar"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/search_bottomsheet_collapsed"
                     app:layout_collapseMode="pin"
                     android:background="@color/white"
-                    android:clickable="true">
+                    android:clickable="true"
+                    android:contentInsetLeft="0dp"
+                    android:contentInsetStart="0dp"
+                    app:contentInsetLeft="0dp"
+                    app:contentInsetStart="0dp"
+                    android:contentInsetRight="0dp"
+                    android:contentInsetEnd="0dp"
+                    app:contentInsetRight="0dp"
+                    app:contentInsetEnd="0dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="@color/colorAccent"
-                        android:text="Active: "/>
+                        android:text=" Active: "/>
 
                     <android.support.v7.widget.ToggleGroup
-                        android:id="@+id/active_search_layout"
+                        android:id="@+id/active_togglegroup"
                         style="@style/Widget.Material.ToggleGroup"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/search_bottomsheet_collapsed"
@@ -235,9 +243,9 @@
                         <android.support.v7.widget.ToggleButton
                             android:id="@+id/active_query"
                             android:layout_weight="1"
-                            android:drawableLeft="@drawable/ic_search_normal"
-                            android:paddingLeft="@dimen/dim_small"
-                            android:text=" "
+                            android:gravity="start|center_vertical"
+                            android:button="@drawable/ic_search_normal"
+                            android:paddingLeft="0dp"
                             style="@style/PinkToggle"
                             android:onClick="@{frag::alterSearchQuery}"/>
                         <android.support.v7.widget.ToggleButton
