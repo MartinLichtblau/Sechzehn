@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.MutableLiveData;
@@ -8,9 +9,12 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -20,12 +24,12 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 import com.ncapdevi.fragnav.FragNavController;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabReselectListener;
-import com.roughike.bottombar.OnTabSelectListener;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
@@ -33,8 +37,8 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.ChatNotificationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
@@ -45,6 +49,12 @@ import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
+
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
+
+import java.io.File;
 
 @RuntimePermissions
 public class BottomTabsActivity extends LifecycleActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
@@ -146,9 +156,11 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     }
 
     public void checkLoggedIn() {
-        SzUtils.initialize(getBaseContext());
+        SzUtils.initialize(this);
         if (TextUtils.isEmpty(SzUtils.getToken()) || TextUtils.isEmpty(SzUtils.getOwnername())) {
-            factoryReset();
+            Intent intent = new Intent(this, LoginActivity.class);
+            this.finish();
+            startActivity(intent);
         } else {
             checkStages.setValue(checkStages.getValue() + 1);
         }
@@ -178,7 +190,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.show();
-        ownerVM.initOwner(SzUtils.getOwnername()).observeForever(new Observer<Resource>() {
+        ownerVM.initOwner(SzUtils.getOwnername()).observe(this, new Observer<Resource>() {
             @Override
             public void onChanged(@Nullable Resource resource) {
                 if (resource.status == Resource.Status.LOADING) {
@@ -191,20 +203,38 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                         }
                     }, 3000);
                 } else if (resource.status == Resource.Status.SUCCESS) {
-                    if (ownerVM.getLatLng() == null) {
-                        progressDialog.setMessage("Waiting for your GPS-Location");
-                        new Handler().postDelayed(new Runnable() { //Test every 3 second again
-                            public void run() {
-                                BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
-                            }
-                        }, 3000);
-                    } else {
+                    //received owner/user object: check GPS
+                    if (isGPSOk()) {
                         progressDialog.dismiss();
                         checkStages.setValue(checkStages.getValue() + 1);
+                    } else {
+                        progressDialog.setMessage("Waiting for your GPS-Location");
                     }
                 }
             }
         });
+    }
+
+    private Boolean isGPSOk(){
+        Location localLoc = LocationService.getPreviousBestLocation();
+        LatLng remoteLatLng = ownerVM.getLatLng();
+/*        Toast.makeText(this, "LocalLoc: "+localLoc.getLatitude()+" "+localLoc.getLatitude()+
+                "RemoteLoc: "+remoteLoc.latitude+" "+remoteLoc.longitude, Toast.LENGTH_SHORT).show();*/
+        //Toast.makeText(this, "isGPSOk", Toast.LENGTH_SHORT).show();
+
+        if(null != localLoc && null != remoteLatLng){
+            Double distInMeter = SphericalUtil.computeDistanceBetween(new LatLng(localLoc.getLatitude(),localLoc.getLongitude()), remoteLatLng);
+            if(distInMeter < 100)
+                return true;
+        }
+        //else try again
+        new Handler().postDelayed(new Runnable() { //Test every 3 second again
+            public void run() {
+                //try every 3seconds again till isGPSOk() == true
+                BottomTabsActivity.getOwnerViewModel().initOwner(SzUtils.getOwnername());
+            }
+        }, 3000);
+        return false;
     }
 
     @NeedsPermission({
@@ -290,17 +320,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     }
 
     public void factoryReset() {
-        getSharedPreferences("Sechzehn", 0).edit().clear().apply();
-        SzUtils.initialize(this);
-        ownerVM = null;
-        Intent locationServiceIntent = new Intent(this, LocationService.class);
-        stopService(locationServiceIntent);
-        Intent chatServiceIntent = new Intent(this, ChatNotificationService.class);
-        stopService(chatServiceIntent);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        this.finish(); //Finish BottomTabs
-        return;
+        //Awesome new function > clearApplicationUserData > https://developer.android.com/reference/android/app/ActivityManager.html
+        ((ActivityManager)getSystemService(ACTIVITY_SERVICE))
+                .clearApplicationUserData();
     }
 
     private void postOwnerToasts() {
@@ -379,8 +401,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
             case INDEX_SEARCH:
                 return SearchFragment.newInstance();
             case INDEX_FRIENDS:
-                //return FriendsFragment.newInstance();
-                return VenueFragment.newInstance("4bccb6ebb6c49c7418419491");
+                return FriendsFragment.newInstance();
             case INDEX_OWNER:
                 return OwnerFragment.newInstance();         //In Background gets owners data from server
         }

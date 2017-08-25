@@ -155,6 +155,6 @@ public class Venue {
         @SerializedName("arts")ARTS,
         @SerializedName("outdoors")OUTDOORS,
         @SerializedName("sights")SIGHTS,
-        UNKNOWN
+        @SerializedName("") UNKNOWN;
     }
 }

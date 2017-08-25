@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.squareup.picasso.Picasso;
 
@@ -128,6 +129,8 @@ public class ChatNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(TextUtils.isEmpty(SzUtils.getOwnername()))
+            SzUtils.initialize(getApplicationContext());
 
         if (socket == null) {
             notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

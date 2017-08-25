@@ -12,35 +12,24 @@ import android.view.ViewGroup;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.BR;
 
 /**
- * Abstract Fragment for usage with Item
+ * Abstract Fragment for usage with DataBinding
  *
- * @param <Binding> The Item class of the implementing Fragment
+ * @param <Binding> The DataBinding class of the implementing Fragment
  * @author Alexander Geiß on 29.06.2017.
  */
 public abstract class DataBindingFragment<Binding extends ViewDataBinding> extends BaseFragment {
     /**
-     * The Item
+     * The DataBinding
      */
     protected Binding binding;
-    /**
-     * Containing activity. For {@link #getActivityEx()}.
-     */
+
     private Activity activity;
 
-    /**
-     * Initialise the Item and create the view.
-     * @param inflater  The LayoutInflater object that can be used to inflate
-     *                  any views in the fragment.
-     * @param container This is the parent view that the fragment's
-     *                  UI should be attached to.
-     * @param savedInstanceState The saved instance state, if the fragment is resumed.
-     * @return The new view.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = initDataBinding(inflater, container);
         bindSelf(binding);
-        useDataBinding(binding, savedInstanceState);
+        useDataBinding(binding,savedInstanceState);
         View view = binding.getRoot();
         initView(view);
         activity = getActivity();
@@ -50,13 +39,13 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
 
 
     /**
-     * This method initialises the Item.
+     * This method initialises the DataBinding.
      *
      * @param inflater  The LayoutInflater object that can be used to inflate
      *                  any views in the fragment.
      * @param container This is the parent view that the fragment's
      *                  UI should be attached to.
-     * @return The initialised Item.
+     * @return The initialised DataBinding.
      */
     protected abstract Binding initDataBinding(LayoutInflater inflater, @Nullable ViewGroup container);
 
@@ -67,7 +56,7 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
      */
     protected void runOnUiThread(Runnable runnable) {
         if (getActivityEx() == null) {
-            Log.d("DataBindingFragment", "runOnUiThread: getActivityEx returns null");
+            Log.d("DataBindingFragment", "runOnUiThread: getActivity returns null");
             return;
         }
         getActivityEx().runOnUiThread(runnable);
@@ -75,10 +64,10 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
 
     /**
      * This method can be overridden instead of the onCreateView method
-     * to use the Item to initialize contained views.
+     * to use the DataBinding to initialize contained views.
      *
-     * @param binding            The Item of this Fragment.
-     * @param savedInstanceState The saved instance state, if the fragment is resumed.
+     * @param binding The DataBinding of this Fragment.
+     * @param savedInstanceState
      */
     protected void useDataBinding(Binding binding, Bundle savedInstanceState) {
     }
@@ -100,11 +89,6 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
         throw new NullPointerException("Activity is null");
     }
 
-    /**
-     * Bind the self variable if present.
-     *
-     * @param binding The Item.
-     */
     private void bindSelf(Binding binding) {
         if (!binding.setVariable(BR.self, this)) {
             Log.w("DataBindingFragment", this.getClass().getName() + ": Self not bound");

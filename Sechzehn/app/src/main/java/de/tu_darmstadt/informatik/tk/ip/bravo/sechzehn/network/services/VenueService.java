@@ -12,6 +12,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Provides interaction with the Sechzehn API related to Venues.
@@ -25,7 +26,7 @@ public interface VenueService {
      * by rating descending.
      *
      * @param page     the page number. Default: 1.
-     * @param per_page the number of elements per page. Default: 10.
+     * @param perPage the number of elements per page. Default: 10.
      * @param lat      the latitude of the point to search around. Can only be used together with
      *                 lng.
      * @param lng      the longitude of the point to search around. Can only be used together with
@@ -39,8 +40,16 @@ public interface VenueService {
      * @return Call which gets a paginated venue list.
      */
     @GET("venues")
-    Call<Pagination<Venue>> getVenues(Integer page, Integer per_page, Double lat, Double lng, Double radius, Venue.Section section, String query, @IntRange(from = 1, to = 5) Integer price, String time);
-
+    Call<Pagination<Venue>> getVenues(
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPage,
+            @Query("lat") Double lat,
+            @Query("lng") Double lng,
+            @Query("radius") Double radius,
+            @Query("section") Venue.Section section,
+            @Query("query")  String query,
+            @Query("price") Integer price,
+            @Query("time") String time);
     /**
      * Gets detail info about a venue.
      *
