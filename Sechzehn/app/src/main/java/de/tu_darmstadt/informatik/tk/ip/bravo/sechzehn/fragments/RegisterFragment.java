@@ -73,6 +73,11 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
         });
     }
 
+    /**
+     * handles the registration process. Account is created and email is sent if credentials are valid.
+     *
+     * @param v
+     */
     public void register(View v) {
         if (!binding.registerPassword.getText().toString().equals(binding.registerPasswordConfirmation.getText().toString())) {
             binding.registerPasswordConfirmation.setError("Passwords do not match.");

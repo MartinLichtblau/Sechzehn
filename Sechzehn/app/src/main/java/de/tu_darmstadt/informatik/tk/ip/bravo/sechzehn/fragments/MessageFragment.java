@@ -225,7 +225,8 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     }
 
     /**
-     * Executes a Runnable after if the senderUser object is already present or retrieves the senderUser object and executes the runnable afterwards.
+     * Executes a Runnable after if the senderUser object is already present or retrieves the
+     * senderUser object and executes the runnable afterwards.
      *
      * @param runnable Runnable executed after senderUser object is present.
      */
@@ -296,6 +297,11 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         adapter.addToEnd(messages, false);
     }
 
+    /**
+     * sends read receipt for a given message
+     *
+     * @param m
+     */
     private void sendRead(Message m) {
         if (!m.isRead && m.receiver.equals(ownername)) {
             socket.sendMessageRead(m);

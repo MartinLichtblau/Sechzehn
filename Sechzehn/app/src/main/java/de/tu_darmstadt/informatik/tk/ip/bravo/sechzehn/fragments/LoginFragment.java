@@ -65,6 +65,11 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
         });
     }
 
+    /**
+     * Use this method to enter the RegisterFrament
+     *
+     * @param view
+     */
     public void toRegister(View view) {
 
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -72,12 +77,22 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
         transaction.commit();
     }
 
+    /**
+     * Use this method to enter the ResetPasswordFragment
+     *
+     * @param view
+     */
     public void toForgotpassword(View view) {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.loginContainer, ForgotPwFragment.newInstance());
         transaction.commit();
     }
 
+    /**
+     * Send the login credentials to the server and react on the response
+     *
+     * @param view
+     */
     public void login(View view) {
         LoginService.login(user).enqueue(new Callback<UserToken>() {
             @Override

@@ -79,6 +79,11 @@ public class ResetPasswordFragment extends DataBindingFragment<FragmentResetPass
         });
     }
 
+    /**
+     * sets the new password if it is entered correctly two times
+     * 
+     * @param view
+     */
     public void confirm(View view) {
         if (!binding.resetPasswordPassword.getText().toString().equals(binding.resetPasswordPasswordConfirmation.getText().toString())) {
             binding.resetPasswordPasswordConfirmation.setError("Passwords do not match.");
