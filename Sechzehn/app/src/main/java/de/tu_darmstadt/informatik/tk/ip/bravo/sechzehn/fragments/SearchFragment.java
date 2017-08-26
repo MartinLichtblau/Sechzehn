@@ -107,6 +107,9 @@ public class SearchFragment extends BaseFragment {
         return binding.getRoot();
     }
 
+    /**
+     * set up the bottom sheet that allows quick search and on pull up extensive search
+     */
     private void setupBottomSheet() {
         Log.d(TAG, "setupBottomSheet");
         bss = binding.bottomsheetSearch;
@@ -169,6 +172,9 @@ public class SearchFragment extends BaseFragment {
         });*/
     }
 
+    /**
+     * set up the search bar in the bottom sheet
+     */
     private void setupSearchbarViews() {
         Log.d(TAG, "setupSearchbarViews");
         final SearchView searchviewVenue = binding.bottomsheetSearch.detailedQuery;
@@ -260,6 +266,10 @@ public class SearchFragment extends BaseFragment {
         }*/
     }
 
+    /**
+     * sets up the configuration for the included GoogleMap
+     * @param googleMap googleMap whose settings will be changed
+     */
     public void setupMap(GoogleMap googleMap) {
         searchVM.map = googleMap;
         searchVM.map.setMyLocationEnabled(true);
@@ -279,6 +289,9 @@ public class SearchFragment extends BaseFragment {
         setupMapListeners();
     }
 
+    /**
+     * set up listeners to react on map interactions
+     */
     private void setupMapListeners() {
         searchVM.map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -351,6 +364,10 @@ public class SearchFragment extends BaseFragment {
         });
     }
 
+    /**
+     * use this to adjust the bottom map padding based on an offset
+     * @param offset Float value [0,1]
+     */
     private void setMapPaddingBotttom(Float offset) {
         //From 0.0 (min) - 1.0 (max)
         Float maxMapPaddingBottom = bsExpanded - bsCollapsed;
@@ -358,6 +375,9 @@ public class SearchFragment extends BaseFragment {
         searchVM.map.setPadding(0, 0, 0, Math.round(offset * maxMapPaddingBottom));
     }
 
+    /**
+     * use this method to trigger an initial search for venues and users
+     */
     public void initalSearch() {
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
@@ -367,6 +387,9 @@ public class SearchFragment extends BaseFragment {
         searchVM.getVenues(initialVS);
     }
 
+    /**
+     * handle the search results and display fitting status toasts
+     */
     public void observeSearchResults() {
         searchVM.userResults.observe(this, new Observer<Resource>() {
             @Override
@@ -418,15 +441,27 @@ public class SearchFragment extends BaseFragment {
         });
     }
 
+    /**
+     * this method adds a marker on the map for every user in userList
+     * @param userList A List of Users
+     */
     public void addUsers(List<User> userList) {
         createAddUserMarkers(userList);
     }
 
+    /**
+     * this method adds a marker on the map for every user in userList
+     * @param venueList A List of Venues
+     */
     public void addVenues(List<Venue> venueList) {
         createAddVenueMarkers(venueList);
         //showVenuesOnList(venueList); @TODO @Alexander
     }
 
+    /**
+     * this method adds a marker on the map for every user in userList
+     * @param userList A List of Users
+     */
     private void createAddUserMarkers(final List<User> userList) {
         final HashMap<Marker, MarkerOptions> tempMarkerMap = new HashMap<>();
         Boolean highlight = false;
@@ -457,6 +492,10 @@ public class SearchFragment extends BaseFragment {
         }
     }
 
+    /**
+     * this method adds a marker on the map for every user in userList
+     * @param venueList A List of Venues
+     */
     private void createAddVenueMarkers(final List<Venue> venueList) {
         final HashMap<Marker, MarkerOptions> tempMarkerMap = new HashMap<>();
         for (final Venue venue : venueList) {
@@ -482,6 +521,10 @@ public class SearchFragment extends BaseFragment {
         }
     }
 
+    /**
+     * update the search query if it is altered
+     * @param view
+     */
     public void alterSearchQuery(View view) {
         ToggleButton activeQuery = bss.activeQuery;
         SearchView detailedQuery = bss.detailedQuery;
@@ -517,6 +560,10 @@ public class SearchFragment extends BaseFragment {
         searchVM.getVenues(alteredVS);
     }
 
+
+    /**
+     * react on a change in the section(category) of the search
+     */
     public void alterSearchSection(View view) {
         Venue.Section section = Venue.Section.valueOf(view.getTag().toString());
 
@@ -552,6 +599,10 @@ public class SearchFragment extends BaseFragment {
         searchVM.getVenues(alteredVS);
     }
 
+    /**
+     * react on altering the searched price category
+     * @param view
+     */
     public void alterSearchPrice(View view) {
         Integer price = Integer.valueOf(view.getTag().toString());
         VenueSearch alteredVS = searchVM.lastVS.getValue();
@@ -584,6 +635,10 @@ public class SearchFragment extends BaseFragment {
         searchVM.getVenues(alteredVS);
     }
 
+    /**
+     * react on altering the open now setting
+     * @param view
+     */
     public void alterSearchOpennow(View view) {
         Boolean opennow;
         if (view instanceof CheckBox)
@@ -608,6 +663,10 @@ public class SearchFragment extends BaseFragment {
         }
     }
 
+    /**
+     * expand the bottom sheet
+     * @param view
+     */
     public void fab(View view) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         //focusSearchView();

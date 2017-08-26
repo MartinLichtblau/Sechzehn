@@ -127,6 +127,12 @@ public class UserProfileFragment extends BaseFragment {
         map = null;
     }
 
+    /**
+     * use this method to calclate the age of a user based on a timestamp
+     *
+     * @param timestamp timestamp received from the Sechzehn API
+     * @return Age of the user as String
+     */
     public String getAge(String timestamp){
         if(timestamp != null)
             return SzUtils.getAge(SzUtils.timestampToCal(timestamp));
@@ -134,6 +140,11 @@ public class UserProfileFragment extends BaseFragment {
             return  null;
     }
 
+    /**
+     * use this to infer the FriendshipDiafrag
+     *
+     * @param view
+     */
     public void friendship(View view){
         fragNavController().showDialogFragment(FriendshipDiafrag.newInstance());
     }

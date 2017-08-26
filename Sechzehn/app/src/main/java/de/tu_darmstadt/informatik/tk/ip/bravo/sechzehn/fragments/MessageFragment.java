@@ -277,7 +277,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     /**
      * Adds the new Messages to the View and remove
      *
-     * @param response
+     * @param response Response Object containing new messages in a Pagination Object
      */
     private void processNewMessages(Response<Pagination<Message>> response) {
         totalItemCountServer = response.body().total;
@@ -300,7 +300,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     /**
      * sends read receipt for a given message
      *
-     * @param m
+     * @param m the message a read receipt has to be send for
      */
     private void sendRead(Message m) {
         if (!m.isRead && m.receiver.equals(ownername)) {
@@ -308,6 +308,12 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         }
     }
 
+    /**
+     * determine the message source
+     *
+     * @param m Message
+     * @return true iff senderUser equals User
+     */
     private boolean userOrOwnerMatch(Message m) {
         if (m.sender.equals(username) && m.receiver.equals(ownername)) {
             m.senderUser = user;
