@@ -108,7 +108,9 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
 
     }
 
-
+    /**
+     * diesplays the opening hours of a venue
+     */
     private void displayHours() {
         if (venue.hours.isEmpty()) {
             binding.hours.add(UNKNOWN_HOUR);
@@ -119,6 +121,11 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
         }
     }
 
+    /**
+     * let the current user check in into a venue
+     *
+     * @param v
+     */
     public void checkIn(View v) {
         fabSheet.showSheet();
     }
@@ -153,6 +160,12 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
 
     private static DecimalFormat ratingFormatter = new DecimalFormat("#0.0");
 
+    /**
+     * format the user rating to display exactly one mantissa
+     *
+     * @param rating user rating as double value
+     * @return String containing the formatted rating
+     */
     @Nullable
     public static String formatRating(@Nullable @FloatRange(from = 0.0, to = 10.0) Double rating) {
         if (rating != null) {
@@ -161,6 +174,9 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
         return null;
     }
 
+    /**
+     * maps the number price range to euro signs
+     */
     @Nullable
     public static String formatPrice(@Nullable @IntRange(from = 1, to = 5) Integer price) {
         if (price != null) {

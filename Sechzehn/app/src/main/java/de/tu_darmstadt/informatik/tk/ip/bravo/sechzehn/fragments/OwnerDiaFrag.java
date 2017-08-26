@@ -68,7 +68,12 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    public void changeBirthday(View view){
+    /**
+     * use this method to show a calendar that allows changing the birthday
+     *
+     * @param view
+     */
+    public void changeBirthday(View view) {
         final Calendar newCal = Calendar.getInstance();
         String dob = owner.getDateOfBirth();
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -80,29 +85,39 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
                 newCal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 owner.setDateOfBirth(SzUtils.calToTimestamp(newCal));
                 binding.setUser(owner);
-                Log.d("onDateSet", year+"-"+monthOfYear+"-"+dayOfMonth);
+                Log.d("onDateSet", year + "-" + monthOfYear + "-" + dayOfMonth);
             }
         };
 
-        if(dob == null){
+        if (dob == null) {
             //If no date was ever set
-            new DatePickerDialog(getContext(),date,1990,11,30).show();
-        }else{
+            new DatePickerDialog(getContext(), date, 1990, 11, 30).show();
+        } else {
             //If some date is already set
             Calendar oldCal = SzUtils.timestampToCal(owner.getDateOfBirth());
-            new DatePickerDialog(getContext(),date,
+            new DatePickerDialog(getContext(), date,
                     oldCal.get(Calendar.YEAR),
                     oldCal.get(Calendar.MONTH),
                     oldCal.get(Calendar.DAY_OF_MONTH)).show();
         }
     }
 
-    public void onCancel(View view){
+    /**
+     * dismiss changes if users cancels interaction
+     *
+     * @param view
+     */
+    public void onCancel(View view) {
         dismiss();
     }
 
-    public void onSubmit(View view){
-        if(type == "editProfile"){
+    /**
+     * set new values if user submits them
+     *
+     * @param view
+     */
+    public void onSubmit(View view) {
+        if (type == "editProfile") {
             ownerVM.editProfile(owner).observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(@Nullable Boolean close) {
@@ -110,11 +125,11 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
                 }
             });
 
-        }else if(type == "logout"){
+        } else if (type == "logout") {
             Toast.makeText(getActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
-            ((BottomTabsActivity)getActivity()).factoryReset();
+            ((BottomTabsActivity) getActivity()).factoryReset();
 
-        }else if(type == "changePassword") {
+        } else if (type == "changePassword") {
             if (TextUtils.equals(binding.newPasswordEdit.getText(), binding.newPasswordConfirmEdit.getText())) {
                 binding.newPasswordEdit.setError(null);
                 binding.newPasswordConfirmEdit.setError(null);
@@ -124,12 +139,12 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
                         dismiss();
                     }
                 });
-            }else{
+            } else {
                 binding.newPasswordEdit.setError("Passwords do not match.");
                 binding.newPasswordConfirmEdit.setError("Passwords do not match.");
                 return;
             }
-        }else if(type == "requestResetPassword") {
+        } else if (type == "requestResetPassword") {
             ownerVM.resetPassword().observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(@Nullable Boolean close) {
@@ -137,7 +152,7 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
                 }
             });
 
-        }else if(type == "changeEmail") {
+        } else if (type == "changeEmail") {
             ownerVM.changeEmail(currentPassword, newEmail).observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(@Nullable Boolean close) {
@@ -145,18 +160,21 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
                 }
             });
 
-        }else if(type == "deleteAccount"){
+        } else if (type == "deleteAccount") {
             ownerVM.deleteAccount(currentPassword).observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
-                    ((BottomTabsActivity)getActivity()).factoryReset();
+                    ((BottomTabsActivity) getActivity()).factoryReset();
                 }
             });
         }
     }
 
-    private void customizeFragment(){
-        if(type == "editProfile"){
+    /**
+     * dynamically adjust fragment based on user interaction
+     */
+    private void customizeFragment() {
+        if (type == "editProfile") {
             getDialog().setTitle("Edit Profile");
             owner = ownerVM.getOwner().getValue();
             binding.setUser(owner);
@@ -164,23 +182,23 @@ public class OwnerDiaFrag extends DialogFragment implements LifecycleRegistryOwn
             binding.ownerBirthday.setVisibility(View.VISIBLE);
             binding.address.setVisibility(View.VISIBLE);
             binding.incognitoSwitch.setVisibility(View.VISIBLE);
-        }else if(type == "logout"){
+        } else if (type == "logout") {
             getDialog().setTitle("Logout");
-        }else if(type == "changePassword") {
+        } else if (type == "changePassword") {
             getDialog().setTitle("Change Password");
             binding.currentPassword.setVisibility(View.VISIBLE);
             binding.newPassword.setVisibility(View.VISIBLE);
             binding.newPasswordConfirm.setVisibility(View.VISIBLE);
-        }else if(type == "requestResetPassword") {
+        } else if (type == "requestResetPassword") {
             getDialog().setTitle("Reset Password");
-        }else if(type == "changeEmail") {
+        } else if (type == "changeEmail") {
             getDialog().setTitle("Change Email");
             binding.newEmail.setVisibility(View.VISIBLE);
             binding.currentPassword.setVisibility(View.VISIBLE);
-        }else if(type == "deleteAccount"){
+        } else if (type == "deleteAccount") {
             getDialog().setTitle("Delete Account");
             binding.currentPassword.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             throw new IllegalArgumentException("Invalid Owner DialogFragment Type");
         }
     }

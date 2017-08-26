@@ -175,6 +175,8 @@ public class SearchViewModel extends ViewModel{
     }
 
     private void showMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
+        if(markersOnMap == null || markersOnMap.isEmpty())
+            return;
         for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
             entry.getKey().setVisible(true); //Set Marker visibility
             entry.getValue().visible(true); //persist visibility also in markeroptions
@@ -182,6 +184,8 @@ public class SearchViewModel extends ViewModel{
     }
 
     private void hideMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
+        if(markersOnMap == null || markersOnMap.isEmpty())
+            return;
         for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
             entry.getKey().setVisible(false);
             entry.getValue().visible(false);
@@ -189,6 +193,8 @@ public class SearchViewModel extends ViewModel{
     }
 
     public void removeMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
+        if(markersOnMap == null || markersOnMap.isEmpty())
+            return;
         for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
             entry.getKey().remove();
         }
