@@ -108,6 +108,7 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
 
     }
 
+
     private void displayHours() {
         if (venue.hours.isEmpty()) {
             binding.hours.add(UNKNOWN_HOUR);
@@ -136,13 +137,17 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                                  @Override
                                  public void onResponse(Call<CheckIn> call, Response<CheckIn> response) {
                                      binding.checkin.setEnabled(false);
+                                     final Venue updatedVenue = response.body().venue;
+                                     venue.checkinsCount = updatedVenue.checkinsCount;
+                                     venue.rating = updatedVenue.rating;
+                                     venue.ratingCount = updatedVenue.ratingCount;
                                  }
                              }
                     );
         }
     }
 
-    private static DecimalFormat ratingFormatter = new DecimalFormat("##.0");
+    private static DecimalFormat ratingFormatter = new DecimalFormat("#0.0");
 
     @Nullable
     public static String formatRating(@Nullable @FloatRange(from = 0.0, to = 10.0) Double rating) {
