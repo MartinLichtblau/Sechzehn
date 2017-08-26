@@ -91,7 +91,7 @@
                 android:layout_marginBottom="@dimen/search_bottomsheet_collapsed"
                 android:layout_marginRight="10dp"
                 android:text=" Here"
-                android:visibility="invisible"
+                android:visibility="gone"
                 style="@style/Base.Widget.AppCompat.Button.Small"
                 android:backgroundTint="@color/white"
                 android:onClick="@{searchVM::searchHere}"/>

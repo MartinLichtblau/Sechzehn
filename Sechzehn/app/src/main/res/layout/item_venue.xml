@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="venue"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue" />
+
+        <variable
+            name="self"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.VenueItem" />
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="?selectableItemBackground"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp">
+
+        <ImageView
+            android:id="@+id/item_venue_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            app:profilePictureUrl="@{venue.category.icon}"
+            app:srcCompat="@drawable/ic_owner" />
+
+        <!--app:profilePictureUrl="@{venue.category.icon}"-->
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="56dp"
+            android:layout_marginRight="56dp"
+            android:clickable="false"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_user_realName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_vertical|start"
+                android:lines="1"
+                android:maxLines="1"
+                android:text="Test "
+                android:textSize="16sp"
+                tools:text="Real Name" />
+
+         <!--   <TextView
+                android:id="@+id/item_user_userName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:fontFamily="sans-serif"
+                android:gravity="center_vertical|start"
+                android:lines="1"
+                android:maxLines="1"
+                android:text="@{user.optionalUserName}"
+                android:textSize="14sp"
+                tools:text="Username" />-->
+        </LinearLayout>
+
+
+<!--        <ImageButton
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/item_user_message"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:clickable="true"
+            android:onClick="@{self::onMessageClick}"
+            android:contentDescription="Messages"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:src="@drawable/ic_message_black_24dp" />-->
+
+
+    </RelativeLayout>
+</layout>

@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ToggleButton;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,7 +34,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +50,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.VenueSearch;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.BottomsheetSearchBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentSearchBinding;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.VenueItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
@@ -65,7 +69,7 @@ public class SearchFragment extends BaseFragment {
     Float bsCollapsed;
     Float bsExpanded;
     BottomsheetSearchBinding bss;
-    BottomSheetBehavior bottomSheetBehavior;
+    BottomSheetBehavior bssBehavior;
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -103,6 +107,7 @@ public class SearchFragment extends BaseFragment {
         //Initialize first venueSearch object for proper functioning of UI(altough the initialSearch() will come shortly after)
         setupBottomSheet();
         //setupSearchbarViews();  now in on Resume because of Bug
+        setupResultList();
 
         return binding.getRoot();
     }
@@ -110,11 +115,11 @@ public class SearchFragment extends BaseFragment {
     private void setupBottomSheet() {
         Log.d(TAG, "setupBottomSheet");
         bss = binding.bottomsheetSearch;
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomsheetSearch.getRoot());
+        bssBehavior = BottomSheetBehavior.from(binding.bottomsheetSearch.getRoot());
         bsCollapsed = getActivity().getResources().getDimension(R.dimen.search_bottomsheet_collapsed);
         bsExpanded = getActivity().getResources().getDimension(R.dimen.search_bottomsheet_expanded);
 
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        bssBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             CameraUpdate cu;
 
             @Override
@@ -141,7 +146,7 @@ public class SearchFragment extends BaseFragment {
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                switch (bottomSheetBehavior.getState()) {
+                switch (bssBehavior.getState()) {
                     case BottomSheetBehavior.STATE_DRAGGING:
                         setMapPaddingBotttom(slideOffset);
                         searchVM.map.moveCamera(CameraUpdateFactory.newLatLng(userSetMapCenter));
@@ -316,9 +321,9 @@ public class SearchFragment extends BaseFragment {
                 //Ref.: https://developers.google.com/maps/documentation/android-api/events
                 if (REASON_GESTURE == i) {
                     userMovedCamera = true;
-                    if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
+                    if (bssBehavior.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
                         //User should not scroll when the BottomSheet is expanded and map is super tiny small
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        bssBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 }
             }
@@ -329,15 +334,19 @@ public class SearchFragment extends BaseFragment {
                 if (userMovedCamera) {
                     userSetMapCenter = searchVM.map.getCameraPosition().target;
                     userSetMapZoom = searchVM.map.getCameraPosition().zoom;
+
+                    //show searchAgainHere Button if it's not already visible and not to start multiple Handlers
+                    //INVISIBLE: (Handler already on it to show it) or VISIBLE
+                    if(binding.searchAgainHere.getVisibility() == View.GONE){
+                        binding.searchAgainHere.setVisibility(View.INVISIBLE);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                binding.searchAgainHere.setVisibility(View.VISIBLE);
+                            }
+                        }, 750);
+                    }
                     userMovedCamera = false;
-                    new Handler().postDelayed(new Runnable() {
-                        //Maps Bug UI Hang while replacing fragment
-                        // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
-                        @Override
-                        public void run() {
-                            binding.searchAgainHere.setVisibility(View.VISIBLE);
-                        }
-                    }, 750);
                 }
             }
         });
@@ -392,7 +401,7 @@ public class SearchFragment extends BaseFragment {
                 switch (resource.status) {
                     case LOADING:
                         //Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
-                        binding.searchAgainHere.setVisibility(View.INVISIBLE);
+                        binding.searchAgainHere.setVisibility(View.GONE);
                         //@TODO show loading dialog progress bar
                         break;
                     case ERROR:
@@ -424,7 +433,7 @@ public class SearchFragment extends BaseFragment {
 
     public void addVenues(List<Venue> venueList) {
         createAddVenueMarkers(venueList);
-        //showVenuesOnList(venueList); @TODO @Alexander
+        addVenuesOnList(venueList);
     }
 
     private void createAddUserMarkers(final List<User> userList) {
@@ -609,7 +618,7 @@ public class SearchFragment extends BaseFragment {
     }
 
     public void fab(View view) {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        bssBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         //focusSearchView();
     }
 
@@ -670,6 +679,35 @@ public class SearchFragment extends BaseFragment {
             mapView.onSaveInstanceState(outState);
         }
     }
+
+
+    //>>>>>>>>>>>> Venues endless List view with FastAdapter
+    private FastItemAdapter fastAdapter = new FastItemAdapter<>();
+    Pagination<VenueItem> venueItemPagination = new Pagination<>();
+
+    private void setupResultList(){
+        Log.d(TAG, "setupResultList");
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        bss.venueList.setLayoutManager(llm);
+        bss.venueList.setAdapter(fastAdapter);
+    }
+
+    private void addVenuesOnList(List<Venue> venueList){
+        Log.d(TAG, "addVenuesOnList");
+        //Create out of the venueList the venueItemPagination for the fastAdapter ResultList
+        List<VenueItem> venueItemList = new ArrayList<>();
+        for(Venue venue : venueList){
+            venueItemList.add(new VenueItem(venue, SearchFragment.this.fragNavController()));
+        }
+        venueItemPagination.data.addAll(venueItemList);
+        fastAdapter.add(venueItemList);
+
+        //Use each venues marker pin when they are ready
+
+    }
+
+
 }
 
 
