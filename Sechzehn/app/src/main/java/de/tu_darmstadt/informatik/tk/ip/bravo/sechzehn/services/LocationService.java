@@ -3,6 +3,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.TextUtils;
@@ -106,6 +107,10 @@ public class LocationService extends Service implements
         locationRequest.setInterval(TWO_MINUTES); // milliseconds
         locationRequest.setFastestInterval(15 * 1000); // you will get updates faster if e.g. another app requests location before your interval
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        if ("ranchu".equals(Build.HARDWARE)||"goldfish".equals(Build.HARDWARE)) {
+            //If running in emulator use HighAccuracy to get any Data
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        }
         //Since our app assures that at all times all permissions are granted it's ok like this
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 googleApiClient, locationRequest, this);

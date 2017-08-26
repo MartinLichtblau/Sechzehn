@@ -132,15 +132,19 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
         if (fromUser) {
             fabSheet.hideSheet();
-            VenueService.checkIn(venueId, new CheckIn((int) rating))
+            int ourRating = ((int) rating) - 1;
+            VenueService.checkIn(venueId, new CheckIn(ourRating))
                     .enqueue(new DefaultCallback<CheckIn>(getActivityEx()) {
                                  @Override
                                  public void onResponse(Call<CheckIn> call, Response<CheckIn> response) {
-                                     binding.checkin.setEnabled(false);
-                                     final Venue updatedVenue = response.body().venue;
-                                     venue.checkinsCount = updatedVenue.checkinsCount;
-                                     venue.rating = updatedVenue.rating;
-                                     venue.ratingCount = updatedVenue.ratingCount;
+                                     if (response.isSuccessful()) {
+                                         binding.checkin.setEnabled(false);
+                                         final Venue updatedVenue = response.body().venue;
+                                         venue.checkinsCount += updatedVenue.ratingCount - venue.ratingCount;
+                                         venue.rating = updatedVenue.rating;
+                                         venue.ratingCount = updatedVenue.ratingCount;
+                                     }
+
                                  }
                              }
                     );

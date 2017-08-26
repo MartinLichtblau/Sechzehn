@@ -73,6 +73,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -107,12 +110,15 @@
                     android:id="@+id/infos"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="16dp"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
                         <TextView
@@ -128,7 +134,6 @@
                             android:id="@+id/textView8"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
                             android:text="@{venue.category.name}"
                             android:textAppearance="@android:style/TextAppearance.Material.Title"
                             tools:text="{category}"/>
@@ -139,10 +144,12 @@
                         android:id="@+id/textView3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
                         android:text="@{venue.description}"
                         android:textAppearance="@android:style/TextAppearance.Material.Medium"
                         android:visibility="@{VenueFragment.objectToVisibility(venue.description)}"
-                        tools:text="{description}"/>
+                        tools:text="{description}"
+                        />
 
 
                 </LinearLayout>
