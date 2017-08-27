@@ -1,6 +1,7 @@
 'use strict'
 
 const Comment = use('App/Model/Comment')
+const Database = use('Database')
 const Photo = use('App/Model/Photo')
 const User = use('App/Model/User')
 const Validator = use('Validator')
@@ -24,6 +25,8 @@ class CommentController {
     const comments = yield Comment.query()
       .with('venue', 'photo')
       .scope('venue', builder => {
+        builder.withCount('checkins')
+        builder.columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       })
       .leftOuterJoin(Comment.ratingQuery, 'rating_query.comment_id', 'comments.id')

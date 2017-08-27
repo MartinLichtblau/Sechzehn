@@ -150,6 +150,7 @@ class VenueController {
   * show (request, response) {
     const venue = yield Venue
       .query()
+      .columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
       .where('venues.id', request.param('id'))
       .withCount('checkins')
       .leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')

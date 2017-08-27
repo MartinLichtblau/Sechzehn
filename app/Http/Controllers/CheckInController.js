@@ -1,9 +1,10 @@
 'use strict'
 
 const CheckIn = use('App/Model/CheckIn')
+const Database = use('Database')
+const User = use('App/Model/User')
 const Validator = use('Validator')
 const Venue = use('App/Model/Venue')
-const User = use('App/Model/User')
 
 class CheckInController {
   * indexForUser (request, response) {
@@ -23,6 +24,8 @@ class CheckInController {
     const checkIns = yield CheckIn.query()
       .with('venue')
       .scope('venue', builder => {
+        builder.withCount('checkins')
+        builder.columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       })
       .where('username', user.username)
@@ -78,6 +81,7 @@ class CheckInController {
     yield checkIn
       .related('venue')
       .scope('venue', builder => {
+        builder.columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
         builder.withCount('checkins')
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       }).load()
@@ -111,6 +115,8 @@ class CheckInController {
     yield checkIn
       .related('venue')
       .scope('venue', builder => {
+        builder.withCount('checkins')
+        builder.columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       }).load()
 

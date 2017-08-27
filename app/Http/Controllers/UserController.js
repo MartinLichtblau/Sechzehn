@@ -155,6 +155,8 @@ class UserController {
           builder.limit(10)
         })
         .scope('checkins.venue', builder => {
+          builder.withCount('checkins')
+          builder.columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
           builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
         })
         .load()

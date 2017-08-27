@@ -56,6 +56,7 @@ class Venue extends Lucid {
       'rating_count',
       'top_visitors',
       'checkins_count'
+      // 'checkins_rating'
     ]
   }
 

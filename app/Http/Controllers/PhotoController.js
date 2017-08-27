@@ -1,6 +1,7 @@
 'use strict'
 
 const Comment = use('App/Model/Comment')
+const Database = use('Database')
 const Photo = use('App/Model/Photo')
 const Storage = use('Storage')
 const User = use('App/Model/User')
@@ -24,6 +25,8 @@ class PhotoController {
     const photos = yield Photo.query()
       .with('venue')
       .scope('venue', builder => {
+        builder.withCount('checkins')
+        builder.columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       })
       .where('username', user.username)
@@ -85,6 +88,8 @@ class PhotoController {
     yield photo
       .related('venue')
       .scope('venue', builder => {
+        builder.withCount('checkins')
+        builder.columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       })
       .load()
@@ -98,6 +103,8 @@ class PhotoController {
     yield photo
       .related('user', 'venue')
       .scope('venue', builder => {
+        builder.withCount('checkins')
+        builder.columns(Database.raw('venues.*'), 'checkins_rating', 'checkins_rating_count')
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       })
       .load()
