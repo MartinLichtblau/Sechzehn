@@ -3,8 +3,8 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
@@ -105,18 +105,15 @@ public class LocationService extends Service implements
         Log.d(TAG, "onConnected");
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(TWO_MINUTES); // milliseconds
-        locationRequest.setFastestInterval(15 * 1000); // you will get updates faster if e.g. another app requests location before your interval
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if ("ranchu".equals(Build.HARDWARE)||"goldfish".equals(Build.HARDWARE)) {
-            //If running in emulator use HighAccuracy to get any Data
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        }
+        locationRequest.setFastestInterval(30 * 1000); // you will get updates faster if e.g. another app requests location before your interval
+        //@TODO Normally we would use "PRIORITY_BALANCED_POWER_ACCURACY", but Locations on Android Emulator won't work with that
+        //Ref.: > https://stackoverflow.com/questions/41559767/android-app-cant-access-location-on-emulator-using-fusedlocationapi
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         //Since our app assures that at all times all permissions are granted it's ok like this
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 googleApiClient, locationRequest, this);
         //Fixes Bug: App does not start if location is not changed.
         // This is also needed to start the app in the emulator.
-        previousBestLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
     }
 
     @Override
@@ -198,9 +195,8 @@ public class LocationService extends Service implements
         }
     }
 
-    protected void updateLocation(Location location) {
+    protected void updateLocation(final Location location) {
         Log.d(TAG, "updateLocation() | ownername: " + ownername + " position: " + location.getLatitude() + ", " + location.getLongitude() + " accuracy: " + location.getAccuracy());
-        previousBestLocation = location;
         RequestBody body = new GenericBody()
                 .put("lat", String.valueOf(location.getLatitude()))
                 .put("lng", String.valueOf(location.getLongitude())).generate();
@@ -208,20 +204,31 @@ public class LocationService extends Service implements
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+                    previousBestLocation = location;
                     //Toast.makeText(LocationService.this, "Location successfully updated", Toast.LENGTH_SHORT).show();
                 } else {
                     //Toast.makeText(LocationService.this, NetworkUtils.parseError(response).getMessage(), Toast.LENGTH_SHORT).show();
+                    retryUpdateLocation(location);
                 }
             }
-
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 //Toast.makeText(LocationService.this, "Error: "+t.getCause(), Toast.LENGTH_SHORT).show();
+                retryUpdateLocation(location);
             }
         });
     }
 
     public static Location getPreviousBestLocation() {
         return previousBestLocation;
+    }
+
+    protected void retryUpdateLocation(final Location location){
+        Log.d(TAG, "retryUpdateLocation");
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                updateLocation(location);
+            }
+        }, 15000); //15sec later
     }
 }
