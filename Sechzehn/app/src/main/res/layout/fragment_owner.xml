@@ -40,6 +40,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="-120dp"
                 android:elevation="@dimen/dim_normal"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:onClick="@{frag::changePicture}"
                 tools:src="@drawable/ic_owner"/>
             <!--android:tint="#FFFFFF"-->
