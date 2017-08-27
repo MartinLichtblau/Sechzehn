@@ -78,6 +78,7 @@ class CheckInController {
     yield checkIn
       .related('venue')
       .scope('venue', builder => {
+        builder.withCount('checkins')
         builder.leftOuterJoin(Venue.ratingQuery, 'rating_query.venue_id', 'venues.id')
       }).load()
 

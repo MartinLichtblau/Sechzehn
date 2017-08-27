@@ -199,8 +199,6 @@ class VenueController {
       }
     })
 
-    venue.checkins_count = Number(venue.checkins_count)
-
     response.ok(venue)
   }
 

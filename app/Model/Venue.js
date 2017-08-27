@@ -145,6 +145,15 @@ class Venue extends Lucid {
   static get ratingQuery () {
     return Database.select('venue_id', Database.raw('avg(check_ins.rating) * 5 as checkins_rating'), Database.raw('count(check_ins.rating) as checkins_rating_count')).from('check_ins').groupBy('venue_id').as('rating_query')
   }
+
+  /**
+   * Cast the checkins_count into a Number.
+   * @param count
+   * @returns {number}
+   */
+  getCheckinsCount (count) {
+    return count ? Number(count) : count
+  }
 }
 
 module.exports = Venue
