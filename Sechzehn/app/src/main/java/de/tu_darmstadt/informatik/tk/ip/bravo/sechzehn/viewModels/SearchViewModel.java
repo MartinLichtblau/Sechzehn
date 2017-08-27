@@ -145,6 +145,8 @@ public class SearchViewModel extends ViewModel{
     }
 
     public HashMap<Marker,MarkerOptions> reAddMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
+        if(markerMap == null || markerMap.isEmpty())
+            return null;
         HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
         for (Map.Entry<Marker, MarkerOptions> entry : markerMap.entrySet()) {
             Marker marker = map.addMarker(entry.getValue());
@@ -201,13 +203,11 @@ public class SearchViewModel extends ViewModel{
     }
 
     public void removeAllUsers(){
-        if(null != usersOnMap.getValue())
-            removeMarkersOnMap(usersOnMap.getValue());
+        removeMarkersOnMap(usersOnMap.getValue());
     }
 
     public void removeAllVenues(){
-        if(null != venuesOnMap.getValue())
-            removeMarkersOnMap(venuesOnMap.getValue());
+        removeMarkersOnMap(venuesOnMap.getValue());
     }
 
     public Double getVisibleRadius(){
