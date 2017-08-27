@@ -3,7 +3,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items;
 import android.view.View;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NestedListView;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.ItemCommentBinding;

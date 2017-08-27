@@ -1,4 +1,4 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views;
 
 import android.content.Context;
 import android.databinding.ViewDataBinding;
@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.BR;
 
 /**
  * @author Alexander Geiß on 22.08.2017.

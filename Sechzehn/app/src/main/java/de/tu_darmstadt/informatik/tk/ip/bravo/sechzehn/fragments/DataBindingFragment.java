@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.BR;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
 
 /**
  * Abstract Fragment for usage with DataBinding
@@ -23,13 +24,15 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
      */
     protected Binding binding;
 
+
+
     private Activity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = initDataBinding(inflater, container);
         bindSelf(binding);
-        useDataBinding(binding,savedInstanceState);
+        useDataBinding(binding, savedInstanceState);
         View view = binding.getRoot();
         initView(view);
         activity = getActivity();
@@ -66,7 +69,7 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
      * This method can be overridden instead of the onCreateView method
      * to use the DataBinding to initialize contained views.
      *
-     * @param binding The DataBinding of this Fragment.
+     * @param binding            The DataBinding of this Fragment.
      * @param savedInstanceState
      */
     protected void useDataBinding(Binding binding, Bundle savedInstanceState) {

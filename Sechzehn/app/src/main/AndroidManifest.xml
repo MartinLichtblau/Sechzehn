@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn">
 
 
     <!--Permissions that are automatically granted >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>-->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
 
     <!--Permissions that senderUser manually has to grant>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>-->
     <!--What's the difference? >>> https://inthecheesefactory.com/blog/things-you-need-to-know-about-android-m-permission-developer-edition/en-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /><!-- Reason: For foto picker-->
-    <uses-permission android:name="android.permission.CAMERA" /><!-- Reason: For foto picker to make fotos-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /><!-- Reason: To share location -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- Reason: ? -->
-    <uses-permission android:name="android.permission.READ_PROFILE" /> <!-- Reason: ? -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" /> <!-- Reason: ? -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/><!-- Reason: For foto picker-->
+    <uses-permission android:name="android.permission.CAMERA"/><!-- Reason: For foto picker to make fotos-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/><!-- Reason: To share location -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/> <!-- Reason: ? -->
+    <uses-permission android:name="android.permission.READ_PROFILE"/> <!-- Reason: ? -->
+    <uses-permission android:name="android.permission.READ_CONTACTS"/> <!-- Reason: ? -->
 
 
     <application
         android:allowBackup="false"
-        tools:replace="android:allowBackup"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/SzMaterialTheme">
+        android:theme="@style/SzMaterialTheme"
+        tools:replace="android:allowBackup">
         <activity
             android:name=".activities.BottomTabsActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
 
             </intent-filter>
         </activity>
@@ -42,34 +42,39 @@
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
                     android:host="iptk.herokuapp.com"
-                    android:scheme="http" />
+                    android:scheme="http"/>
                 <data
                     android:host="iptk.herokuapp.com"
-                    android:scheme="https" />
+                    android:scheme="https"/>
             </intent-filter>
 
         </activity>
+        <activity
+            android:name="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.ImageGalleryActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label=""
+            />
 
-        <service android:name="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService" />
+        <service android:name="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService"/>
         <service
             android:name="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.ChatNotificationService"
-            android:exported="false" />
+            android:exported="false"/>
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
 
         <!--              The API key for Google Maps-based APIs. -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_api_key" />
+            android:value="@string/google_maps_api_key"/>
 
 
     </application>

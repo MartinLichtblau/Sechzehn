@@ -1,7 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -29,7 +28,6 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentOwnerBinding;
-
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
@@ -48,7 +46,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         return fragment;
     }
 
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = BottomTabsActivity.getOwnerViewModel();
     }
@@ -73,7 +71,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
     }
 
@@ -84,7 +82,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         updateOwner();
     }
 
-    private void updateOwner(){
+    private void updateOwner() {
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -101,7 +99,7 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                         .into(binding.ownerPicture);
 
                 LatLng pos = viewModel.getLatLng();
-                if(map != null && pos != null){
+                if (map != null && pos != null) {
                     map.addMarker(new MarkerOptions()
                             .position(pos)
                             .title(viewModel.getOwnername())
@@ -112,37 +110,37 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         });
     }
 
-    public void editProfile(View view){
+    public void editProfile(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("editProfile");
-         fragNavController().showDialogFragment(ownerDiaFrag);
+        fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
-    public void logout(View view){
+    public void logout(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("logout");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
-    public void resetPassword(View view){
+    public void resetPassword(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("requestResetPassword");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
-    public void changePassword(View view){
+    public void changePassword(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changePassword");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
-    public void changeEmail(View view){
+    public void changeEmail(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changeEmail");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
-    public void deleteAccount(View view){
+    public void deleteAccount(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("deleteAccount");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
-    public void changePicture(View view){
+    public void changePicture(View view) {
         Matisse.from(OwnerFragment.this)
                 .choose(MimeType.allOf())
                 .maxSelectable(1)
@@ -152,12 +150,13 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
                 .forResult(1);
         //Result receive in @onActivityResult
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
             Uri uri = Matisse.obtainResult(data).get(0);
-            SzUtils.centerCropImage(getActivity(),uri).observe(this, new Observer<Bitmap>() {
+            SzUtils.centerCropImage(getActivity(), uri).observe(this, new Observer<Bitmap>() {
                 @Override
                 public void onChanged(@Nullable Bitmap bitmap) {
                     viewModel.changePicture(bitmap);
@@ -166,11 +165,11 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         }
     }
 
-    public String getAge(String timestamp){
-        if(timestamp != null)
+    public String getAge(String timestamp) {
+        if (timestamp != null)
             return SzUtils.getAge(SzUtils.timestampToCal(timestamp));
         else
-            return  null;
+            return null;
     }
 
 }

@@ -1,4 +1,4 @@
-package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn;
+package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views;
 
 /**
  * @author Alexander Geiß on 21.08.2017.

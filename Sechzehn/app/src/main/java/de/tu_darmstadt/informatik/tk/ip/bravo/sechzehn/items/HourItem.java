@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import java.util.Calendar;
 
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NestedListView;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Hour;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;

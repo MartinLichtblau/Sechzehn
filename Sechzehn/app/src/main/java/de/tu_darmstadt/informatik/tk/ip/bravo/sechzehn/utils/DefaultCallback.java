@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * This callback shows a default error message onFailure.
@@ -44,5 +43,10 @@ public abstract class DefaultCallback<T> implements Callback<T> {
     public void onFailure(Call<T> call, Throwable t) {
         Log.e("HTTP Error:", t.toString());
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        onFinally(call);
+    }
+
+    public void onFinally(Call<T> call) {
+
     }
 }

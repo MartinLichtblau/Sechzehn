@@ -144,6 +144,11 @@ public class Venue {
         return topVisitors.get(place).user.getOptionalRealName();
     }
 
+    public String getTopPhotoUrl(int place) {
+        if (photos.size() <= place) return null;
+        return photos.get(place).url;
+    }
+
     /**
      * This class represents a venue's section.
      */
@@ -155,6 +160,6 @@ public class Venue {
         @SerializedName("arts")ARTS,
         @SerializedName("outdoors")OUTDOORS,
         @SerializedName("sights")SIGHTS,
-        @SerializedName("") UNKNOWN;
+        @SerializedName("")UNKNOWN;
     }
 }

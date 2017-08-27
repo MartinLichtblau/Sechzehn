@@ -22,7 +22,7 @@
         tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment">
 
 
-        <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFAB
+        <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.AnimatedFAB
 
             android:id="@+id/checkin"
             android:layout_width="wrap_content"
@@ -49,16 +49,49 @@
                 android:layout_height="0dp"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/imageView2"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="176dp"
-                    android:adjustViewBounds="true"
-                    android:cropToPadding="false"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/profile_coverfoto_default"
-                    />
+                    android:orientation="horizontal">
 
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="176dp"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:onClick="@{()->self.showPhotos(0)}"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/profile_coverfoto_default"
+                        android:visibility="@{VenueFragment.objectToVisibility(venue.getTopPhotoUrl(0))}"
+                        app:venuePictureUrl="@{venue.getTopPhotoUrl(0)}"/>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="176dp"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:cropToPadding="false"
+                        android:onClick="@{()->self.showPhotos(1)}"
+                        android:scaleType="centerCrop"
+                        android:visibility="@{VenueFragment.objectToVisibility(venue.getTopPhotoUrl(1))}"
+                        app:venuePictureUrl="@{venue.getTopPhotoUrl(1)}"/>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="176dp"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:cropToPadding="false"
+                        android:onClick="@{()->self.showPhotos(2)}"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/profile_coverfoto_default"
+                        android:visibility="@{VenueFragment.objectToVisibility(venue.getTopPhotoUrl(2))}"
+                        app:venuePictureUrl="@{venue.getTopPhotoUrl(2)}"/>
+                </LinearLayout>
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
@@ -67,8 +100,7 @@
                     android:background="@color/primary"
                     android:elevation="3dp"
                     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                    android:title=""
-                    tools:title="venue name">
+                    >
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -116,28 +148,15 @@
                     android:layout_marginTop="16dp"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:text="@{VenueFragment.formatPrice(venue.price,venue.category.name)}"
+                        android:textAppearance="@android:style/TextAppearance.Material.Title"
+                        tools:text="$$$$$ · {category}"/>
 
-                        <TextView
-                            android:id="@+id/textView9"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{VenueFragment.formatPrice(venue.price)}"
-                            android:textAppearance="@android:style/TextAppearance.Material.Title"
-                            tools:text="$$$$$ · "/>
-
-                        <TextView
-
-                            android:id="@+id/textView8"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@{venue.category.name}"
-                            android:textAppearance="@android:style/TextAppearance.Material.Title"
-                            tools:text="{category}"/>
-                    </LinearLayout>
 
                     <TextView
 
@@ -287,6 +306,8 @@
                                 android:layout_height="80dp"
                                 android:layout_marginBottom="8dp"
                                 android:layout_marginStart="8dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:onClick="@{()->self.showTopVisitorProfile(0)}"
                                 android:visibility="@{VenueFragment.booleanToVisibility(venue.topVisitors.size()>0,true)}"
                                 app:kingPictureUrl="@{venue.getTopVisitorPictureUrl(0)}"
                                 app:layout_constraintBottom_toTopOf="@+id/topVisitor1name"
@@ -316,6 +337,8 @@
                                 android:layout_marginLeft="8dp"
                                 android:layout_marginRight="8dp"
                                 android:layout_marginStart="8dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:onClick="@{()->self.showTopVisitorProfile(1)}"
                                 android:visibility="@{VenueFragment.booleanToVisibility(venue.topVisitors.size()>1,true)}"
                                 app:layout_constraintLeft_toLeftOf="@+id/textView16"
                                 app:layout_constraintRight_toRightOf="@+id/textView16"
@@ -336,6 +359,7 @@
                                 app:layout_constraintLeft_toRightOf="@+id/topVisitor1"
                                 app:layout_constraintRight_toRightOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/topVisitor2"
+
                                 tools:text="2. Visitor"/>
 
                             <ImageView
@@ -347,6 +371,8 @@
                                 android:layout_marginRight="8dp"
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:onClick="@{()->self.showTopVisitorProfile(2)}"
                                 android:visibility="@{VenueFragment.booleanToVisibility(venue.topVisitors.size()>2,true)}"
                                 app:layout_constraintLeft_toLeftOf="@+id/textView16"
                                 app:layout_constraintRight_toRightOf="@+id/textView16"
@@ -480,7 +506,7 @@
                     >
 
 
-                    <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView
+                    <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NestedListView
 
                         android:id="@+id/hours"
                         android:layout_width="match_parent"
@@ -497,7 +523,7 @@
                             android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
 
-                    </de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView>
+                    </de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NestedListView>
 
 
                 </android.support.v7.widget.CardView>
@@ -515,11 +541,17 @@
                     android:textAppearance="@android:style/TextAppearance.Material.Title"/>
 
 
-                <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.NestedListView
+                <de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NestedListView
                     android:id="@+id/comments"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"/>
+                    android:layout_marginBottom="84dp"
+                    android:orientation="vertical">
+
+                    <include
+                        android:id="@+id/view_comment_new"
+                        layout="@layout/view_comment_new"/>
+                </de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NestedListView>
 
             </LinearLayout>
         </com.amar.library.ui.StickyScrollView>
@@ -543,8 +575,6 @@
                 android:layout_width="220dp"
                 android:layout_height="152dp"
                 android:layout_margin="16dp">
-
-                <!-- TODO: Put your sheet items here -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
