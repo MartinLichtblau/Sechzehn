@@ -236,11 +236,16 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                                          venue.checkinsCount = updatedVenue.checkinsCount;
                                          venue.rating = updatedVenue.rating;
                                          venue.ratingCount = updatedVenue.ratingCount;
+                                         binding.setVenue(venue);//To Update the view.
                                      }
                                  }
                              }
                     );
         }
+    }
+
+    public void addPhoto(View v) {
+
     }
 
     private static DecimalFormat ratingFormatter = new DecimalFormat("#0.0");

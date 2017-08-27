@@ -24,19 +24,5 @@ public class ImageGalleryActivity extends FullScreenImageGalleryActivity {
             iv.setImageDrawable(null);
         }
     }
-    /*
-    , new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            Bitmap bitmap = ((BitmapDrawable) iv.getDrawable()).getBitmap();
-                            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                                public void onGenerated(Palette palette) {
-                                    applyPalette(palette, bgLinearLayout);
-                                }
-                            });
-                        }
-                        @Override
-                        public void onError() {}
-                    }
-     */
+
 }

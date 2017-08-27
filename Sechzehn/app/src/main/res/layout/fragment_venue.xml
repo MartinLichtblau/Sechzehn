@@ -76,6 +76,7 @@
                         android:foreground="?android:attr/selectableItemBackground"
                         android:onClick="@{()->self.showPhotos(1)}"
                         android:scaleType="centerCrop"
+                        android:src="@drawable/profile_coverfoto_default"
                         android:visibility="@{VenueFragment.objectToVisibility(venue.getTopPhotoUrl(1))}"
                         app:venuePictureUrl="@{venue.getTopPhotoUrl(1)}"/>
 
@@ -112,7 +113,7 @@
 
                         <TextView
 
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@{venue.name}"

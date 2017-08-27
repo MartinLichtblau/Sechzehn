@@ -59,7 +59,6 @@
         <activity
             android:name="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.ImageGalleryActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label=""
             />
 
         <service android:name="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService"/>
