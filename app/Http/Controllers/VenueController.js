@@ -164,7 +164,7 @@ class VenueController {
       yield VenueRetriever.retrieveDetails(venue)
     }
 
-    yield venue.related('category', 'hours', 'photos', 'comments', 'comments.user')
+    yield venue.related('category', 'hours', 'photos', 'comments', 'comments.user', 'comments.photo')
       .scope('hours', (builder) => {
         builder.orderBy('hours', 'asc')
       })
