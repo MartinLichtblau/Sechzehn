@@ -2,6 +2,7 @@
 
 const Lucid = use('Lucid')
 const Database = use('Database')
+const Validator = use('Validator')
 
 class Venue extends Lucid {
   /**
@@ -32,7 +33,6 @@ class Venue extends Lucid {
       'lat',
       'lng',
       'price'
-      // 'photo'
     ]
   }
 
@@ -56,7 +56,6 @@ class Venue extends Lucid {
       'rating_count',
       'top_visitors',
       'checkins_count'
-      // 'checkins_rating'
     ]
   }
 
@@ -112,16 +111,22 @@ class Venue extends Lucid {
    * @returns {number}
    */
   getRating () {
-    let result = 5
+    let result = -1
 
     const checkinsRating = Number(this.checkins_rating)
     const foursquareRating = Number(this.foursquare_rating)
 
-    if (!isNaN(checkinsRating) && !isNaN(foursquareRating)) {
+    const checkinsRatingCount = Number(this.checkins_rating_count)
+    const foursquareRatingCount = Number(this.foursquare_rating_count)
+
+    const checkinsRatingExists = !isNaN(checkinsRating) && !isNaN(checkinsRatingCount) && checkinsRatingCount > 0
+    const foursquareRatingExists = !isNaN(foursquareRating) && !isNaN(foursquareRatingCount) && foursquareRatingCount > 0
+
+    if (checkinsRatingExists && foursquareRatingExists) {
       result = (checkinsRating + foursquareRating) / 2
-    } else if (!isNaN(checkinsRating) && isNaN(foursquareRating)) {
+    } else if (checkinsRatingExists && !foursquareRatingExists) {
       result = checkinsRating
-    } else if (isNaN(checkinsRating) && !isNaN(foursquareRating)) {
+    } else if (!checkinsRatingExists && foursquareRatingExists) {
       result = foursquareRating
     }
 
