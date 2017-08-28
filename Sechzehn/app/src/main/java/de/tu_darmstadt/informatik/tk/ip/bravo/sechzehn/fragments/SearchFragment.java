@@ -34,11 +34,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
+import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
@@ -85,7 +88,7 @@ public class SearchFragment extends BaseFragment {
         //This is why they must be put in onCreate!! because here they only get called once onCreate (and this is as long as the existing Observer functions exists)
         //@TODO check code where I fell for this tricky time dimension trap
         observeSearchResults();
-        observeVenueSearch();
+        //observeVenueSearch();
     }
 
     @Override
@@ -103,7 +106,6 @@ public class SearchFragment extends BaseFragment {
             }
         });
 
-        //binding.setActiveSearch(new VenueSearch()); //@TODO remove since not needed when using Livedata
         //Initialize first venueSearch object for proper functioning of UI(altough the initialSearch() will come shortly after)
         setupBottomSheet();
         //setupSearchbarViews();  now in on Resume because of Bug
@@ -209,62 +211,6 @@ public class SearchFragment extends BaseFragment {
 
     }
 
-    private void updateActiveSearchHint(VenueSearch vs) {
-        Log.d(TAG, "updateActiveSearchHint");
-
-/*        //Active Query
-        if(vs.getQuery() != null){
-            bss.activeQuery.setText(vs.getQuery());
-            bss.activeQuery.setChecked(true);
-            bss.activeQuery.setClickable(true);
-        }else{
-            //bss.activeQuery.setText(" ");
-            bss.activeQuery.setChecked(false);
-            //bss.activeQuery.setClickable(false);
-        }*/
-
-/*        //Active Section
-        String selectedSection = vs.getSection();
-        if(! TextUtils.isEmpty(selectedSection)){
-            View rootView = bss.getRoot();
-            ToggleButton selectedToggleButton = (ToggleButton) rootView.findViewWithTag(selectedSection);
-            Drawable relatedDrawable = selectedToggleButton.getButtonDrawable();
-            bss.activeSection.setButtonDrawable(relatedDrawable);
-            bss.activeSection.setChecked(true);
-        }else{
-            bss.activeSection.setChecked(false);
-            //Leave the old ButtonDrawable
-        }*/
-
-/*        //Active Price
-        Integer price = (vs.price == null ? 0 : vs.price);
-        ToggleButton detailedPrice = (ToggleButton) getView().findViewWithTag(price.toString());
-        ToggleButton activePrice = bss.activePrice;
-        if(vs.getPrice() != null){
-            // create a string made up of n copies of string s
-            String s = "$";
-            Integer n = price;
-            activePrice.setText(String.format("%0" + n + "d", 0).replace("0",s));
-            activePrice.setTag(vs.price);
-            activePrice.setChecked(true);
-            detailedPrice.setChecked(true);
-        }else{
-            activePrice.setText("$"); //If any price is set show cheapest but deactivated
-            activePrice.setTag("1");
-            activePrice.setChecked(false);
-            detailedPrice.setChecked(false);
-        }*/
-
-/*        //Active Opennow
-        if(null != vs.getTime()){
-            bss.activeOpennow.setChecked(true);
-            bss.detailedOpennow.setChecked(true);
-        }else{
-            bss.activeOpennow.setChecked(false);
-            bss.detailedOpennow.setChecked(false);
-        }*/
-    }
-
     public void setupMap(GoogleMap googleMap) {
         searchVM.map = googleMap;
         searchVM.map.setMyLocationEnabled(true);
@@ -272,9 +218,8 @@ public class SearchFragment extends BaseFragment {
         searchVM.map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.search_map_style));
 
         if (searchVM.lastStateSaved) {
-            Toast.makeText(getActivity(), "restore lastStateSaved", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "restore lastStateSaved", Toast.LENGTH_SHORT).show();
             searchVM.restoreLastState(); //show last state
-            //updateActiveSearchHint(searchVM.lastVS.getValue()); //should go into restoreLastMapState but viewmodel can't reference activities/fragments
         } else {
             searchVM.map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
             userSetMapCenter = searchVM.map.getCameraPosition().target;
@@ -422,7 +367,6 @@ public class SearchFragment extends BaseFragment {
         searchVM.lastVS.observe(this, new Observer<VenueSearch>() {
             @Override
             public void onChanged(@Nullable VenueSearch vs) {
-                updateActiveSearchHint(vs);
             }
         });
     }
@@ -431,10 +375,65 @@ public class SearchFragment extends BaseFragment {
         createAddUserMarkers(userList);
     }
 
-    public void addVenues(List<Venue> venueList) {
-        createAddVenueMarkers(venueList);
-        addVenuesOnList(venueList);
+    public void addVenues(final List<Venue> venueList) {
+        createVenueMarkerPins(venueList);
+        /*.observe(this, new Observer<HashMap<Venue, Bitmap>>() {
+            @Override
+            public void onChanged(@Nullable HashMap<Venue, Bitmap> venueIconMap) {
+                addVenuesOnList(venueIconMap);
+                searchVM.createAddVenueMarkers(venueIconMap);
+            }
+        });*/
     }
+
+    public void  createVenueMarkerPins(final List<Venue> venueList) {
+        final int[] i = {0};
+        for (final Venue venue : venueList) {
+            final MutableLiveData liveBitmap = SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon);
+            liveBitmap.observe(this, new Observer<Bitmap>() {
+                final int pos = i[0]++;
+                @Override
+                public void onChanged(@Nullable Bitmap bitmap) {
+
+                    fastAdapter.add((new VenueItem(venueList.get(pos), bitmap, SearchFragment.this.fragNavController())));
+                    //@Alexander Ein Item an einer bestimmten Position einsetzen?
+                    //Bind bitmap direkt on create (ist immer die selbe)
+
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(new LatLng(venue.lat, venue.lng))
+                            .title(venue.name)
+                            .snippet("View Venue Rating: " + venue.rating)
+                            .infoWindowAnchor(0.5f, 0.5f)
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                    Marker marker = searchVM.map.addMarker(markerOptions);
+                    marker.setTag(venue);
+                    searchVM.venuesOnMap.put(marker, markerOptions);
+
+                    liveBitmap.removeObserver(this);
+                }
+            });
+        }
+    }
+
+   /* public MutableLiveData<HashMap<Venue, Bitmap>> createVenueMarkerPins(final List<Venue> venueList) {
+        final MutableLiveData<HashMap<Venue, Bitmap>> liveVenueIconMap = new MutableLiveData<>();
+        final HashMap<Venue, Bitmap> tempVenueIconMap = new HashMap<>();
+
+        for (final Venue venue : venueList) {
+            final MutableLiveData liveBitmap = SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon);
+            *//*tempVenueIconMap.put(venue, null);*//*
+            liveBitmap.observe(this, new Observer<Bitmap>() {
+                @Override
+                public void onChanged(@Nullable Bitmap bitmap) {
+                    tempVenueIconMap.put(venue, bitmap);
+                    if (tempVenueIconMap.size() >= (venueList.size())) //If the last bitmap returned (at some point in time)
+                        liveVenueIconMap.setValue(tempVenueIconMap);  //setValue to call Observer
+                    liveBitmap.removeObservers(SearchFragment.this);
+                }
+            });
+        }
+        return liveVenueIconMap;
+    }*/
 
     private void createAddUserMarkers(final List<User> userList) {
         final HashMap<Marker, MarkerOptions> tempMarkerMap = new HashMap<>();
@@ -463,31 +462,6 @@ public class SearchFragment extends BaseFragment {
                     }
                 });
             }
-        }
-    }
-
-    private void createAddVenueMarkers(final List<Venue> venueList) {
-        final HashMap<Marker, MarkerOptions> tempMarkerMap = new HashMap<>();
-        for (final Venue venue : venueList) {
-            final MutableLiveData liveBitmap = SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon);
-            liveBitmap.observe(this, new Observer<Bitmap>() {
-                @Override
-                public void onChanged(@Nullable Bitmap bitmap) {
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .position(new LatLng(venue.lat, venue.lng))
-                            .title(venue.name)
-                            .snippet("View Venue Rating: " + venue.rating)
-                            .infoWindowAnchor(0.5f, 0.5f)
-                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                    Marker marker = searchVM.map.addMarker(markerOptions);
-                    marker.setTag(venue);
-                    tempMarkerMap.put(marker, markerOptions);
-                    if (tempMarkerMap.size() >= (venueList.size()))
-                        searchVM.venuesOnMap.setValue(tempMarkerMap);
-
-                    liveBitmap.removeObserver(this);
-                }
-            });
         }
     }
 
@@ -691,20 +665,25 @@ public class SearchFragment extends BaseFragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         bss.venueList.setLayoutManager(llm);
         bss.venueList.setAdapter(fastAdapter);
+
+        fastAdapter.withOnClickListener(new FastAdapter.OnClickListener() {
+            @Override
+            public boolean onClick(View v, IAdapter adapter, IItem item, int position) {
+                VenueItem venueItem = (VenueItem) item;
+                fragNavController().pushFragment(VenueFragment.newInstance(venueItem.getVenue().id));
+                return true;
+            }
+        });
     }
 
-    private void addVenuesOnList(List<Venue> venueList){
+    private void addVenuesOnList(HashMap<Venue, Bitmap> venueIconMap){
         Log.d(TAG, "addVenuesOnList");
-        //Create out of the venueList the venueItemPagination for the fastAdapter ResultList
-        List<VenueItem> venueItemList = new ArrayList<>();
-        for(Venue venue : venueList){
-            venueItemList.add(new VenueItem(venue, SearchFragment.this.fragNavController()));
+        //Create out of the venueIconMap the list entries for the fastAdapter ResultList
+        for(Map.Entry<Venue, Bitmap> e : venueIconMap.entrySet()){
+            fastAdapter.add(new VenueItem(e.getKey(), e.getValue(), SearchFragment.this.fragNavController()));
         }
-        venueItemPagination.data.addAll(venueItemList);
-        fastAdapter.add(venueItemList);
-
+        /*venueItemPagination.data.addAll(venueItemList);*/
         //Use each venues marker pin when they are ready
-
     }
 
 

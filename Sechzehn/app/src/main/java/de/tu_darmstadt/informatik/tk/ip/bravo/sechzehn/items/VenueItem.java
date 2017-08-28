@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -37,14 +38,17 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class VenueItem extends DataBindingItem<Venue, ItemVenueBinding, VenueItem, VenueItem.ViewHolder> {
     private AnimatedFragNavController fragNavController;
+    public Bitmap pinIcon;
 
-    public static VenueItem create(Venue venue, AnimatedFragNavController fragNavController) {
-        return new VenueItem(venue,fragNavController);
+    public static VenueItem create(Venue venue, Bitmap pinIcon, AnimatedFragNavController fragNavController) {
+        return new VenueItem(venue, pinIcon, fragNavController);
     }
 
-    public VenueItem(Venue venue, AnimatedFragNavController fragNavController) {
-        //super(venue);
+    public VenueItem(Venue venue, Bitmap pinIcon, AnimatedFragNavController fragNavController) {
+        super(venue);
         this.fragNavController = fragNavController;
+        this.pinIcon = pinIcon;
+
     }
 
     public Venue getVenue() {
@@ -74,8 +78,6 @@ public class VenueItem extends DataBindingItem<Venue, ItemVenueBinding, VenueIte
 
     protected class ViewHolder extends DataBindingItem<Venue, ItemVenueBinding, VenueItem, VenueItem.ViewHolder>.ViewHolder {
 
-        /*protected ImageView message;*/
-
         /**
          * Creates a new ViewHolder with
          *
@@ -83,12 +85,13 @@ public class VenueItem extends DataBindingItem<Venue, ItemVenueBinding, VenueIte
          */
         public ViewHolder(ItemVenueBinding binding) {
             super(binding);
-            /*this.message = binding.itemUserMessage;*/
+            /*binding.itemVenueIcon.setImageBitmap(pinIcon);*/
         }
 
         @Override
         protected void bindItemImplementation(ItemVenueBinding binding, Venue venue) {
             binding.setVenue(venue);
+            //binding.itemVenueIcon.setImageBitmap(pinIcon);
         }
     }
 }

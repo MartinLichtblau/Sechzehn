@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -12,9 +15,7 @@
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.VenueItem" />
     </data>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
                     android:background="?selectableItemBackground"
@@ -29,13 +30,11 @@
             android:layout_height="40dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            app:profilePictureUrl="@{venue.category.icon}"
-            app:srcCompat="@drawable/ic_owner" />
+            tools:src="@drawable/ic_venue_icon"/>
 
         <!--app:profilePictureUrl="@{venue.category.icon}"-->
 
         <LinearLayout
-
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="56dp"
@@ -45,7 +44,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/item_user_realName"
+                android:id="@+id/item_venue_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
@@ -53,23 +52,54 @@
                 android:gravity="center_vertical|start"
                 android:lines="1"
                 android:maxLines="1"
-                android:text="Test "
+                android:text="@{venue.name}"
                 android:textSize="16sp"
-                tools:text="Real Name" />
+                tools:text="Venue Name" />
 
-         <!--   <TextView
-                android:id="@+id/item_user_userName"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginBottom="2dp"
-                android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif"
-                android:gravity="center_vertical|start"
-                android:lines="1"
-                android:maxLines="1"
-                android:text="@{user.optionalUserName}"
-                android:textSize="14sp"
-                tools:text="Username" />-->
+                android:layout_marginTop="2dp">
+
+                <TextView
+                    android:id="@+id/item_venue_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorAccent"
+                    android:fontFamily="sans-serif"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:text='@{venue.rating > 0.0 ? String.valueOf(venue.rating) : "-.-" }'
+                    android:textSize="14sp"
+                    tools:text="7.5" />
+
+                <!--Change color Ref. > https://stackoverflow.com/questions/2446270/android-ratingbar-change-star-colors-->
+                <RatingBar
+                    android:id="@+id/item_venue_ratingbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dim_small"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:progressTint="@color/md_grey_400"
+                    android:progressBackgroundTint="@color/gray"
+                    android:rating="@{(float)(venue.rating / 2)}"
+                    android:stepSize="0.5"
+                    tools:rating="4.5"/>
+
+                <TextView
+                    android:id="@+id/item_venue_ratingcount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dim_small"
+                    android:fontFamily="sans-serif"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:text='@{"("+ String.valueOf(venue.ratingCount +")")}'
+                    android:textSize="14sp"
+                    tools:text="(23)" />
+            </LinearLayout>
         </LinearLayout>
 
 

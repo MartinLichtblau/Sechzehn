@@ -2,11 +2,13 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -41,7 +43,7 @@ public class SearchViewModel extends ViewModel{
     public MutableLiveData<Resource> userResults = new MutableLiveData<>();
     public MutableLiveData<HashMap<Marker,MarkerOptions>> usersOnMap = new MutableLiveData<>();
     public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
-    public MutableLiveData<HashMap<Marker,MarkerOptions>> venuesOnMap = new MutableLiveData<>();
+    public HashMap<Marker,MarkerOptions> venuesOnMap = new HashMap<>();
     public MutableLiveData<VenueSearch> lastVS = new MutableLiveData<>();
 
 
@@ -134,6 +136,23 @@ public class SearchViewModel extends ViewModel{
         getVenues(vs);
     }
 
+    public void createAddVenueMarkers(HashMap<Venue, Bitmap> venueIconMap) {
+        HashMap<Marker, MarkerOptions> tempMarkerMap = new HashMap<>();
+        for (Map.Entry<Venue, Bitmap> e : venueIconMap.entrySet()) {
+            Venue venue = e.getKey();
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(new LatLng(venue.lat, venue.lng))
+                    .title(venue.name)
+                    .snippet("View Venue Rating: " + venue.rating)
+                    .infoWindowAnchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromBitmap(e.getValue()));
+            Marker marker = map.addMarker(markerOptions);
+            marker.setTag(venue);
+            tempMarkerMap.put(marker, markerOptions);
+        }
+        venuesOnMap = tempMarkerMap;
+    }
+
     public void reAddUserMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
         //Add markers through markerOptions and save them
         usersOnMap.setValue(reAddMarkersOnMap(markerMap));
@@ -141,7 +160,7 @@ public class SearchViewModel extends ViewModel{
 
     public void reAddVenueMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
         //Add markers through markerOptions and save them
-        venuesOnMap.setValue(reAddMarkersOnMap(markerMap));
+        venuesOnMap = reAddMarkersOnMap(markerMap);
     }
 
     public HashMap<Marker,MarkerOptions> reAddMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
@@ -169,10 +188,10 @@ public class SearchViewModel extends ViewModel{
     public void toggleVenues(View view){
         if(venueToggle){
             venueToggle = false;
-            hideMarkersOnMap(venuesOnMap.getValue());
+            hideMarkersOnMap(venuesOnMap);
         } else{
             venueToggle = true;
-            showMarkersOnMap(venuesOnMap.getValue());
+            showMarkersOnMap(venuesOnMap);
         }
     }
 
@@ -207,7 +226,7 @@ public class SearchViewModel extends ViewModel{
     }
 
     public void removeAllVenues(){
-        removeMarkersOnMap(venuesOnMap.getValue());
+        removeMarkersOnMap(venuesOnMap);
     }
 
     public Double getVisibleRadius(){
@@ -241,7 +260,7 @@ public class SearchViewModel extends ViewModel{
         //restore User Data
         reAddUserMarkersOnMap(usersOnMap.getValue());
         //restore Venue Data
-        reAddVenueMarkersOnMap(venuesOnMap.getValue());
+        reAddVenueMarkersOnMap(venuesOnMap);
         //restore Camera
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }

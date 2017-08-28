@@ -1,6 +1,8 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
 
 import android.databinding.BindingAdapter;
+import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -32,12 +34,17 @@ public class DataBindingAdapters {
                 .into(view);
     }
 
-/*    @BindingAdapter({"venuePictureUrl"})
+    @BindingAdapter({"venuePictureUrl"})
     public static void loadVenuePicture(ImageView view, String url) {
         Picasso.with(view.getContext())
                 .load(url)
                 .placeholder(R.drawable.ic_venue_icon) //Placeholders and error images are not resized and must be fairly small images.
-                .centerCrop().resize(40, 40)
+                .centerCrop().resize(80, 80)
                 .into(view);
-    }*/
+    }
+
+    @BindingAdapter({"venuePictureBitmap"})
+    public static void setVenuePicture(ImageView view, Bitmap bitmap) {
+        view.setImageBitmap(bitmap);
+    }
 }
