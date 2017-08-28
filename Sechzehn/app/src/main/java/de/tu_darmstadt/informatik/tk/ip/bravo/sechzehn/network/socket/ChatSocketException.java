@@ -19,6 +19,7 @@ public class ChatSocketException extends RuntimeException {
      *
      * @param message The detail message.
      */
+    @SuppressWarnings("SameParameterValue")
     public ChatSocketException(String message) {
         super(message);
     }

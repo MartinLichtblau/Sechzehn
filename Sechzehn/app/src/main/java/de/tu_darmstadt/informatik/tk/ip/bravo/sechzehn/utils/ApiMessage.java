@@ -45,7 +45,7 @@ public class ApiMessage {
     public String getMessage() {
         return message;
     }
-
+    @SuppressWarnings("SameParameterValue")
     public void setMessage(String message) {
         this.message = message;
     }

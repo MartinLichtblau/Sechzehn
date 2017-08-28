@@ -75,9 +75,9 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
         @Override
         public void onLoadMore(int currentPage) {
             if (search) {
-                appendSearchListDataAsync(currentPage + 1, PER_PAGE);
+                appendSearchListDataAsync(currentPage + 1);
             } else {
-                appendDefaultListDataAsync(currentPage + 1, PER_PAGE);
+                appendDefaultListDataAsync(currentPage + 1);
             }
         }
     };
@@ -114,12 +114,11 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
 
     /**
      * Appends a data page to the search list.
+     *  @param page    Number of the data page.
      *
-     * @param page    Number of the data page.
-     * @param perPage Size of the data page.
      */
     @Asynchronous
-    private void appendSearchListDataAsync(int page, int perPage) {
+    private void appendSearchListDataAsync(int page) {
         new AsyncTask<Integer, Void, Pagination<IItem>>() {
             @Override
             protected Pagination<IItem> doInBackground(Integer... params) {
@@ -132,7 +131,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
             protected void onPostExecute(Pagination<IItem> iItemPagination) {
                 fastAdapter.add(iItemPagination.data);
             }
-        }.execute(page, perPage);
+        }.execute(page, FriendsFragment.PER_PAGE);
     }
 
 
@@ -368,12 +367,11 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
 
     /**
      * Appends a data page to the default list.
+     *  @param page    Number of the data page.
      *
-     * @param page    Number of the data page.
-     * @param perPage Size of the data page.
      */
     @Asynchronous
-    private void appendDefaultListDataAsync(int page, int perPage) {
+    private void appendDefaultListDataAsync(int page) {
         new AsyncTask<Integer, Void, Pagination<IItem>>() {
             @Override
             protected Pagination<IItem> doInBackground(Integer... params) {
@@ -389,7 +387,7 @@ public class FriendsFragment extends DataBindingFragment<FragmentFriendsBinding>
                 fastAdapter.add(iItemPagination.data);
 
             }
-        }.execute(page, perPage);
+        }.execute(page, FriendsFragment.PER_PAGE);
     }
 
     /**

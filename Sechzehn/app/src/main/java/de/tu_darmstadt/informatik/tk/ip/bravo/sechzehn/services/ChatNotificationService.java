@@ -80,7 +80,7 @@ public class ChatNotificationService extends Service {
         }
     }
 
-    public void notify(User user, final Message msg) {
+    private void notify(User user, final Message msg) {
         msg.senderUser = new ChatUser(user);
         Picasso.with(self)
                 .load(user.getProfilePicture())
@@ -108,7 +108,7 @@ public class ChatNotificationService extends Service {
                 });
     }
 
-    public PendingIntent createContentIntent(Message msg) {
+    private PendingIntent createContentIntent(Message msg) {
         Intent intent = new Intent(self, BottomTabsActivity.class)
                 .putExtra(Intent.EXTRA_INTENT, BottomTabsActivity.EXTRA_INTENT_SHOW_MESSAGE)
                 .putExtra(Intent.EXTRA_USER, msg.sender);
@@ -122,7 +122,7 @@ public class ChatNotificationService extends Service {
      * @param msg The message for which the id is calculated.
      * @return The calculated notification ID.
      */
-    public static int getNotificationId(Message msg) {
+    private static int getNotificationId(Message msg) {
         return msg.id + MESSAGE_NOTIFICATION_OFFSET;
     }
 

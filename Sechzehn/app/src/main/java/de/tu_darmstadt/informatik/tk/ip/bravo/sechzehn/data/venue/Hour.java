@@ -10,6 +10,7 @@ public class Hour {
     public Hour() {
     }
 
+    @SuppressWarnings("SameParameterValue")
     public Hour(Day day, String start, String end) {
         this.day = day;
         this.start = start;

@@ -54,6 +54,7 @@ public interface FriendshipService {
      *                     accept/cancel.
      * @return Call which results in a page of friendship requests.
      */
+    @SuppressWarnings("SameParameterValue")
     @GET("users/{username}/friends/requests")
     Call<Pagination<Friendship>> getFriendshipRequests(
             @Path("username") @NonNull String username,

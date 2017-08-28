@@ -48,6 +48,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
 
     private static final String ARG_PARAM1 = "username";
+    public static final int PER_PAGE = 10;
 
     private final ChatUser owner = new ChatUser(BottomTabsActivity.getOwnerViewModel().getOwner().getValue());
     private ChatSocket socket;
@@ -80,7 +81,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         public void onLoadMore(int page, int totalItemsCount) {
             Log.d("ChatLoad", page + " " + totalItemsCount);
             if (totalItemsCount < totalItemCountServer) {
-                loadMessages(page + 1, 10);
+                loadMessages(page + 1);
             }
         }
     };
@@ -158,8 +159,8 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
     /**
      * Required empty public constructor.
-     *
-     * @deprecated Please use {@link #newInstance(String)} instead.
+     * <p>
+     * Please use {@link #newInstance(String)} instead.
      */
     public MessageFragment() {
         // Required empty public constructor
@@ -213,7 +214,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
 
         binding.messagesList.setAdapter(adapter);
         binding.messagesInput.setInputListener(inputListener);
-        loadMessages(1, 10);
+        loadMessages(1);
 
 
         ensureUsersAreLoaded(new Runnable() {
@@ -253,13 +254,12 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
      * Loads messages from server.
      *
      * @param page     current page.
-     * @param per_page number of messages per page.
      */
-    private void loadMessages(final int page, final int per_page) {
+    private void loadMessages(final int page) {
         ensureUsersAreLoaded(new Runnable() {
             @Override
             public void run() {
-                ChatService.getMessages(username, page, per_page)
+                ChatService.getMessages(username, page, PER_PAGE)
                         .enqueue(new DefaultCallback<Pagination<Message>>(getActivityEx()) {
                             @Override
                             public void onResponse(Call<Pagination<Message>> call, Response<Pagination<Message>> response) {

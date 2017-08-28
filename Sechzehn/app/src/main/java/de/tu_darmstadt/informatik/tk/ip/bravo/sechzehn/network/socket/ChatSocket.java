@@ -287,14 +287,14 @@ public class ChatSocket {
      * Interface for message related listeners
      */
     public interface Listener extends BaseListener {
-        public void call(Message msg);
+        void call(Message msg);
     }
 
     /**
      * Interface for warning listeners
      */
     public interface WarningListener extends BaseListener {
-        public void call(ApiMessage err);
+        void call(ApiMessage err);
     }
 
 
