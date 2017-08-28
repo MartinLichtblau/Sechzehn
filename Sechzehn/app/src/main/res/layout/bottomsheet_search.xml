@@ -304,16 +304,13 @@
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.widget.NestedScrollView
-            android:id="@+id/results"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/md_blue_grey_200"
-            android:fillViewport="true"
+            android:background="@color/white"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <android.support.v7.widget.RecyclerView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/rvItems"
+                android:id="@+id/venueList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </android.support.v4.widget.NestedScrollView>

@@ -28,7 +28,6 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -149,7 +148,7 @@ public final class SzUtils {
     public static void checkInitDrawablesOnce(Context context){
         if(venuePinBackground == null){
             //Alpha/Transparency is first two chars Ref.: https://stackoverflow.com/a/17239853/3965610
-            Integer color = Color.parseColor("#D9FFFFFF"); //BF Transparency is good
+            Integer color = Color.parseColor("#D9FFFFFF"); //BF or D9 Transparency is good
             venuePinBackground = tintBitmap(Bitmap.createScaledBitmap(
                     BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_background), 120, 120, false),color);
         }
@@ -258,20 +257,25 @@ public final class SzUtils {
     public static Bitmap tintBitmapByRating(Bitmap orig, Double rating){
         if(rating <= 0) //venue got no rating
             return orig;
-        float[] hslColor = hslColorByRating(rating);
+        float[] hslColor = ratingToHslColor(rating);
         int color = ColorUtils.HSLToColor(hslColor);
         return tintBitmap(orig, color);
     }
 
-    public static float[] hslColorByRating(Double rating){
+    public static float[] ratingToHslColor(Double rating){
         //In Theory: Rating ranges from 0.0 to 10.0
-        //In Reality: Less then 5% > rating 5
-        // conclusion > So maxHue 100 is good value
+        //In Reality: 99% have rating higher than 3.0
+        // conclusion > Cut useless rating range and expand/broaden usefull range on whole color spectrum to to distinguish rating colors easier
+        // How?  && expand range from 3-10 on larger previous 0-10 spectrum
+        Double adaptedRating = rating -3.333333d; //Shift range -3.3 period (1/3)
+        adaptedRating = adaptedRating < 0 ? 0 : adaptedRating; //Cut all ratings which were below -3.3
+        adaptedRating = adaptedRating * 1.5; // expand ratings by 1.5 (1(1/2)) to map on range from 0 - 10 again
+
+        Double colorPercentage = (adaptedRating / 10); //the actual ratingPercentage (0-1) to calculate the color gradient
         Integer minHue = 0; //full red
-        Integer maxHue = 100; //120 = full green, 100 = still intense green
-        Double ratingPercentage = (rating / 10);
-        float[] hslColor = percentageToHsl(ratingPercentage, minHue, maxHue);
-        //Log.d("hslColorByRating","rating: "+String.valueOf(rating)+" Percentage: "+ratingPercentage+" Hue: "+String.valueOf(hslColor[0]));
+        Integer maxHue = 120; //120 = full green, 100 = still intense green
+        float[] hslColor = percentageToHsl(colorPercentage, minHue, maxHue);
+        //Log.d("ratingToHslColor","rating: "+String.valueOf(rating)+" adaptedRating: "+String.valueOf(adaptedRating)+" Percentage: "+colorPercentage+" Hue: "+String.valueOf(hslColor[0]));
         return hslColor;
     }
 

@@ -178,9 +178,14 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                 Toast.makeText(this, "This device is not supported, since it does not have Google Play Services installed.", Toast.LENGTH_SHORT).show();
                 finish();
             }
-            checkStages.setValue(checkStages.getValue());
+            new Handler().postDelayed(new Runnable() { //Try again in 5 second again
+                public void run() {
+                    checkStages.setValue(checkStages.getValue());
+                }
+            }, 5000);
+        }else{
+            checkStages.setValue(checkStages.getValue() + 1);
         }
-        checkStages.setValue(checkStages.getValue() + 1);
     }
 
     public void checkProfile() {

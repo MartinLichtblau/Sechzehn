@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="venue"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue" />
+
+        <variable
+            name="self"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.VenueItem" />
+    </data>
+
+    <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="?selectableItemBackground"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp">
+
+        <ImageView
+            android:id="@+id/item_venue_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            app:venuePictureBitmap="@{self.pinIcon}"
+            tools:src="@drawable/ic_venue_icon"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="56dp"
+            android:layout_marginRight="56dp"
+            android:clickable="false"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_venue_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_vertical|start"
+                android:lines="1"
+                android:maxLines="1"
+                android:text="@{venue.name}"
+                android:textSize="16sp"
+                tools:text="Venue Name" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp">
+
+                <TextView
+                    android:id="@+id/item_venue_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorAccent"
+                    android:fontFamily="sans-serif"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:text='@{venue.rating > 0.0 ? String.valueOf(venue.rating) : "-.-" }'
+                    android:textSize="14sp"
+                    tools:text="7.5" />
+
+                <!--Change color Ref. > https://stackoverflow.com/questions/2446270/android-ratingbar-change-star-colors-->
+                <RatingBar
+                    android:id="@+id/item_venue_ratingbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dim_small"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:progressTint="@color/md_grey_400"
+                    android:progressBackgroundTint="@color/gray"
+                    android:rating="@{(float)(venue.rating / 2)}"
+                    android:stepSize="0.5"
+                    tools:rating="4.5"/>
+
+                <TextView
+                    android:id="@+id/item_venue_ratingcount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dim_small"
+                    android:fontFamily="sans-serif"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:text='@{"("+ String.valueOf(venue.ratingCount +")")}'
+                    android:textSize="14sp"
+                    tools:text="(23)" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+<!--        <ImageButton
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/item_user_message"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:clickable="true"
+            android:onClick="@{self::onMessageClick}"
+            android:contentDescription="Messages"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:src="@drawable/ic_message_black_24dp" />-->
+
+
+    </RelativeLayout>
+</layout>
