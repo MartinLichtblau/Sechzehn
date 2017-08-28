@@ -133,6 +133,7 @@ public abstract class DataBindingItem<
                 Log.w("DataBindingFragment", self.getClass().getName() + ": Self not bound");
             }
         }
+
     }
 
 }
