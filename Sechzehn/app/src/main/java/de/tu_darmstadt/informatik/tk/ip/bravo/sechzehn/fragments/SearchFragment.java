@@ -68,8 +68,8 @@ public class SearchFragment extends BaseFragment {
     private OwnerViewModel ownerVM;
     private MapView mapView;
 
-    LatLng userSetMapCenter;
-    Float userSetMapZoom;
+    LatLng lastValidMapCenter;
+    Float lastValidMapZoom;
     Boolean userMovedCamera = false;
     Float bsCollapsed;
     Float bsExpanded;
@@ -123,21 +123,25 @@ public class SearchFragment extends BaseFragment {
         bsCollapsed = getActivity().getResources().getDimension(R.dimen.search_bottomsheet_collapsed);
         bsExpanded = getActivity().getResources().getDimension(R.dimen.search_bottomsheet_expanded);
 
+        if(searchVM.lastBssState == BottomSheetBehavior.STATE_EXPANDED) { //Open it collapsed or (in case it's onresumed) in it's last state
+            bssBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+
         bssBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             CameraUpdate cu;
-
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                searchVM.lastBssState = newState;
                 switch (newState) {
                     case BottomSheetBehavior.STATE_EXPANDED:
                         setMapPaddingBotttom(1f);
-                        cu = CameraUpdateFactory.zoomTo(userSetMapZoom - 1.1f);
-                        searchVM.map.animateCamera(cu, 500, null);
+                        cu = CameraUpdateFactory.zoomTo(-1.1f + searchVM.lastSetZoom);
+                        searchVM.map.animateCamera(cu, 300, null);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         setMapPaddingBotttom(0f);
-                        cu = CameraUpdateFactory.zoomTo(userSetMapZoom);
-                        searchVM.map.animateCamera(cu, 500, null);
+                        cu = CameraUpdateFactory.zoomTo(searchVM.lastSetZoom);
+                        searchVM.map.animateCamera(cu, 300, null);
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         break;
@@ -153,11 +157,11 @@ public class SearchFragment extends BaseFragment {
                 switch (bssBehavior.getState()) {
                     case BottomSheetBehavior.STATE_DRAGGING:
                         setMapPaddingBotttom(slideOffset);
-                        searchVM.map.moveCamera(CameraUpdateFactory.newLatLng(userSetMapCenter));
+                        searchVM.map.moveCamera(CameraUpdateFactory.newLatLng(lastValidMapCenter));
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
                         setMapPaddingBotttom(slideOffset);
-                        searchVM.map.moveCamera(CameraUpdateFactory.newLatLng(userSetMapCenter));
+                        searchVM.map.moveCamera(CameraUpdateFactory.newLatLng(lastValidMapCenter));
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         break;
@@ -210,28 +214,33 @@ public class SearchFragment extends BaseFragment {
         searchVM.map.setMyLocationEnabled(true);
         searchVM.map.getUiSettings().setMapToolbarEnabled(false);
         searchVM.map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.search_map_style));
+        setupMapListeners();
 
         if (searchVM.lastStateSaved) {
             //Toast.makeText(getActivity(), "restore lastStateSaved", Toast.LENGTH_SHORT).show();
-            searchVM.restoreLastState(); //show last state
+            if(bssBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) { //Open it collapsed or (in case it's onresumed) in it's last state
+                setMapPaddingBotttom(1f);
+            }
+            searchVM.restoreLastState(); //show last
         } else {
-            searchVM.map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), 12));
-            userSetMapCenter = searchVM.map.getCameraPosition().target;
-            userSetMapZoom = searchVM.map.getCameraPosition().zoom;
+            searchVM.map.moveCamera(CameraUpdateFactory.newLatLngZoom(ownerVM.getLatLng(), searchVM.lastSetZoom));
+            lastValidMapCenter = searchVM.map.getCameraPosition().target;
+            lastValidMapZoom = searchVM.map.getCameraPosition().zoom;
             initalSearch(); //Initialize anew
         }
-        setupMapListeners();
     }
 
     private void setupMapListeners() {
         searchVM.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                searchVM.selectedMarker = marker;
                 if (marker.getTag() instanceof User) {
                     return false;
                 }else{
-                    Integer pos = Integer.valueOf(marker.getTag().toString());
-                    fastAdapter.select(pos);
+                    Integer pos = (Integer) marker.getTag();
+                    /*fastAdapter.select(pos);
+                    bss.venueList.scrollToPosition(pos);*/
                     return false;
                 }
             }
@@ -274,7 +283,7 @@ public class SearchFragment extends BaseFragment {
                 //Ref.: https://developers.google.com/maps/documentation/android-api/events
                 if (REASON_GESTURE == i) {
                     userMovedCamera = true;
-                    if (bssBehavior.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
+                    if (searchVM.lastBssState != BottomSheetBehavior.STATE_COLLAPSED) {
                         //User should not scroll when the BottomSheet is expanded and map is super tiny small
                         bssBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
@@ -284,9 +293,12 @@ public class SearchFragment extends BaseFragment {
         searchVM.map.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
+                lastValidMapCenter = searchVM.map.getCameraPosition().target;
+                lastValidMapZoom = searchVM.map.getCameraPosition().zoom;
                 if (userMovedCamera) {
-                    userSetMapCenter = searchVM.map.getCameraPosition().target;
-                    userSetMapZoom = searchVM.map.getCameraPosition().zoom;
+                    //Make user set zoom level the new baseZoomLevel, just
+                    if(searchVM.lastBssState == BottomSheetBehavior.STATE_COLLAPSED)
+                        searchVM.lastSetZoom = searchVM.map.getCameraPosition().zoom;
 
                     //show searchAgainHere Button if it's not already visible and not to start multiple Handlers
                     //INVISIBLE: (Handler already on it to show it) or VISIBLE
@@ -307,7 +319,7 @@ public class SearchFragment extends BaseFragment {
             @Override
             public boolean onMyLocationButtonClick() {
                 Location loc = LocationService.getPreviousBestLocation();
-                userSetMapCenter = new LatLng(loc.getLatitude(), loc.getLongitude());
+                lastValidMapCenter = new LatLng(loc.getLatitude(), loc.getLongitude());
                 return false;
             }
         });
@@ -638,7 +650,6 @@ public class SearchFragment extends BaseFragment {
 
     //>>>>>>>>>>>> Venues endless List view with FastAdapter
     private FastItemAdapter fastAdapter = new FastItemAdapter<>();
-    Pagination<VenueItem> venueItemPagination = new Pagination<>();
 
     private void setupResultList(){
         Log.d(TAG, "setupResultList");
@@ -652,10 +663,28 @@ public class SearchFragment extends BaseFragment {
             public boolean onClick(View v, IAdapter adapter, IItem item, int position) {
                 VenueItem venueItem = (VenueItem) item;
                 Marker marker = searchVM.venuesOnMap.get(position).marker;
-                CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 1.5f + userSetMapZoom );
+                CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 1.1f + searchVM.lastSetZoom);
                 searchVM.map.animateCamera(cu, 500, null);
                 marker.showInfoWindow();
+                searchVM.selectedMarker = marker; //Don't forget to save selected marker, for restoreLastState
                 return true;
+            }
+        });
+        fastAdapter.withOnLongClickListener(new FastAdapter.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v, IAdapter adapter, IItem item, int position) {
+                Log.d(TAG,"fastAdapter.withOnLongClickListener | "+"pos = "+position);
+                final Venue venue = ((VenueItem) item).getVenue();
+                new Handler().postDelayed(new Runnable() {
+                    //Maps Bug UI Hang while replacing fragment
+                    // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
+                    @Override
+                    public void run() {
+                        /*openVenue(venue.id);*/
+                        fragNavController().pushFragment(VenueFragment.newInstance(venue.id));
+                    }
+                }, 100);
+                return false;
             }
         });
     }

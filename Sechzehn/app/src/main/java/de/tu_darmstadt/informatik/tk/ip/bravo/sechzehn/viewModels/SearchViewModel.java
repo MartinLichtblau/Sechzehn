@@ -3,9 +3,11 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
+import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -16,7 +18,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -53,9 +54,11 @@ public class SearchViewModel extends ViewModel{
     public Boolean lastStateSaved = false;
     public GoogleMap map;
     private CameraPosition cameraPosition;
+    public Float lastSetZoom = 12f; //Default is 12
     public Boolean userToggle = true;
     public Boolean venueToggle = true;
-
+    public Marker selectedMarker;
+    public Integer lastBssState = BottomSheetBehavior.STATE_COLLAPSED;
 
     public void searchXUsersNearby(Integer numberUsers, Double lat, Double lng, Double radius){
         getUsers(null, numberUsers, lat, lng,radius,null,null);
@@ -148,10 +151,12 @@ public class SearchViewModel extends ViewModel{
         if(mmoList == null || mmoList.isEmpty())
             return null;
         ArrayList<MarkerMarkerOptions> newMmoList = new ArrayList<>();
-        for (MarkerMarkerOptions mmo : mmoList) {
-            Marker marker = map.addMarker(mmo.markerOptions);
-            marker.setTag(mmo.marker.getTag()); //Retrieve saved Object (User or Venue) in Tag
-            newMmoList.add(new MarkerMarkerOptions(marker, mmo.markerOptions));
+        for (MarkerMarkerOptions oldMmo : mmoList) {
+            Marker newMarker = map.addMarker(oldMmo.markerOptions);
+            newMarker.setTag(oldMmo.marker.getTag()); //Retrieve saved Object (User or Venue) in Tag
+            if(selectedMarker.equals(oldMmo.marker)) //This marker was selecte on SaveLastState
+                newMarker.showInfoWindow();
+            newMmoList.add(new MarkerMarkerOptions(newMarker, oldMmo.markerOptions));
         }
         return newMmoList;
     }
@@ -204,10 +209,12 @@ public class SearchViewModel extends ViewModel{
 
     public void removeAllUsersOnMap(){
         removeMarkersOnMap(usersOnMap);
+        usersOnMap = new ArrayList<>();
     }
 
     public void removeAllVenuesOnMap(){
         removeMarkersOnMap(venuesOnMap);
+        venuesOnMap = new ArrayList<>();
     }
 
     public Double getVisibleRadius(){
@@ -244,5 +251,7 @@ public class SearchViewModel extends ViewModel{
         reAddVenueMarkersOnMap(venuesOnMap);
         //restore Camera
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        CameraUpdate cu = CameraUpdateFactory.newCameraPosition(cameraPosition);
+        map.moveCamera(cu);
     }
 }
