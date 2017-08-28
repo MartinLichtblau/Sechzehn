@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -225,6 +226,10 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         });
     }
 
+    public void showUser(View v) {
+        fragNavController().pushFragment(UserProfileFragment.newInstance(username));
+    }
+
     /**
      * Executes a Runnable after if the senderUser object is already present or retrieves the
      * senderUser object and executes the runnable afterwards.
@@ -253,7 +258,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     /**
      * Loads messages from server.
      *
-     * @param page     current page.
+     * @param page current page.
      */
     private void loadMessages(final int page) {
         ensureUsersAreLoaded(new Runnable() {
