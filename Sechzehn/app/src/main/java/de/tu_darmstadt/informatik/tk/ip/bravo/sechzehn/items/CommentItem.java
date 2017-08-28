@@ -104,4 +104,9 @@ public class CommentItem implements NestedListView.Item {
 
         });
     }
+
+    public static String formatRating(Integer rating) {
+        if (rating == null) return "0";
+        return rating.toString();
+    }
 }

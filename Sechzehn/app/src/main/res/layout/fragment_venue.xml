@@ -3,7 +3,7 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DB"/>
         <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment"/>
 
         <variable
@@ -76,7 +76,7 @@
                         android:onClick="@{()->self.showPhotos(1)}"
                         android:scaleType="centerCrop"
                         android:src="@drawable/profile_coverfoto_default"
-                        android:visibility="@{VenueFragment.objectToVisibility(venue.getTopPhotoUrl(1))}"
+                        android:visibility="@{DB.objectToVisibility(venue.getTopPhotoUrl(1))}"
                         app:venuePictureUrl="@{venue.getTopPhotoUrl(1)}"/>
 
                     <ImageView
@@ -89,7 +89,7 @@
                         android:onClick="@{()->self.showPhotos(2)}"
                         android:scaleType="centerCrop"
                         android:src="@drawable/profile_coverfoto_default"
-                        android:visibility="@{VenueFragment.objectToVisibility(venue.getTopPhotoUrl(2))}"
+                        android:visibility="@{DB.objectToVisibility(venue.getTopPhotoUrl(2))}"
                         app:venuePictureUrl="@{venue.getTopPhotoUrl(2)}"/>
                 </LinearLayout>
 
@@ -130,7 +130,7 @@
                             android:fontFamily="sans-serif"
                             android:text="@{venue.checkinsCount.toString()}"
                             android:textAppearance="@android:style/TextAppearance.Material.Title"
-                            android:visibility="@{VenueFragment.objectToVisibility(venue.checkinsCount)}"
+                            android:visibility="@{DB.objectToVisibility(venue.checkinsCount)}"
                             tools:text="000000"/>
                     </LinearLayout>
                 </android.support.v7.widget.Toolbar>
@@ -166,7 +166,7 @@
                         android:layout_marginTop="16dp"
                         android:text="@{venue.description}"
                         android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                        android:visibility="@{VenueFragment.objectToVisibility(venue.description)}"
+                        android:visibility="@{DB.objectToVisibility(venue.description)}"
                         tools:text="{description}"
                         />
 
@@ -281,7 +281,7 @@
                                 android:text="No one visited :(\n\nCheck in now to be king."
                                 android:textAlignment="center"
                                 android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                                android:visibility="@{VenueFragment.booleanToVisibility(venue.topVisitors.isEmpty())}"
+                                android:visibility="@{DB.booleanToVisibility(venue.topVisitors.isEmpty())}"
                                 app:layout_constraintBottom_toTopOf="@+id/textView10"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintRight_toRightOf="parent"
@@ -294,7 +294,7 @@
                                 android:scaleType="fitXY"
                                 android:src="@drawable/ic_crown"
                                 android:tint="@color/accent"
-                                android:visibility="@{VenueFragment.booleanToVisibility(!venue.topVisitors.isEmpty())}"
+                                android:visibility="@{DB.booleanToVisibility(!venue.topVisitors.isEmpty())}"
                                 app:layout_constraintLeft_toLeftOf="@+id/topVisitor1"
                                 app:layout_constraintRight_toRightOf="@+id/topVisitor1"
                                 app:layout_constraintTop_toTopOf="parent"/>
@@ -308,7 +308,7 @@
 
                                 android:foreground="?attr/selectableItemBackgroundBorderless"
                                 android:onClick="@{()->self.showTopVisitorProfile(0)}"
-                                android:visibility="@{VenueFragment.booleanToVisibility(venue.topVisitors.size()>0,true)}"
+                                android:visibility="@{DB.booleanToVisibility(venue.topVisitors.size()>0,true)}"
                                 app:kingPictureUrl="@{venue.getTopVisitorPictureUrl(0)}"
                                 app:layout_constraintBottom_toTopOf="@+id/topVisitor1name"
                                 app:layout_constraintLeft_toLeftOf="parent"
@@ -341,7 +341,7 @@
                                 android:layout_marginStart="8dp"
                                 android:foreground="?attr/selectableItemBackgroundBorderless"
                                 android:onClick="@{()->self.showTopVisitorProfile(1)}"
-                                android:visibility="@{VenueFragment.booleanToVisibility(venue.topVisitors.size()>1,true)}"
+                                android:visibility="@{DB.booleanToVisibility(venue.topVisitors.size()>1,true)}"
                                 app:layout_constraintLeft_toLeftOf="@+id/textView16"
                                 app:layout_constraintRight_toRightOf="@+id/textView16"
                                 app:layout_constraintTop_toTopOf="parent"
@@ -378,7 +378,7 @@
                                 android:layout_marginTop="8dp"
                                 android:foreground="?attr/selectableItemBackgroundBorderless"
                                 android:onClick="@{()->self.showTopVisitorProfile(2)}"
-                                android:visibility="@{VenueFragment.booleanToVisibility(venue.topVisitors.size()>2,true)}"
+                                android:visibility="@{DB.booleanToVisibility(venue.topVisitors.size()>2,true)}"
                                 app:layout_constraintLeft_toLeftOf="@+id/textView16"
                                 app:layout_constraintRight_toRightOf="@+id/textView16"
                                 app:layout_constraintTop_toBottomOf="@+id/textView16"
@@ -453,7 +453,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@{venue.addressPart1}"
                             android:textAppearance="@android:style/TextAppearance.Material.Title"
-                            android:visibility="@{VenueFragment.objectToVisibility(venue.addressPart1)}"
+                            android:visibility="@{DB.objectToVisibility(venue.addressPart1)}"
                             tools:text="{address1}"/>
 
                         <TextView
@@ -464,7 +464,7 @@
                             android:layout_marginRight="16dp"
                             android:text="@{venue.addressPart2}"
                             android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                            android:visibility="@{VenueFragment.objectToVisibility(venue.addressPart2)}"
+                            android:visibility="@{DB.objectToVisibility(venue.addressPart2)}"
                             tools:text="{address2}"/>
 
                         <TextView
@@ -479,7 +479,7 @@
                             android:focusable="true"
                             android:text="@{venue.phone}"
                             android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                            android:visibility="@{VenueFragment.objectToVisibility(venue.phone)}"
+                            android:visibility="@{DB.objectToVisibility(venue.phone)}"
                             tools:text="012341234"/>
 
                         <TextView
@@ -494,7 +494,7 @@
                             android:focusable="true"
                             android:text="@{venue.url}"
                             android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                            android:visibility="@{VenueFragment.objectToVisibility(venue.url)}"
+                            android:visibility="@{DB.objectToVisibility(venue.url)}"
                             tools:text="www.test.de"/>
                     </LinearLayout>
 
@@ -510,7 +510,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:visibility="@{VenueFragment.booleanToVisibility(!venue.hours.isEmpty())}"
+                    android:visibility="@{DB.booleanToVisibility(!venue.hours.isEmpty())}"
                     >
 
 
@@ -554,7 +554,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="84dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:animateLayoutChanges="true">
 
                     <include
                         android:id="@+id/view_comment_new"

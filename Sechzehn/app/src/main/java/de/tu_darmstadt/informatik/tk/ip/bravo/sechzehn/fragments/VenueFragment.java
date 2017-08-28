@@ -2,11 +2,10 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 
 import android.R;
-import android.app.Activity;
 import android.app.Fragment;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.FloatRange;
@@ -19,38 +18,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.ImageGalleryActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Hour;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Photo;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentVenueBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.ViewCommentNewBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.CommentItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.HourItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.IgnoreErrorTarget;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ImagePicker;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.OnTextChangedListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.AnimatedFAB;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NewCommentView;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -62,16 +54,26 @@ import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.V
  * create an instance of this fragment.
  */
 public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> implements OnMapReadyCallback, RatingBar.OnRatingBarChangeListener {
-    private static final String ARG_PARAM1 = "venueId";
-    public final HourItem UNKNOWN_HOUR = new HourItem(new Hour(Hour.Day.UNKNOWN, null, null));
-    public static final User EMPTY_USER = new User();
-    private final User owner = BottomTabsActivity.getOwnerViewModel().getOwner().getValue();
-    private Comment newComment = new Comment();
+
     public static final int PHOTO_NEW_COMMENT = 7634;
+    private static final String ARG_PARAM1 = "venueId";
+    private static DecimalFormat ratingFormatter = new DecimalFormat("#0.0");
+    public final HourItem UNKNOWN_HOUR = new HourItem(new Hour(Hour.Day.UNKNOWN, null, null));
+    public final NewCommentView.Listener newCommentListener = new NewCommentView.Listener() {
+        @Override
+        public void addComment(Comment comment) {
+            binding.comments.add(1, new CommentItem(comment, fragNavController()));
+        }
+
+        @Override
+        public void addPhotoToNewComment() {
+            startActivityForResult(ImagePicker.getPickImageIntent(getContext()), PHOTO_NEW_COMMENT);
+        }
+    };
     private String venueId;
     private Venue venue;
     private MaterialSheetFab<AnimatedFAB> fabSheet;
-
+    private NewCommentView newCommentView;
 
     /**
      * Use this factory method to create a new instance of
@@ -90,6 +92,44 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
         return fragment;
     }
 
+    /**
+     * format the user rating to display exactly one mantissa
+     *
+     * @param rating user rating as double value
+     * @return String containing the formatted rating
+     */
+    @Nullable
+    public static String formatRating(@Nullable @FloatRange(from = -1.0, to = 10.0) Double rating) {
+        if (rating != null) {
+            if (rating < 0) {
+                return "-.-";
+            }
+            return ratingFormatter.format(rating);
+        }
+        return null;
+    }
+
+    /**
+     * maps the number price range to euro signs
+     */
+    @Nullable
+    public static String formatPrice(@Nullable @IntRange(from = 1, to = 5) Integer price, @Nullable String category) {
+        StringBuilder sb = new StringBuilder();
+        if (price != null) {
+            for (int i = 0; i < price; i++) {
+                sb.append('$');
+            }
+            if (!TextUtils.isEmpty(category)) {
+                sb.append(" · ");
+            }
+        }
+        if (!TextUtils.isEmpty(category)) {
+            sb.append(category);
+        }
+
+        return sb.toString();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +137,6 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
             venueId = getArguments().getString(ARG_PARAM1);
         }
     }
-
 
     @Override
     protected FragmentVenueBinding initDataBinding(LayoutInflater inflater, @Nullable ViewGroup container) {
@@ -153,64 +192,78 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
             }
         });
 
-        VenueService.getComments(venueId,null,null).enqueue(new DefaultCallback<Pagination<Comment>>(getActivityEx()) {
-            @Override
-            public void onResponse(Call<Pagination<Comment>> call, Response<Pagination<Comment>> response) {
-                if (response.isSuccessful()) {
-                    for (Comment comment : response.body().data) {
-                        binding.comments.add(new CommentItem(comment, fragNavController()));
-                    }
-                }
-            }
-        });
+        loadComments(binding);
 
         binding.ratingBar.setOnRatingBarChangeListener(this);
 
-        initViewCommentNew(binding.viewCommentNew);
+        newCommentView = new NewCommentView(getActivityEx(), binding.viewCommentNew, venueId, newCommentListener);
 
 
     }
 
-    /**
-     * Initialises the View for new comments.
-     *
-     * @param binding The Binding of the ViewCommentNew
-     */
-    private void initViewCommentNew(final ViewCommentNewBinding binding) {
-        //Init
-        binding.setSelf(this);
-        binding.setUser(owner);
-        binding.setNewComment(newComment);
-        binding.body.addTextChangedListener(new OnTextChangedListener() {
+    private void loadComments(final FragmentVenueBinding binding) {
+        VenueService.getComments(venueId, null, null).enqueue(new DefaultCallback<Pagination<Comment>>(getActivityEx()) {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                binding.submit.setEnabled(!TextUtils.isEmpty(s));
-            }
-        });
-    }
-
-    public void submitNewComment(View v) {
-        binding.viewCommentNew.getRoot().setEnabled(false);
-        VenueService.comment(venueId, newComment).enqueue(new DefaultCallback<Comment>(getActivityEx()) {
-            @Override
-            public void onResponse(Call<Comment> call, Response<Comment> response) {
+            public void onResponse(Call<Pagination<Comment>> call, Response<Pagination<Comment>> response) {
                 if (response.isSuccessful()) {
-                    newComment.body = "";
-                    newComment.photoId = null;
-                    Comment myComment = response.body();
-                    myComment.user = owner;
-                    binding.comments.add(new CommentItem(myComment, fragNavController()));
+                    final Pagination<Comment> paginationMini = response.body();
+                    for (Comment comment : paginationMini.data) {
+                        binding.comments.add(new CommentItem(comment, fragNavController()));
+                    }
+                    if (paginationMini.total > paginationMini.data.size()) {
+                        loadFurtherComments(paginationMini);
+                    }
                 }
-                onFinally(call);
             }
 
-            @Override
-            public void onFinally(Call<Comment> call) {
-                binding.viewCommentNew.getRoot().setEnabled(true);
+            private void loadFurtherComments(final Pagination<Comment> paginationMini) {
+                VenueService.getComments(venueId, 1, paginationMini.total).enqueue(new DefaultCallback<Pagination<Comment>>(getActivityEx()) {
+                    @Override
+                    public void onResponse(Call<Pagination<Comment>> call, Response<Pagination<Comment>> response) {
+                        if (response.isSuccessful()) {
+                            final Pagination<Comment> pagination = response.body();
+                            for (int i = paginationMini.data.size(); i < pagination.data.size(); i++) {
+                                binding.comments.add(new CommentItem(pagination.data.get(i), fragNavController()));
+                            }
+                        }
+                    }
+                });
             }
         });
+    }
 
 
+    @Override
+    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+        if (fromUser) {
+            fabSheet.hideSheet();
+            int ourRating = ((int) rating) - 1;
+            VenueService.checkIn(venueId, new CheckIn(ourRating))
+                    .enqueue(new DefaultCallback<CheckIn>(getActivityEx()) {
+                                 @Override
+                                 public void onResponse(Call<CheckIn> call, Response<CheckIn> response) {
+                                     if (response.isSuccessful()) {
+                                         final Venue updatedVenue = response.body().venue;
+                                         venue.checkinsCount = updatedVenue.checkinsCount;
+                                         venue.rating = updatedVenue.rating;
+                                         venue.ratingCount = updatedVenue.ratingCount;
+                                         binding.ratingBar.setNumStars(0);
+                                         binding.setVenue(venue);//To Update the view.
+                                     }
+                                 }
+                             }
+                    );
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(final int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PHOTO_NEW_COMMENT) {
+            final Uri imageUri = ImagePicker.getImageFromResult(getContext(), resultCode, data);
+            newCommentView.setPhoto(imageUri);
+        }
     }
 
     /**
@@ -236,119 +289,18 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        googleMap.addMarker(new MarkerOptions().position(venue.getPosition()));
-    }
-
-    @Override
-    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-        if (fromUser) {
-            fabSheet.hideSheet();
-            int ourRating = ((int) rating) - 1;
-            VenueService.checkIn(venueId, new CheckIn(ourRating))
-                    .enqueue(new DefaultCallback<CheckIn>(getActivityEx()) {
-                                 @Override
-                                 public void onResponse(Call<CheckIn> call, Response<CheckIn> response) {
-                                     if (response.isSuccessful()) {
-                                         final Venue updatedVenue = response.body().venue;
-                                         venue.checkinsCount = updatedVenue.checkinsCount;
-                                         venue.rating = updatedVenue.rating;
-                                         venue.ratingCount = updatedVenue.ratingCount;
-                                         binding.ratingBar.setNumStars(0);
-                                         binding.setVenue(venue);//To Update the view.
-                                     }
-                                 }
-                             }
-                    );
-        }
-    }
-
-    public void addPhotoToNewComment(View v) {
-
-        startActivityForResult(ImagePicker.getPickImageIntent(getContext()), PHOTO_NEW_COMMENT);
-
-        //Result receive in @onActivityResult
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PHOTO_NEW_COMMENT) {
-            final Uri imageUri = ImagePicker.getImageFromResult(getContext(), resultCode, data);
-            Picasso.with(getActivityEx())
-                    .load(imageUri)
-                    .into(new IgnoreErrorTarget() {
-                        @Override
-                        public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                            byte[] byteArray = SzUtils.compressWithJpgToByte(bitmap);
-                            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), byteArray);
-                            MultipartBody.Part picture = MultipartBody.Part.createFormData("photo", SzUtils.getOwnername() + "photo" + ".jpg", reqFile);
-                            VenueService.addPhoto(venueId, picture).enqueue(new DefaultCallback<Photo>(getActivityEx()) {
-                                @Override
-                                public void onResponse(Call<Photo> call, Response<Photo> response) {
-                                    if (response.isSuccessful()) {
-                                        newComment.photoId = response.body().id;
-                                        Picasso.with(getActivityEx()).load(imageUri).into(binding.viewCommentNew.imageView);
-                                    }
-                                }
-                            });
-                        }
-
-
-                    });
-        }
-    }
-
-    private static DecimalFormat ratingFormatter = new DecimalFormat("#0.0");
-
-    /**
-     * format the user rating to display exactly one mantissa
-     *
-     * @param rating user rating as double value
-     * @return String containing the formatted rating
-     */
-    @Nullable
-    public static String formatRating(@Nullable @FloatRange(from = 0.0, to = 10.0) Double rating) {
-        if (rating != null) {
-            return ratingFormatter.format(rating);
-        }
-        return null;
-    }
-
-    /**
-     * maps the number price range to euro signs
-     */
-    @Nullable
-    public static String formatPrice(@Nullable @IntRange(from = 1, to = 5) Integer price, @Nullable String category) {
-        StringBuilder sb = new StringBuilder();
-        if (price != null) {
-            for (int i = 0; i < price; i++) {
-                sb.append('€');
+    public void onMapReady(final GoogleMap googleMap) {
+        SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon).observe(this, new Observer<Bitmap>() {
+            @Override
+            public void onChanged(@Nullable Bitmap bitmap) {
+                googleMap.addMarker(new MarkerOptions()
+                        .position(venue.getPosition())
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(venue.getPosition(), 10));
             }
-            if (!TextUtils.isEmpty(category)) {
-                sb.append(" · ");
-            }
-        }
-        if (!TextUtils.isEmpty(category)) {
-            sb.append(category);
-        }
+        });
 
-        return sb.toString();
     }
 
-    public static int objectToVisibility(Object obj) {
-        return booleanToVisibility(obj != null);
-    }
-
-    public static int booleanToVisibility(boolean bool) {
-        return bool ? View.VISIBLE : View.GONE;
-    }
-
-    public static int booleanToVisibility(boolean bool, boolean invisibleInsteadOfGone) {
-        if (invisibleInsteadOfGone)
-            return bool ? View.VISIBLE : View.INVISIBLE;
-        else
-            return bool ? View.VISIBLE : View.GONE;
-    }
 
 }

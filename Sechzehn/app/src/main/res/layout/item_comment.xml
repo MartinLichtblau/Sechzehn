@@ -6,8 +6,8 @@
 
     <data>
 
-        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment"/>
-
+        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DB"/>
+        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.CommentItem"/>
         <variable
             name="comment"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment"/>
@@ -85,7 +85,7 @@
                         android:id="@+id/textView4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{comment.rating.toString()}"
+                        android:text="@{CommentItem.formatRating(comment.rating)}"
                         android:textAppearance="@android:style/TextAppearance.Material.Medium"
                         tools:text="0"/>
 
@@ -109,7 +109,7 @@
                 android:adjustViewBounds="true"
                 android:maxHeight="256dp"
                 android:scaleType="centerCrop"
-                android:visibility="@{VenueFragment.objectToVisibility(comment.photo)}"
+                android:visibility="@{DB.objectToVisibility(comment.photo)}"
                 app:venuePictureUrl="@{comment.photo.url}"
                 tools:src="@drawable/profile_coverfoto_default"
                 />
