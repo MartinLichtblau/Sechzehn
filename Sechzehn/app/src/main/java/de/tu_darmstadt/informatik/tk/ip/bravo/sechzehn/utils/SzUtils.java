@@ -148,7 +148,7 @@ public final class SzUtils {
     public static void checkInitDrawablesOnce(Context context){
         if(venuePinBackground == null){
             //Alpha/Transparency is first two chars Ref.: https://stackoverflow.com/a/17239853/3965610
-            Integer color = Color.parseColor("#D9FFFFFF"); //BF Transparency is good
+            Integer color = Color.parseColor("#D9FFFFFF"); //BF or D9 Transparency is good
             venuePinBackground = tintBitmap(Bitmap.createScaledBitmap(
                     BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_background), 120, 120, false),color);
         }
@@ -275,7 +275,7 @@ public final class SzUtils {
         Integer minHue = 0; //full red
         Integer maxHue = 120; //120 = full green, 100 = still intense green
         float[] hslColor = percentageToHsl(colorPercentage, minHue, maxHue);
-        Log.d("ratingToHslColor","rating: "+String.valueOf(rating)+" adaptedRating: "+String.valueOf(adaptedRating)+" Percentage: "+colorPercentage+" Hue: "+String.valueOf(hslColor[0]));
+        //Log.d("ratingToHslColor","rating: "+String.valueOf(rating)+" adaptedRating: "+String.valueOf(adaptedRating)+" Percentage: "+colorPercentage+" Hue: "+String.valueOf(hslColor[0]));
         return hslColor;
     }
 

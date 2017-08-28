@@ -39,13 +39,15 @@ import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Friendship;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.MarkerMarkerOptions;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
@@ -166,14 +168,6 @@ public class SearchFragment extends BaseFragment {
                 }
             }
         });
-        /*AppBarLayout appBarLayout = binding.bottomsheetSearch.searchBottomsheetAppbarlayout;
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if(verticalOffset == 0)
-                    Toast.makeText(getContext(), "onOffsetChanged", Toast.LENGTH_SHORT).show();
-            }
-        });*/
     }
 
     private void setupSearchbarViews() {
@@ -230,6 +224,18 @@ public class SearchFragment extends BaseFragment {
     }
 
     private void setupMapListeners() {
+        searchVM.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (marker.getTag() instanceof User) {
+                    return false;
+                }else{
+                    Integer pos = Integer.valueOf(marker.getTag().toString());
+                    fastAdapter.select(pos);
+                    return false;
+                }
+            }
+        });
         searchVM.map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(final Marker marker) {
@@ -242,13 +248,15 @@ public class SearchFragment extends BaseFragment {
                             fragNavController().pushFragment(UserProfileFragment.newInstance(((User) marker.getTag()).getUsername()));
                         }
                     }, 100);
-                } else if (marker.getTag() instanceof Venue) {
+                } else { //It's a venue with it's ListPosition as Tag
+                    Integer pos = (Integer) marker.getTag();
+                    final Venue venue = ((VenueItem) fastAdapter.getAdapterItem(pos)).getVenue();
                     new Handler().postDelayed(new Runnable() {
                         //Maps Bug UI Hang while replacing fragment
                         // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
                         @Override
                         public void run() {
-                            fragNavController().pushFragment(VenueFragment.newInstance(((Venue) marker.getTag()).id));
+                            fragNavController().pushFragment(VenueFragment.newInstance(venue.id));
                         }
                     }, 100);
                 }
@@ -334,7 +342,7 @@ public class SearchFragment extends BaseFragment {
                         break;
                     case SUCCESS:
                         Pagination<User> userPagination = (Pagination<User>) resource.data;
-                        searchVM.removeAllUsers();
+                        searchVM.removeAllUsersOnMap();
                         addUsers(userPagination.data);
                         break;
                 }
@@ -354,7 +362,8 @@ public class SearchFragment extends BaseFragment {
                         break;
                     case SUCCESS:
                         Pagination<Venue> venuePagination = (Pagination<Venue>) resource.data;
-                        searchVM.removeAllVenues();
+                        searchVM.removeAllVenuesOnMap();
+                        clearVenueList();
                         addVenues(venuePagination.data);
                         break;
                 }
@@ -376,67 +385,39 @@ public class SearchFragment extends BaseFragment {
     }
 
     public void addVenues(final List<Venue> venueList) {
-        createVenueMarkerPins(venueList);
-        /*.observe(this, new Observer<HashMap<Venue, Bitmap>>() {
+        createVenueMarkerPins(venueList).observe(this, new Observer<LinkedHashMap<Venue, Bitmap>>() {
             @Override
-            public void onChanged(@Nullable HashMap<Venue, Bitmap> venueIconMap) {
-                addVenuesOnList(venueIconMap);
+            public void onChanged(@Nullable LinkedHashMap<Venue, Bitmap> venueIconMap) {
                 searchVM.createAddVenueMarkers(venueIconMap);
+                addVenuesOnList(venueIconMap);
+
             }
-        });*/
+        });
     }
 
-    public void  createVenueMarkerPins(final List<Venue> venueList) {
-        final int[] i = {0};
+    public MutableLiveData<LinkedHashMap<Venue, Bitmap>> createVenueMarkerPins(final List<Venue> venueList) {
+        final MutableLiveData<LinkedHashMap<Venue, Bitmap>> liveVenueIconMap = new MutableLiveData<>();
+        final LinkedHashMap<Venue, Bitmap> tempVenueIconMap = new LinkedHashMap<>();
+        final int[] count = {0};
         for (final Venue venue : venueList) {
             final MutableLiveData liveBitmap = SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon);
-            liveBitmap.observe(this, new Observer<Bitmap>() {
-                final int pos = i[0]++;
-                @Override
-                public void onChanged(@Nullable Bitmap bitmap) {
-
-                    fastAdapter.add((new VenueItem(venueList.get(pos), bitmap, SearchFragment.this.fragNavController())));
-                    //@Alexander Ein Item an einer bestimmten Position einsetzen?
-                    //Bind bitmap direkt on create (ist immer die selbe)
-
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .position(new LatLng(venue.lat, venue.lng))
-                            .title(venue.name)
-                            .snippet("View Venue Rating: " + venue.rating)
-                            .infoWindowAnchor(0.5f, 0.5f)
-                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                    Marker marker = searchVM.map.addMarker(markerOptions);
-                    marker.setTag(venue);
-                    searchVM.venuesOnMap.put(marker, markerOptions);
-
-                    liveBitmap.removeObserver(this);
-                }
-            });
-        }
-    }
-
-   /* public MutableLiveData<HashMap<Venue, Bitmap>> createVenueMarkerPins(final List<Venue> venueList) {
-        final MutableLiveData<HashMap<Venue, Bitmap>> liveVenueIconMap = new MutableLiveData<>();
-        final HashMap<Venue, Bitmap> tempVenueIconMap = new HashMap<>();
-
-        for (final Venue venue : venueList) {
-            final MutableLiveData liveBitmap = SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon);
-            *//*tempVenueIconMap.put(venue, null);*//*
+            tempVenueIconMap.put(venue, null); //to set entry at correct position
             liveBitmap.observe(this, new Observer<Bitmap>() {
                 @Override
                 public void onChanged(@Nullable Bitmap bitmap) {
-                    tempVenueIconMap.put(venue, bitmap);
-                    if (tempVenueIconMap.size() >= (venueList.size())) //If the last bitmap returned (at some point in time)
+                    tempVenueIconMap.put(venue, bitmap); //Overwrite entry at already correctly set position
+                    count[0]++;
+                    if (count[0] >= (venueList.size())) //If the last bitmap returned (at some point in time)
                         liveVenueIconMap.setValue(tempVenueIconMap);  //setValue to call Observer
                     liveBitmap.removeObservers(SearchFragment.this);
                 }
             });
         }
         return liveVenueIconMap;
-    }*/
+    }
 
     private void createAddUserMarkers(final List<User> userList) {
-        final HashMap<Marker, MarkerOptions> tempMarkerMap = new HashMap<>();
+        final ArrayList<MarkerMarkerOptions> tempMmoList = new ArrayList<>();
         Boolean highlight = false;
         for (final User user : userList) {
             if (!TextUtils.equals(user.getUsername(), SzUtils.getOwnername())) {
@@ -454,9 +435,9 @@ public class SearchFragment extends BaseFragment {
                                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
                         Marker marker = searchVM.map.addMarker(markerOptions);
                         marker.setTag(user);
-                        tempMarkerMap.put(marker, markerOptions);
-                        if (tempMarkerMap.size() >= (userList.size() - 1))
-                            searchVM.usersOnMap.setValue(tempMarkerMap);
+                        tempMmoList.add(new MarkerMarkerOptions(marker, markerOptions));
+                        if (tempMmoList.size() >= (userList.size() - 1))
+                            searchVM.usersOnMap = tempMmoList;
 
                         liveBitmap.removeObserver(this);
                     }
@@ -670,20 +651,25 @@ public class SearchFragment extends BaseFragment {
             @Override
             public boolean onClick(View v, IAdapter adapter, IItem item, int position) {
                 VenueItem venueItem = (VenueItem) item;
-                fragNavController().pushFragment(VenueFragment.newInstance(venueItem.getVenue().id));
+                Marker marker = searchVM.venuesOnMap.get(position).marker;
+                CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 1.5f + userSetMapZoom );
+                searchVM.map.animateCamera(cu, 500, null);
+                marker.showInfoWindow();
                 return true;
             }
         });
     }
 
-    private void addVenuesOnList(HashMap<Venue, Bitmap> venueIconMap){
+    private void addVenuesOnList(LinkedHashMap<Venue, Bitmap> venueIconMap){
         Log.d(TAG, "addVenuesOnList");
         //Create out of the venueIconMap the list entries for the fastAdapter ResultList
         for(Map.Entry<Venue, Bitmap> e : venueIconMap.entrySet()){
             fastAdapter.add(new VenueItem(e.getKey(), e.getValue(), SearchFragment.this.fragNavController()));
         }
-        /*venueItemPagination.data.addAll(venueItemList);*/
-        //Use each venues marker pin when they are ready
+    }
+
+    private  void clearVenueList(){
+        fastAdapter.clear();
     }
 
 
