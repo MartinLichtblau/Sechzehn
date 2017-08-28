@@ -154,7 +154,7 @@ To install the app you have to download it from the app from our web page \cite{
 \end{enumerate} 
 If your phone is allowed to install apps from third parties, the phone asks you to install the app. To do so tap on install. Now you have installed the app successfully. Have fun and enjoy the usage.
 
-\section{Features}
+\section{Features}\label{sec:features}
 We only list the bonus features because the mandatory features have to be fullfilled.
 \begin{enumerate}
 \item account verification with an email: \\
@@ -169,8 +169,15 @@ Within his settings the user can disable that other users of Sechzehn can see hi
 Our app not only gives you the opportunity to see friends on a map, you can also contact them via live chats. Those live chats also support read receipts.
 \item Venue Filters: \\
 The venue search offers filtering for opening hours and price category.
-\item JWT
-\item Caching
+\item Push Notifications: \\
+The user receives push notifications if a new message is sent to him.
+\item Web Interface: \\
+We also provide a web interface to confirm email addresses and set new passwords.
+\item Live Updates: \\
+The location is updated every 100m to provide a near to real-time feeling.
+\item Encryption: \\
+We use TLS as transport encryption to prevent eavesdropping.
+
 \end{enumerate}
 
 \section{App Flow}
@@ -198,13 +205,22 @@ The venue search offers filtering for opening hours and price category.
 \end{minipage}%
 \end{figure}
 
+When the user starts our app for the first time, he enters the login view. This view is shown in \autoref{fig:login_view}. If the user enters his login credentials correctly, he is forwarded to the map view shown in \autoref{fig:map_view}. During the first start of our app, the user also has to accept the permissions mentioned in \autoref{sec:system_requirements}. Wrong credentials provided by the user lead to red warnings indicating the problem. The login credentials are stored to improve the user experience by not asking for them every time.
+
+If the user has no account to log in, he can create a new one. To do this he has to click on the ``Not registered?'' button. A click on this button directs the user to the register view shown in \autoref{fig:register_view}. The username as well as the mail address have to be unique. With this restriction we can ensure that there is only one account per mail address. We ensure that the password is free of typos by asking for the password two times. Only if the password is entered correctly twice, an account is created. A toast indicates a succesful registration. After a successfull registration, the user is redirected to the login view and a confirmation mail is sent to the given mail address. The login only works if the mail address is verfied. To confirm the account a the link in the email has to be clicked. The smartphone offers the possibility to open the link via a browser or the app 'Sechzehn'. If the link is opened with 'Sechzehn' the account will be activated and the login screen is shown again.
+
+We also provide the option to reset the account password if necessary (e.g. due to memory loss). 
+The user can enter the Forgot PW View shown in \autoref{fig:forgot_pw_view} by clicking the ``Forgot password?'' button. The user now can enter the email address and click the send button. A password reset request will be sent to that email address. The link in the email could be opened with 'Sechzehn' or with any browser. If the link in the email is opened with 'Sechzehn' a screen is opened where you have to insert a new password (two times). By clicking the confirm button the passwords are checked and if they are equal the new password is set. The same procedure could be done on a website by opening the link in a browser.
+
+We further assume that the user is logged in. Now he sees a bottom navigation bar with three navigation options: Search, Friends and Profile. The Search view shows a map with venues and users, and offers a search for venues. The Friends view shows a list with friends, friendship requests and the last messages. The user profile displays all information we have about the user. 
+
 \begin{figure}[h]
 \centering
 \begin{minipage}{.3\textwidth}
   \centering
   \includegraphics[width=.8\linewidth]{./res/map_user_venues.png}
   \captionof{figure}{Map View}
-  \label{fig:user_profile}
+  \label{fig:map_view}
 \end{minipage}%
 \begin{minipage}{.3\textwidth}
   \centering
@@ -219,6 +235,12 @@ The venue search offers filtering for opening hours and price category.
   \label{fig:live_chat}
 \end{minipage}%
 \end{figure}
+
+% TODO Map View
+
+% TODO Search View
+
+% TODO Venue View
 
 \begin{figure}[h]
 \centering
@@ -242,35 +264,20 @@ The venue search offers filtering for opening hours and price category.
 \end{minipage}%
 \end{figure}
 
+% TODO User Profile
+The profile view is shown in \autoref{fig:user_profile}. The profile picture is on the top of the profile view. By tapping on it the users photo gallery is opened and he can choose a new profile picture. In the profile section basic information about the user is displayed (respectively real name, age and home town).
+This information can be changed by clicking on the small pencil in the top right of the section. In this edit menu you also have the option to toggle the incognito mode described in \autoref{sec:features}. In this view the user can change all of this information. Furthermore this is where the log out option is located. In the bottom of the profile view there are several account settings not described in detail here.
 
+% TODO Friends View
+The friends view is shown in \autoref{fig:friends_view}. In the first section open friendship requests are displayed. These requests can be accepted or declined. In the second section the chats are displayed. In the last section the user's friends are shown. By tapping on a friend his profile is shown, by tapping on the message symbol the live chat with the user is invoked. 
+All of those sections are only displayed if information in them is available. Without outstanding friendship requests, the section friendship requests is not shown. 
+It is tedious to scroll through this growing list. We therefore provided a search bar to filter the list. The search bar is also used to find and add new friends. 
 
-When a user starts the app for the first time he enters the login screen. On this screen the user has three options:
-\begin{enumerate}
-\item he can log in with his email and password. If the login was successful the app asks for some permissions (further information on why the app needs those permissions can be found in \ref{sec:system_requirements}.
-If the permissions are granted, the main screen is shown. The login information will be stored so that the user doesn't need to log in every time he uses the app. If he wants to log out he can do it in the options.
-\item if he has no account yet, he can enter the register screen.
-\item if he has forgotten his password he can request a password reset link to his email address.
-\end{enumerate}
-%%%REGISTRATION SCREEN%%%
-If he enters the register screen he has two options:   
-\begin{enumerate}
-\item he can enter a username, an email address, and a password (two times). By clicking the register button the inputs are checked If the passwords are equal, the email address and the username are not used yet a toast tell that the registration was successful. Otherwise, there will be an information why the registration failed (username already exists, passwords are not equal, ...) and he has to correct it. After a successful registration, the screen switches to the login screen and an email confirmation is sent. To confirm the account a the link in the email has to be clicked. The smartphone offers the possibility to open the link via a browser or the app 'Sechzehn'. If the link is opened with 'Sechzehn' the account will be activated and the login screen is shown.  
-\item if he has already an account, he can go back to the login screen.
-\end{enumerate}
-%%%FORGOTPW SCREEN%%%
-If he enters the forgot password screen he has two options:
-\begin{enumerate}
-\item he can enter the email address and click the send button. A password reset request will be sent to that email address. The link in the email could be opened with 'Sechzehn' or with any browser. If the link in the email is opened with 'Sechzehn' a screen is opened where you have to insert a new password (two times). By clicking the confirm button the passwords are checked and if they are equal the new password is set. The same procedure could be done on a website by opening the link 
-\item if he knows the password he can go back to the login screen.
-\end{enumerate}
-%%%MAIN SCREEN%%%
-We further assume that the user is logged in. Now he sees a bottom navigation bar with three navigation options:
-\begin{enumerate}
-\item the first one shows the map with venues and users and offers a search for venues
-\item the second one shows a list with friends and messages
-\item the third one is the user's profile and its settings. Here you can select a profile picture from your gallery by tapping on the photo. To edit the name, birthday, city or to enter the incognito mode, you have to tap on the pencil in the profile section. In the account section, you can log out from the app, change the current password, reset the password if you are logged in and don't know your password, change the used email address, and delete your account.
-\end{enumerate}
-% Diagramm einfuegen?
+% TODO Live Chat
+The chat view is shown in \autoref{fig:live_chat}. On the top of the chat view the chat partner is shown. By tapping on the name his profile is shown. Check marks indicate that a message has been read. Push notifications % TODO
+
+%The other part of the view contains the chat history. 
+
 
 \chapter{Feature List}\label{ch:feature_list}
 % ! 1 page !
