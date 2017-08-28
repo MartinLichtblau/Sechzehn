@@ -335,8 +335,6 @@ public class SearchFragment extends BaseFragment {
     public void initalSearch() {
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
-        //searchVM.searchXVenuesNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
-
         VenueSearch initialVS = new VenueSearch(25);
         searchVM.getVenues(initialVS);
     }
@@ -356,6 +354,15 @@ public class SearchFragment extends BaseFragment {
                         Pagination<User> userPagination = (Pagination<User>) resource.data;
                         searchVM.removeAllUsersOnMap();
                         addUsers(userPagination.data);
+                        new Handler().postDelayed(new Runnable() {
+                            //Maps Bug UI Hang while replacing fragment
+                            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
+                            @Override
+                            public void run() {
+                                //Get User Update every 30 seconds
+                                searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
+                            }
+                        }, 30000);
                         break;
                 }
             }
