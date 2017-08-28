@@ -79,6 +79,7 @@ In this section we present the architecture we used and thereby how our componen
 \end{figure}
 The communication between the clients and our server is illustrated in \autoref{fig:architecture}.
 For their communication with our server, the clients access the RESTful endpoints or use WebSocket connections. The latter one is necessary to provide our real-time chat. Since we do not have a huge community that backs our app, we need to retrieve the data from other sources. Our server therefore connects to the Foursquare API and fetches the venues, venue details and photos dynamically.
+\clearpage
 \subsection{Server API Documentation}
 To connect app and server, the app developers need the knowledge of endpoints, query parameters and the data structures of requests and responses. To prevent that they need to look through the server's code, an extensive documentation is provided using Apiary \cite{apiary}. An impression is given in \autoref{fig:apiary}.
 
@@ -87,8 +88,8 @@ To connect app and server, the app developers need the knowledge of endpoints, q
 	\caption{Screenshot of the Apiary Documentation}
 	\label{fig:apiary}
 \end{figure}
-\newpage
 
+\clearpage
 \subsection{Database}
 \begin{figure}[ht]
 	\includegraphics[width=\textwidth]{./res/sechzehn-erm.pdf}
