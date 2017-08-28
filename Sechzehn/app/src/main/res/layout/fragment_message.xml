@@ -1,16 +1,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="self"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment" />
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment"/>
 
         <variable
             name="user"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User" />
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User"/>
     </data>
 
     <RelativeLayout
@@ -18,20 +18,23 @@
         android:layout_height="match_parent"
         android:background="@color/md_grey_200"
         android:orientation="vertical">
+
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
-            android:src="@drawable/map_background"/>
+            android:src="@drawable/map_background"
+            />
+
         <android.support.v7.widget.Toolbar
-            android:onClick="@{self::showUser}"
             android:id="@+id/messageToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:elevation="3dp"
             android:minHeight="?attr/actionBarSize"
+            android:onClick="@{self::showUser}"
             android:theme="?attr/actionBarTheme">
 
             <ImageView
@@ -39,7 +42,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="8dp"
-                app:profilePictureUrl="@{user.profilePicture}" />
+                app:profilePictureUrl="@{user.profilePicture}"/>
 
             <LinearLayout
 
@@ -82,6 +85,7 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/messagesInput"
             android:layout_below="@+id/messageToolbar"
+            app:dateHeaderPadding="4dp"
             app:incomingDefaultBubbleColor="@color/colorPrimary"
             app:incomingDefaultBubblePressedColor="@color/primary_dark"
             app:incomingTextColor="@color/md_dark_primary_text"
@@ -91,7 +95,7 @@
             app:outcomingDefaultBubblePressedColor="@color/md_grey_100"
             app:outcomingTextColor="@color/md_light_primary_text"
             app:outcomingTextLinkColor="@color/accent"
-            app:outcomingTimeTextColor="@color/md_light_secondary" />
+            app:outcomingTimeTextColor="@color/md_light_secondary"/>
 
         <com.stfalcon.chatkit.messages.MessageInput
             android:id="@+id/messagesInput"
@@ -110,6 +114,6 @@
             app:inputButtonDefaultIconPressedColor="@color/white"
             app:inputButtonHeight="40dp"
             app:inputButtonWidth="40dp"
-            app:inputHint="Enter a message" />
+            app:inputHint="Enter a message"/>
     </RelativeLayout>
 </layout>

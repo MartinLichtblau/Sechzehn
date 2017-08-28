@@ -199,6 +199,7 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
     @Override
     protected void useDataBinding(final FragmentMessageBinding binding, Bundle savedInstanceState) {
         MessageHolders holders = new MessageHolders();
+        holders.setDateHeaderLayout(R.layout.message_item_date);
         holders.setOutcomingTextHolder(OutcomingMessageViewHolder.class);
         adapter = new MessagesListAdapter<>(SzUtils.getOwnername(), holders, imageLoader);
         adapter.setLoadMoreListener(loadMoreListener);
@@ -212,7 +213,6 @@ public class MessageFragment extends DataBindingFragment<FragmentMessageBinding>
         socket.connect();
 
         ChatNotificationService.blockUser(username);
-
         binding.messagesList.setAdapter(adapter);
         binding.messagesInput.setInputListener(inputListener);
         loadMessages(1);

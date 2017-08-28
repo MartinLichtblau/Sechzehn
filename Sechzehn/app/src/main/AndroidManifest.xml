@@ -30,7 +30,8 @@
         <activity
             android:name=".activities.BottomTabsActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -40,7 +41,8 @@
         <activity
             android:name=".activities.LoginActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            >
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
 

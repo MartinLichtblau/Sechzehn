@@ -90,7 +90,6 @@ public class ChatNotificationService extends Service {
                 .into(new IgnoreErrorTarget() {
                     @Override
                     public void onBitmapLoaded(Bitmap largeIcon, Picasso.LoadedFrom from) {
-                        createContentIntent(msg);
                         Notification notification = new NotificationCompat.Builder(self)
                                 .setSmallIcon(R.drawable.ic_notification)
                                 .setContentTitle(msg.senderUser.getUser().getOptionalRealName())
