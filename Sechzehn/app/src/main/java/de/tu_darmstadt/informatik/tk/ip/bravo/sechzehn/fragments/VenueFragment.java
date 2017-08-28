@@ -73,8 +73,8 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     public static VenueFragment newInstance(String venueId) {
         VenueFragment fragment = new VenueFragment();
         Bundle args = new Bundle();
-        // args.putString(ARG_PARAM1, venueId);
-        args.putString(ARG_PARAM1, "4bccb6ebb6c49c7418419491");
+        args.putString(ARG_PARAM1, venueId);
+        //args.putString(ARG_PARAM1, "4bccb6ebb6c49c7418419491");
         fragment.setArguments(args);
         return fragment;
     }
@@ -231,11 +231,11 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                                  @Override
                                  public void onResponse(Call<CheckIn> call, Response<CheckIn> response) {
                                      if (response.isSuccessful()) {
-                                         binding.checkin.setEnabled(false);
                                          final Venue updatedVenue = response.body().venue;
                                          venue.checkinsCount = updatedVenue.checkinsCount;
                                          venue.rating = updatedVenue.rating;
                                          venue.ratingCount = updatedVenue.ratingCount;
+                                         binding.ratingBar.setNumStars(0);
                                          binding.setVenue(venue);//To Update the view.
                                      }
                                  }
