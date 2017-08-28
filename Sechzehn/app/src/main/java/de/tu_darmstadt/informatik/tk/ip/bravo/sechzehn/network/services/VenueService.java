@@ -92,5 +92,12 @@ public interface VenueService {
      */
     VenueService VenueService = ServiceGenerator.createService(VenueService.class);
 
-
+    /**
+     * Rate a comment
+     */
+    @POST("comments/{comment_id}/rating")
+    Call<Comment> rateComment(
+            @NonNull @Path("comment_id") int commentId,
+            @NonNull @Body Comment comment
+    );
 }

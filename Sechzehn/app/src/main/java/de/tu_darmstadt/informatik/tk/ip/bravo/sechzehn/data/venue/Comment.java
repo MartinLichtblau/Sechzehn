@@ -14,7 +14,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
  * @author Alexander Geiß on 21.08.2017.
  */
 
-public class Comment  {
+public class Comment {
     public Integer id;
     public User user;
     public Venue venue;
@@ -37,4 +37,11 @@ public class Comment  {
      */
     @SerializedName("created_at")
     public String created;
+
+    public Comment(Integer rating) {
+        this.rating = rating;
+    }
+
+    public Comment() {
+    }
 }
