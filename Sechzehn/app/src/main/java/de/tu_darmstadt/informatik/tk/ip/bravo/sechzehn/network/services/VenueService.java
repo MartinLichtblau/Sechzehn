@@ -6,11 +6,15 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Photo;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.ServiceGenerator;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -87,17 +91,36 @@ public interface VenueService {
             @NonNull @Body Comment comment
     );
 
-    /**
-     * An instance of the {@link VenueService}.
-     */
-    VenueService VenueService = ServiceGenerator.createService(VenueService.class);
 
     /**
      * Rate a comment
      */
     @POST("comments/{comment_id}/rating")
     Call<Comment> rateComment(
-            @NonNull @Path("comment_id") int commentId,
+            @Path("comment_id") int commentId,
             @NonNull @Body Comment comment
     );
+
+    @GET("venues/{venue_id}/comments")
+    Call<Pagination<Comment>> getComments(
+            @NonNull @Path("venue_id") String venueId,
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPage
+    );
+
+    /**
+     * Add a photo
+     */
+    @Multipart
+    @POST("venues/{venue_id}/photos")
+    Call<Photo> addPhoto(
+            @NonNull @Path("venue_id") String venueId,
+            @NonNull @Part MultipartBody.Part photo
+    );
+
+    /**
+     * An instance of the {@link VenueService}.
+     */
+    VenueService VenueService = ServiceGenerator.createService(VenueService.class);
+
 }

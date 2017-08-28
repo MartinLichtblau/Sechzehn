@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment"/>
+
         <variable
             name="comment"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment"/>
@@ -26,7 +28,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="144dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
@@ -96,6 +98,19 @@
                     android:textDirection="rtl"/>
             </LinearLayout>
 
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:maxHeight="256dp"
+                android:scaleType="centerCrop"
+                android:visibility="@{VenueFragment.objectToVisibility(comment.photo)}"
+                app:venuePictureUrl="@{comment.photo.url}"
+                tools:src="@drawable/profile_coverfoto_default"
+                />
+
             <TextView
                 android:id="@+id/textView15"
                 android:layout_width="wrap_content"
@@ -103,7 +118,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:text="@{comment.body}"
                 tools:text="{text}"/>
 

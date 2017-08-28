@@ -29,7 +29,7 @@
         tools:replace="android:allowBackup">
         <activity
             android:name=".activities.BottomTabsActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
             >

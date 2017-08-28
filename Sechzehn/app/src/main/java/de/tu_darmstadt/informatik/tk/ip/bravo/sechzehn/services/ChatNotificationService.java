@@ -112,7 +112,7 @@ public class ChatNotificationService extends Service {
                 .putExtra(Intent.EXTRA_INTENT, BottomTabsActivity.EXTRA_INTENT_SHOW_MESSAGE)
                 .putExtra(Intent.EXTRA_USER, msg.sender);
 
-        return PendingIntent.getActivity(self, 0, intent, 0);
+        return PendingIntent.getActivity(self, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }
 
     /**

@@ -64,7 +64,6 @@
                         android:onClick="@{()->self.showPhotos(0)}"
                         android:scaleType="centerCrop"
                         android:src="@drawable/profile_coverfoto_default"
-                        android:visibility="@{VenueFragment.objectToVisibility(venue.getTopPhotoUrl(0))}"
                         app:venuePictureUrl="@{venue.getTopPhotoUrl(0)}"/>
 
                     <ImageView

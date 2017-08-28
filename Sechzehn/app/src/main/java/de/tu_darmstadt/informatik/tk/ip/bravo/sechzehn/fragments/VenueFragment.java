@@ -2,8 +2,12 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 
 import android.R;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
@@ -19,12 +23,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.ImageGalleryActivity;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.CheckIn;
@@ -36,9 +43,14 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.ViewCommentNe
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.CommentItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.HourItem;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.IgnoreErrorTarget;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ImagePicker;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.OnTextChangedListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.AnimatedFAB;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -54,9 +66,8 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     public final HourItem UNKNOWN_HOUR = new HourItem(new Hour(Hour.Day.UNKNOWN, null, null));
     public static final User EMPTY_USER = new User();
     private final User owner = BottomTabsActivity.getOwnerViewModel().getOwner().getValue();
-
     private Comment newComment = new Comment();
-
+    public static final int PHOTO_NEW_COMMENT = 7634;
     private String venueId;
     private Venue venue;
     private MaterialSheetFab<AnimatedFAB> fabSheet;
@@ -137,10 +148,18 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
                     venue = response.body();
                     binding.setVenue(venue);
                     binding.mapView.getMapAsync(VenueFragment.this);
-                    for (Comment comment : venue.comments) {
+                    displayHours();
+                }
+            }
+        });
+
+        VenueService.getComments(venueId,null,null).enqueue(new DefaultCallback<Pagination<Comment>>(getActivityEx()) {
+            @Override
+            public void onResponse(Call<Pagination<Comment>> call, Response<Pagination<Comment>> response) {
+                if (response.isSuccessful()) {
+                    for (Comment comment : response.body().data) {
                         binding.comments.add(new CommentItem(comment, fragNavController()));
                     }
-                    displayHours();
                 }
             }
         });
@@ -244,8 +263,40 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
         }
     }
 
-    public void addPhoto(View v) {
+    public void addPhotoToNewComment(View v) {
 
+        startActivityForResult(ImagePicker.getPickImageIntent(getContext()), PHOTO_NEW_COMMENT);
+
+        //Result receive in @onActivityResult
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PHOTO_NEW_COMMENT) {
+            final Uri imageUri = ImagePicker.getImageFromResult(getContext(), resultCode, data);
+            Picasso.with(getActivityEx())
+                    .load(imageUri)
+                    .into(new IgnoreErrorTarget() {
+                        @Override
+                        public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                            byte[] byteArray = SzUtils.compressWithJpgToByte(bitmap);
+                            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), byteArray);
+                            MultipartBody.Part picture = MultipartBody.Part.createFormData("photo", SzUtils.getOwnername() + "photo" + ".jpg", reqFile);
+                            VenueService.addPhoto(venueId, picture).enqueue(new DefaultCallback<Photo>(getActivityEx()) {
+                                @Override
+                                public void onResponse(Call<Photo> call, Response<Photo> response) {
+                                    if (response.isSuccessful()) {
+                                        newComment.photoId = response.body().id;
+                                        Picasso.with(getActivityEx()).load(imageUri).into(binding.viewCommentNew.imageView);
+                                    }
+                                }
+                            });
+                        }
+
+
+                    });
+        }
     }
 
     private static DecimalFormat ratingFormatter = new DecimalFormat("#0.0");
