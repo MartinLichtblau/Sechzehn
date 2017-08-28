@@ -49,3 +49,8 @@ $RECYCLE.BIN/
 *.lnk
 database/development.sqlite
 package-lock.json
+*.aux
+*.out
+*.bak
+*.synctex.gz
+*.toc
