@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:tools="http://schemas.android.com/tools"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -15,15 +15,13 @@
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.CommentItem"/>
     </data>
 
-    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                                        xmlns:tools="http://schemas.android.com/tools"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginBottom="4dp"
-                                        android:layout_marginLeft="8dp"
-                                        android:layout_marginRight="8dp"
-                                        android:layout_marginTop="4dp">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp">
 
 
         <LinearLayout
@@ -34,33 +32,68 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
                 android:gravity="center_vertical"
-                android:onClick="@{self::showUserProfile}"
                 android:orientation="horizontal"
-                android:paddingBottom="8dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="8dp">
+                android:weightSum="1">
 
-                <ImageView
-                    android:id="@+id/imageView5"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:profilePictureUrl="@{comment.user.profilePicture}"
-                    app:srcCompat="@drawable/ic_owner"/>
 
-                <TextView
-                    android:id="@+id/textView13"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
-                    android:text="@{comment.user.optionalRealName}"
-                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                    tools:text="{realname}"/>
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:onClick="@{self::showUserProfile}"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="8dp">
 
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:profilePictureUrl="@{comment.user.profilePicture}"
+                        app:srcCompat="@drawable/ic_owner"/>
+
+                    <TextView
+                        android:id="@+id/textView13"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@{comment.user.optionalRealName}"
+                        android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                        tools:text="{realname}"/>
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/imageButton2"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:onClick="@{self::voteUp}"
+                    android:src="@drawable/ic_thumb_up_black_24dp"/>
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{comment.rating.toString()}"
+                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                    tools:text="0"/>
+
+                <ImageButton
+                    android:id="@+id/imageButton3"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:onClick="@{self::voteDown}"
+                    android:src="@drawable/ic_thumb_down_black_24dp"
+                    android:textDirection="rtl"/>
             </LinearLayout>
 
             <TextView
@@ -74,40 +107,7 @@
                 android:text="@{comment.body}"
                 tools:text="{text}"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right|center_vertical"
-                android:orientation="horizontal"
-                android:weightSum="1">
 
-                <ImageButton
-                    android:id="@+id/imageButton2"
-                    style="@style/Base.Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    app:srcCompat="@drawable/ic_thumb_up_black_24dp"
-                    android:onClick="@{self::voteUp}"/>
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{comment.rating}"
-                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                    />
-
-                <ImageButton
-                    android:id="@+id/imageButton3"
-                    style="@style/Base.Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:textDirection="rtl"
-                    app:srcCompat="@drawable/ic_thumb_down_black_24dp"
-                    android:onClick="@{self::voteDown}"/>
-            </LinearLayout>
         </LinearLayout>
 
 
