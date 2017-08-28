@@ -114,7 +114,6 @@ public class LocationService extends Service implements
                 googleApiClient, locationRequest, this);
         //Fixes Bug: App does not start if location is not changed.
         // This is also needed to start the app in the emulator.
-        previousBestLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
     }
 
     @Override
@@ -190,7 +189,7 @@ public class LocationService extends Service implements
             if (previousBestLocation == null) {
                 updateLocation(location);
             } else if (previousBestLocation.getLatitude() != 0.0d && previousBestLocation.getLongitude() != 0.0d) {
-                if (previousBestLocation.distanceTo(location) > 25)
+                if (previousBestLocation.distanceTo(location) > 50)
                     updateLocation(location);
             }
         }

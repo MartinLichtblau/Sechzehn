@@ -2,20 +2,26 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.graphics.Bitmap;
+import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.MarkerMarkerOptions;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Pagination;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
@@ -38,19 +44,21 @@ public class SearchViewModel extends ViewModel{
     private final String TAG = "SearchViewModel";
     private static final UserService userService = ServiceGenerator.createService(UserService.class,SzUtils.getToken());
     private static final VenueService venueService = ServiceGenerator.createService(VenueService.class,SzUtils.getToken());
-    public MutableLiveData<Resource> userResults = new MutableLiveData<>();
-    public MutableLiveData<HashMap<Marker,MarkerOptions>> usersOnMap = new MutableLiveData<>();
-    public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
-    public MutableLiveData<HashMap<Marker,MarkerOptions>> venuesOnMap = new MutableLiveData<>();
-    public MutableLiveData<VenueSearch> lastVS = new MutableLiveData<>();
 
+    public MutableLiveData<Resource> userResults = new MutableLiveData<>();
+    public ArrayList<MarkerMarkerOptions> usersOnMap = new ArrayList<>();
+    public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
+    public ArrayList<MarkerMarkerOptions> venuesOnMap = new ArrayList<>();
+    public MutableLiveData<VenueSearch> lastVS = new MutableLiveData<>();
 
     public Boolean lastStateSaved = false;
     public GoogleMap map;
     private CameraPosition cameraPosition;
+    public Float lastSetZoom = 12f; //Default is 12
     public Boolean userToggle = true;
     public Boolean venueToggle = true;
-
+    public Marker selectedMarker;
+    public Integer lastBssState = BottomSheetBehavior.STATE_COLLAPSED;
 
     public void searchXUsersNearby(Integer numberUsers, Double lat, Double lng, Double radius){
         getUsers(null, numberUsers, lat, lng,radius,null,null);
@@ -75,29 +83,6 @@ public class SearchViewModel extends ViewModel{
         });
     }
 
-/*    public void searchXVenuesNearby(Integer numberVenues, Double lat, Double lng, Double radius){
-        getVenues(null, numberVenues, lat, lng, radius, null, null, null, null, null);
-    }*/
-
-    public void newSearchSectionHere (String section) {
-        LatLng center = map.getCameraPosition().target;
-        Double radius = getVisibleRadius();
-        VenueSearch vs = lastVS.getValue();
-        vs.setSection(Venue.Section.valueOf(section));
-        vs.setLat(center.latitude); vs.setLng(center.longitude); vs.setRadius(radius);
-        getVenues(vs);
-    }
-
-    public void alterLastVenueSearch(Integer page, Integer perPage, Double lat, Double lng, Double radius, String section, String query, Integer price, String time, Boolean sortByDistance){
-        if(null != query){
-
-        }
-        if(null != section){
-
-        }
-
-
-    }
 
     public void getVenues (VenueSearch vs) {
         venueResults.setValue(Resource.loading(null));
@@ -134,80 +119,102 @@ public class SearchViewModel extends ViewModel{
         getVenues(vs);
     }
 
-    public void reAddUserMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
-        //Add markers through markerOptions and save them
-        usersOnMap.setValue(reAddMarkersOnMap(markerMap));
-    }
-
-    public void reAddVenueMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
-        //Add markers through markerOptions and save them
-        venuesOnMap.setValue(reAddMarkersOnMap(markerMap));
-    }
-
-    public HashMap<Marker,MarkerOptions> reAddMarkersOnMap(HashMap<Marker,MarkerOptions> markerMap){
-        HashMap<Marker,MarkerOptions> markersOnMap = new HashMap<>();
-        for (Map.Entry<Marker, MarkerOptions> entry : markerMap.entrySet()) {
-            Marker marker = map.addMarker(entry.getValue());
-            marker.setTag(entry.getKey().getTag()); //Retrieve saved Object (User or Venue) in Tag
-            markersOnMap.put(marker, entry.getValue());
+    public void createAddVenueMarkers(LinkedHashMap<Venue, Bitmap> venueIconMap) {
+        Integer pos = 0;
+        for (Map.Entry<Venue, Bitmap> e : venueIconMap.entrySet()) {
+            Venue venue = e.getKey();
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(new LatLng(venue.lat, venue.lng))
+                    .title(venue.name)
+                    .flat(true) //To save performance
+                    .zIndex((float) (venueIconMap.size() - pos)) //Top list items should show on top
+                    .snippet("View Venue Rating: " + (venue.rating <= 0.0d ? "-.-" : venue.rating))
+                    .infoWindowAnchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromBitmap(e.getValue()));
+            Marker marker = map.addMarker(markerOptions);
+            marker.setTag(pos++);
+            venuesOnMap.add(new MarkerMarkerOptions(marker, markerOptions));
         }
-        return markersOnMap;
+    }
+
+    public void reAddUserMarkersOnMap(ArrayList<MarkerMarkerOptions> userMmoList){
+        //Add markers through markerOptions and save them
+        usersOnMap = reAddMarkersOnMap(userMmoList);
+    }
+
+    public void reAddVenueMarkersOnMap(ArrayList<MarkerMarkerOptions> venueMmoList){
+        //Add markers through markerOptions and save them
+        venuesOnMap = reAddMarkersOnMap(venueMmoList);
+    }
+
+    public ArrayList<MarkerMarkerOptions> reAddMarkersOnMap(ArrayList<MarkerMarkerOptions> mmoList){
+        if(mmoList == null || mmoList.isEmpty())
+            return null;
+        ArrayList<MarkerMarkerOptions> newMmoList = new ArrayList<>();
+        for (MarkerMarkerOptions oldMmo : mmoList) {
+            Marker newMarker = map.addMarker(oldMmo.markerOptions);
+            newMarker.setTag(oldMmo.marker.getTag()); //Retrieve saved Object (User or Venue) in Tag
+            if(selectedMarker.equals(oldMmo.marker)) //This marker was selecte on SaveLastState
+                newMarker.showInfoWindow();
+            newMmoList.add(new MarkerMarkerOptions(newMarker, oldMmo.markerOptions));
+        }
+        return newMmoList;
     }
 
     public void toggleUsers(View view){
         if(userToggle){
             userToggle = false;
-            hideMarkersOnMap(usersOnMap.getValue());
+            hideMarkersOnMap(usersOnMap);
         } else{
             userToggle = true;
-            showMarkersOnMap(usersOnMap.getValue());
+            showMarkersOnMap(usersOnMap);
         }
     }
 
     public void toggleVenues(View view){
         if(venueToggle){
             venueToggle = false;
-            hideMarkersOnMap(venuesOnMap.getValue());
+            hideMarkersOnMap(venuesOnMap);
         } else{
             venueToggle = true;
-            showMarkersOnMap(venuesOnMap.getValue());
+            showMarkersOnMap(venuesOnMap);
         }
     }
 
-    private void showMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
-        if(markersOnMap == null || markersOnMap.isEmpty())
+    private void showMarkersOnMap(ArrayList<MarkerMarkerOptions> mmoList) {
+        if(mmoList == null || mmoList.isEmpty())
             return;
-        for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
-            entry.getKey().setVisible(true); //Set Marker visibility
-            entry.getValue().visible(true); //persist visibility also in markeroptions
+        for (MarkerMarkerOptions mmo : mmoList) {
+            mmo.marker.setVisible(true);
+            mmo.markerOptions.visible(true);
         }
     }
 
-    private void hideMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
-        if(markersOnMap == null || markersOnMap.isEmpty())
+    private void hideMarkersOnMap(ArrayList<MarkerMarkerOptions> mmoList) {
+        if(mmoList == null || mmoList.isEmpty())
             return;
-        for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
-            entry.getKey().setVisible(false);
-            entry.getValue().visible(false);
+        for (MarkerMarkerOptions mmo : mmoList) {
+            mmo.marker.setVisible(false);
+            mmo.markerOptions.visible(false);
         }
     }
 
-    public void removeMarkersOnMap(HashMap<Marker,MarkerOptions> markersOnMap) {
-        if(markersOnMap == null || markersOnMap.isEmpty())
+    public void removeMarkersOnMap(ArrayList<MarkerMarkerOptions> mmoList) {
+        if(mmoList == null || mmoList.isEmpty())
             return;
-        for (Map.Entry<Marker, MarkerOptions> entry : markersOnMap.entrySet()) {
-            entry.getKey().remove();
+        for (MarkerMarkerOptions mmo : mmoList) {
+            mmo.marker.remove();
         }
     }
 
-    public void removeAllUsers(){
-        if(null != usersOnMap.getValue())
-            removeMarkersOnMap(usersOnMap.getValue());
+    public void removeAllUsersOnMap(){
+        removeMarkersOnMap(usersOnMap);
+        usersOnMap = new ArrayList<>();
     }
 
-    public void removeAllVenues(){
-        if(null != venuesOnMap.getValue())
-            removeMarkersOnMap(venuesOnMap.getValue());
+    public void removeAllVenuesOnMap(){
+        removeMarkersOnMap(venuesOnMap);
+        venuesOnMap = new ArrayList<>();
     }
 
     public Double getVisibleRadius(){
@@ -239,10 +246,12 @@ public class SearchViewModel extends ViewModel{
     public void restoreLastState(){
         lastStateSaved = false;
         //restore User Data
-        reAddUserMarkersOnMap(usersOnMap.getValue());
+        reAddUserMarkersOnMap(usersOnMap);
         //restore Venue Data
-        reAddVenueMarkersOnMap(venuesOnMap.getValue());
+        reAddVenueMarkersOnMap(venuesOnMap);
         //restore Camera
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        CameraUpdate cu = CameraUpdateFactory.newCameraPosition(cameraPosition);
+        map.moveCamera(cu);
     }
 }
