@@ -337,7 +337,7 @@ public class SearchFragment extends BaseFragment {
     public void initalSearch() {
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
-        VenueSearch initialVS = new VenueSearch(25);
+        VenueSearch initialVS = new VenueSearch();
         searchVM.getVenues(initialVS);
     }
 
@@ -361,8 +361,8 @@ public class SearchFragment extends BaseFragment {
                             // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
                             @Override
                             public void run() {
-                                //Get User Update every 30 seconds
-                                searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
+                                //Live update User every 30 seconds
+                                searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, 50.0);
                             }
                         }, 30000);
                         break;
@@ -392,15 +392,6 @@ public class SearchFragment extends BaseFragment {
         });
     }
 
-    private void observeVenueSearch() {
-        //observe the currenlty active Venue Search to dynamically adapt the active_search_layout
-        searchVM.lastVS.observe(this, new Observer<VenueSearch>() {
-            @Override
-            public void onChanged(@Nullable VenueSearch vs) {
-            }
-        });
-    }
-
     public void addUsers(List<User> userList) {
         createAddUserMarkers(userList);
     }
@@ -411,7 +402,8 @@ public class SearchFragment extends BaseFragment {
             public void onChanged(@Nullable LinkedHashMap<Venue, Bitmap> venueIconMap) {
                 searchVM.createAddVenueMarkers(venueIconMap);
                 addVenuesOnList(venueIconMap);
-
+                //Open BottomSearchSheet
+                bssBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
     }
@@ -475,36 +467,41 @@ public class SearchFragment extends BaseFragment {
 
         //Adapt activeQuery and Sync Detailed~Active
         if (activeCalls) {
-            if (activeQuery.isChecked()) {
-                query = activeQuery.getText().toString();
+            if (TextUtils.isEmpty(activeQuery.getText())) {
+                //Don't serach, instead Open detailedSearch and focus querySearch
+                activeQuery.setChecked(false);
+                bssBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                bss.searchBottomsheetAppbarlayout.setExpanded(true);
+                detailedQuery.findFocus();
+                detailedQuery.setIconified(false);
+                detailedQuery.requestFocusFromTouch();
+                return;
             } else {
-                query = null;
+                if(activeQuery.isChecked()){
+                    query = activeQuery.getText().toString();
+                    detailedQuery.setQuery(query, false);
+                }else{
+                    query = "";
+                }
+
             }
-            detailedQuery.setQuery(query, false);
         } else {
             query = detailedQuery.getQuery().toString();
             if (TextUtils.isEmpty(query)) {
-                //bss.activeQuery.setText(" ");
                 activeQuery.setChecked(false);
-                //bss.activeQuery.setClickable(false);
             } else {
                 activeQuery.setText(query);
                 activeQuery.setChecked(true);
-                activeQuery.setClickable(true);
             }
         }
-
-        if (activeCalls && !activeQuery.isChecked())
-            return; //Or both activeQuery & detailed search, since the query was set empty and triggered the Searchviews onTextChangeListener
         //make the search
-        VenueSearch alteredVS = searchVM.lastVS.getValue();
+        VenueSearch alteredVS = searchVM.lastVS;
         alteredVS.setQuery(query);
         searchVM.getVenues(alteredVS);
     }
 
     public void alterSearchSection(View view) {
         Venue.Section section = Venue.Section.valueOf(view.getTag().toString());
-
         //Sync detailed_view and active_view
         ToggleButton activeSection = bss.activeSection;
         ToggleButton detailedSection = (ToggleButton) bss.getRoot().findViewWithTag(section);
@@ -519,27 +516,35 @@ public class SearchFragment extends BaseFragment {
 
         } else {
             //Sync Active
-            if (detailedSection.isChecked()) {
-                activeSection.setTag(section);
-                Drawable relatedDrawable = detailedSection.getButtonDrawable();
-                activeSection.setButtonDrawable(relatedDrawable);
-                activeSection.setChecked(true);
-            } else {
-                section = null;
-                activeSection.setChecked(false);
-                //Leave the old ButtonDrawable and Tag as is
+            if(searchVM.lastBssState == BottomSheetBehavior.STATE_EXPANDED){
+                if (detailedSection.isChecked()) {
+                    activeSection.setTag(section);
+                    Drawable relatedDrawable = detailedSection.getButtonDrawable();
+                    activeSection.setButtonDrawable(relatedDrawable);
+                    activeSection.setChecked(true);
+                } else {
+                    section = null;
+                    activeSection.setChecked(false);
+                    //Leave the old ButtonDrawable and Tag as is
+                }
+            }else{
+                //Sections should act as instant search sections, making a new Search only with this section
+                VenueSearch newVS = new VenueSearch();
+                newVS.setSection(section);
+                searchVM.getVenues(newVS);
             }
+
         }
 
         //make Search
-        VenueSearch alteredVS = searchVM.lastVS.getValue();
+        VenueSearch alteredVS = searchVM.lastVS;
         alteredVS.setSection(section); //Convert the string section to enum section
         searchVM.getVenues(alteredVS);
     }
 
     public void alterSearchPrice(View view) {
         Integer price = Integer.valueOf(view.getTag().toString());
-        VenueSearch alteredVS = searchVM.lastVS.getValue();
+        VenueSearch alteredVS = searchVM.lastVS;
         ToggleButton activePrice = bss.activePrice;
         ToggleButton detailedPrice;
 
@@ -576,7 +581,7 @@ public class SearchFragment extends BaseFragment {
         else
             opennow = ((ToggleButton) view).isChecked();
         String nowDate = null;
-        VenueSearch alteredVS = searchVM.lastVS.getValue();
+        VenueSearch alteredVS = searchVM.lastVS;
         //Toast.makeText(getActivity(), "alterSearchOpennow: "+opennow.toString(), Toast.LENGTH_SHORT).show();
         if (opennow)
             nowDate = SzUtils.getNowDate("yyyy-MM-dd hh:mm");
@@ -609,7 +614,7 @@ public class SearchFragment extends BaseFragment {
 
     private void restoreActiveBar(){
         Log.d(TAG, "restoreActiveBar");
-        VenueSearch vs = searchVM.lastVS.getValue();
+        VenueSearch vs = searchVM.lastVS;
 
         //Active Query
         if(vs.getQuery() != null){

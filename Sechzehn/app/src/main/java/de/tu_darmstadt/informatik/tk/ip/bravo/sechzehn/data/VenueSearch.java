@@ -31,7 +31,7 @@ public class VenueSearch {
         this.searchHere = searchHere;
     }
 
-    public VenueSearch(Integer perPage){
+    public VenueSearch(){
         this.perPage = (perPage == null ? 25 : perPage);
     }
 
