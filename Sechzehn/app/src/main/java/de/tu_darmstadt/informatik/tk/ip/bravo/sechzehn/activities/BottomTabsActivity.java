@@ -9,12 +9,10 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -23,25 +21,28 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
-
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 import com.ncapdevi.fragnav.FragNavController;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Resource;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.BaseFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.MessageFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.OwnerFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.ChatNotificationService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services.LocationService;
@@ -53,12 +54,6 @@ import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabReselectListener;
-import com.roughike.bottombar.OnTabSelectListener;
-
-import java.io.File;
 
 @RuntimePermissions
 public class BottomTabsActivity extends LifecycleActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
@@ -76,7 +71,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-           //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull
+        //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull
         super.onCreate(null); //don't do super.onCreate(savedInstanceState) or it will load e.g. searchFragment before fully checks and initialization
         checkRequirements().observe(this, new Observer<Boolean>() {
             @Override
@@ -90,8 +85,8 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
-        LayoutInflater inflator=getLayoutInflater();
-        View view=inflator.inflate(layoutResID, null, false);
+        LayoutInflater inflator = getLayoutInflater();
+        View view = inflator.inflate(layoutResID, null, false);
         view.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         setContentView(view);
     }
@@ -134,7 +129,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         requirementsOK.setValue(false);
         checkStages.setValue(0);
 
-        checkStages.observe(this, new Observer<Integer>() {
+        checkStages.observeForever(new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer stage) {
                 switch (stage) {
@@ -148,6 +143,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                         break;
                     case 2:
                         //2. Check permissions
+                        Log.d("Has observer", String.valueOf(checkStages.hasActiveObservers()));
                         BottomTabsActivityPermissionsDispatcher.checkPermissionsWithCheck(BottomTabsActivity.this);
                         break;
                     case 3:
@@ -158,6 +154,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                         break;
                     case 4:
                         requirementsOK.setValue(true);
+                        checkStages.removeObserver(this);
                         break;
                     default:
                         Toast.makeText(BottomTabsActivity.this, "Fatal ERROR in checkRequirements — You should not see that —", Toast.LENGTH_SHORT).show();
@@ -195,7 +192,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                     checkStages.setValue(checkStages.getValue());
                 }
             }, 5000);
-        }else{
+        } else {
             checkStages.setValue(checkStages.getValue() + 1);
         }
     }
@@ -232,16 +229,16 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         });
     }
 
-    private Boolean isGPSOk(){
+    private Boolean isGPSOk() {
         Location localLoc = LocationService.getPreviousBestLocation();
         LatLng remoteLatLng = ownerVM.getLatLng();
 /*        Toast.makeText(this, "LocalLoc: "+localLoc.getLatitude()+" "+localLoc.getLatitude()+
                 "RemoteLoc: "+remoteLoc.latitude+" "+remoteLoc.longitude, Toast.LENGTH_SHORT).show();*/
         //Toast.makeText(this, "isGPSOk", Toast.LENGTH_SHORT).show();
 
-        if(null != localLoc && null != remoteLatLng){
-            Double distInMeter = SphericalUtil.computeDistanceBetween(new LatLng(localLoc.getLatitude(),localLoc.getLongitude()), remoteLatLng);
-            if(distInMeter < 100)
+        if (null != localLoc && null != remoteLatLng) {
+            Double distInMeter = SphericalUtil.computeDistanceBetween(new LatLng(localLoc.getLatitude(), localLoc.getLongitude()), remoteLatLng);
+            if (distInMeter < 100)
                 return true;
         }
         //else try again
@@ -260,6 +257,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
             Manifest.permission.ACCESS_FINE_LOCATION})
     public void checkPermissions() {
         checkStages.setValue(checkStages.getValue() + 1);
+        Log.d("Has observer", String.valueOf(checkStages.hasActiveObservers()));
     }
 
     @OnShowRationale({
@@ -338,7 +336,7 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     public void factoryReset() {
         //Awesome new function > clearApplicationUserData > https://developer.android.com/reference/android/app/ActivityManager.html
-        ((ActivityManager)getSystemService(ACTIVITY_SERVICE))
+        ((ActivityManager) getSystemService(ACTIVITY_SERVICE))
                 .clearApplicationUserData();
     }
 
