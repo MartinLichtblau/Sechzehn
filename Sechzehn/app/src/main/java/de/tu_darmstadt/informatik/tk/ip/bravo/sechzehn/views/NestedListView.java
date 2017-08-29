@@ -20,7 +20,6 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.BR;
  */
 
 public class NestedListView extends LinearLayout {
-    private List<Item> items = new ArrayList<>();
 
     public NestedListView(Context context) {
         super(context);
@@ -42,7 +41,6 @@ public class NestedListView extends LinearLayout {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(item.getLayoutRes(), this, false);
         item.bind(v);
-        items.add(item);
         addView(v);
     }
 
@@ -50,7 +48,6 @@ public class NestedListView extends LinearLayout {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(item.getLayoutRes(), this, false);
         item.bind(v);
-        items.add(position, item);
         addView(v,position);
     }
 
