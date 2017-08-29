@@ -3,12 +3,13 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.squareup.picasso.Picasso;
+import java.io.IOException;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
@@ -16,7 +17,6 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Photo;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.ViewCommentNewBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.IgnoreErrorTarget;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.OnTextChangedListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import okhttp3.MediaType;
@@ -109,35 +109,31 @@ public class NewCommentView {
     public void setPhoto(@Nullable Uri imageUri) {
         if (imageUri != null) {
             startImageLoading();
-            Picasso.with(context)
-                    .load(imageUri)
-                    .into(new IgnoreErrorTarget() {
-                        @Override
-                        public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                            binding.imageView.setImageBitmap(bitmap);
-                            binding.imageView.setAlpha(0.5f);
-                            VenueService.addPhoto(venueId, bitmapToBodyPart(bitmap)).enqueue(new DefaultCallback<Photo>(context) {
-                                @Override
-                                public void onResponse(Call<Photo> call, Response<Photo> response) {
-                                    if (response.isSuccessful()) {
-                                        newComment.photoId = response.body().id;
-                                        binding.imageView.setAlpha(1.f);
-                                    } else {
-                                        binding.imageView.setImageBitmap(null);
-                                    }
-                                    onFinally(call);
-                                }
-
-                                @Override
-                                public void onFinally(Call<Photo> call) {
-                                    endImageLoading();
-                                }
-                            });
-
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+                binding.imageView.setImageBitmap(bitmap);
+                binding.imageView.setAlpha(0.5f);
+                VenueService.addPhoto(venueId, bitmapToBodyPart(bitmap)).enqueue(new DefaultCallback<Photo>(context) {
+                    @Override
+                    public void onResponse(Call<Photo> call, Response<Photo> response) {
+                        if (response.isSuccessful()) {
+                            newComment.photoId = response.body().id;
+                            binding.imageView.setAlpha(1.f);
+                        } else {
+                            binding.imageView.setImageBitmap(null);
                         }
+                        onFinally(call);
+                    }
 
+                    @Override
+                    public void onFinally(Call<Photo> call) {
+                        endImageLoading();
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-                    });
         }
     }
 
