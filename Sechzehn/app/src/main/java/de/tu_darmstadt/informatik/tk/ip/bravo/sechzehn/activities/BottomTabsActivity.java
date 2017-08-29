@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,7 +25,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 
@@ -75,9 +76,8 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull
+           //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull
         super.onCreate(null); //don't do super.onCreate(savedInstanceState) or it will load e.g. searchFragment before fully checks and initialization
-        setContentView(R.layout.activity_bottom_tabs);
         checkRequirements().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean requirementsOK) {
@@ -86,6 +86,14 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                 }
             }
         });
+    }
+
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        LayoutInflater inflator=getLayoutInflater();
+        View view=inflator.inflate(layoutResID, null, false);
+        view.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        setContentView(view);
     }
 
     private void runApp() {

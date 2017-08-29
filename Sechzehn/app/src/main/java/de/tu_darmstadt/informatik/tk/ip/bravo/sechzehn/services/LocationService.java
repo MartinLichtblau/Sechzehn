@@ -3,6 +3,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -112,8 +113,11 @@ public class LocationService extends Service implements
         //Since our app assures that at all times all permissions are granted it's ok like this
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 googleApiClient, locationRequest, this);
-        //Fixes Bug: App does not start if location is not changed.
-        // This is also needed to start the app in the emulator.
+
+        // This is needed to start the app in the emulator.
+        if ("ranchu".equals(Build.HARDWARE)) {
+            previousBestLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        }
     }
 
     @Override
@@ -211,6 +215,7 @@ public class LocationService extends Service implements
                     retryUpdateLocation(location);
                 }
             }
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 //Toast.makeText(LocationService.this, "Error: "+t.getCause(), Toast.LENGTH_SHORT).show();
@@ -223,7 +228,7 @@ public class LocationService extends Service implements
         return previousBestLocation;
     }
 
-    protected void retryUpdateLocation(final Location location){
+    protected void retryUpdateLocation(final Location location) {
         Log.d(TAG, "retryUpdateLocation");
         new Handler().postDelayed(new Runnable() {
             public void run() {

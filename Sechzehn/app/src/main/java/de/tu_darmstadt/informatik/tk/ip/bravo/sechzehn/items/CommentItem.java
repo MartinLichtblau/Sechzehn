@@ -3,15 +3,13 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items;
 import android.view.View;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.AnimatedFragNavController;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NestedListView;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.ItemCommentBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.UserProfileFragment;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
+import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views.NestedListView;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService.VenueService;
@@ -20,22 +18,21 @@ import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.V
  * @author Alexander Geiß on 21.08.2017.
  */
 
-public class CommentItem extends DataBindingItem<Comment, ItemCommentBinding, CommentItem, CommentItem.ViewHolder> implements NestedListView.Item {
+public class CommentItem implements NestedListView.Item {
+    public static final Comment DOWNVOTE = new Comment(-1);
+    public static final Comment UPVOTE = new Comment(1);
     /**
      * Binding for NestedListView
      */
+    private Comment comment;
     private ItemCommentBinding binding;
     private AnimatedFragNavController fragNavController;
 
     public CommentItem(Comment comment, AnimatedFragNavController fragNavController) {
-        super(comment);
+        this.comment = comment;
         this.fragNavController = fragNavController;
     }
 
-    @Override
-    public int getType() {
-        return 0;
-    }
 
     /**
      * Returns the corresponding layout.
@@ -52,7 +49,7 @@ public class CommentItem extends DataBindingItem<Comment, ItemCommentBinding, Co
     public void showUserProfile(View v) {
         fragNavController.pushFragment(
                 UserProfileFragment.newInstance(
-                        getData().user.getUsername()
+                        comment.user.getUsername()
                 )
         );
     }
@@ -65,46 +62,51 @@ public class CommentItem extends DataBindingItem<Comment, ItemCommentBinding, Co
     @Override
     public void bind(View view) {
         binding = ItemCommentBinding.bind(view);
-        binding.setSelf(getSelf());
-        binding.setComment(getData());
+        binding.setSelf(this);
+        binding.setComment(comment);
     }
 
-    @Override
-    public ViewHolder getViewHolder(View v) {
-        return new ViewHolder(ItemCommentBinding.bind(v));
-    }
-
-    public class ViewHolder extends DataBindingItem<Comment, ItemCommentBinding, CommentItem, CommentItem.ViewHolder>.ViewHolder {
-        /**
-         * Creates a new ViewHolder with
-         *
-         * @param binding the binding used for this Item.
-         */
-        public ViewHolder(ItemCommentBinding binding) {
-            super(binding);
-        }
-
-        @Override
-        protected void bindItemImplementation(ItemCommentBinding binding, Comment comment) {
-            binding.setComment(comment);
-        }
-    }
 
     public void voteUp(View v) {
-        VenueService.rateComment(getData().id, new Comment(1)).enqueue(new DefaultCallback<Comment>(v.getContext()) {
+        deactivateRating();
+        VenueService.rateComment(comment.id, UPVOTE).enqueue(new DefaultCallback<Comment>(v.getContext()) {
             @Override
             public void onResponse(Call<Comment> call, Response<Comment> response) {
-                // TODO
+                if (response.isSuccessful()) {
+                    updateRating(response.body());
+
+                }
             }
         });
+    }
+
+    private void updateRating(Comment body) {
+        comment.rating = body.rating;
+        binding.setComment(comment);
+    }
+
+    private void deactivateRating() {
+        binding.upVote.setEnabled(false);
+        binding.downVote.setEnabled(false);
+        binding.downVote.setAlpha(0.26f);
+        binding.upVote.setAlpha(0.26f);
     }
 
     public void voteDown(View v) {
-        VenueService.rateComment(getData().id, new Comment(1)).enqueue(new DefaultCallback<Comment>(v.getContext()) {
+        deactivateRating();
+        VenueService.rateComment(comment.id, DOWNVOTE).enqueue(new DefaultCallback<Comment>(v.getContext()) {
             @Override
             public void onResponse(Call<Comment> call, Response<Comment> response) {
-                // TODO
+                if (response.isSuccessful()) {
+                    updateRating(response.body());
+                }
             }
+
         });
+    }
+
+    public static String formatRating(Integer rating) {
+        if (rating == null) return "0";
+        return rating.toString();
     }
 }

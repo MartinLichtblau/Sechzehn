@@ -6,8 +6,8 @@
 
     <data>
 
-        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.VenueFragment"/>
-
+        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DB"/>
+        <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items.CommentItem"/>
         <variable
             name="comment"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment"/>
@@ -70,32 +70,35 @@
                         tools:text="{realname}"/>
                 </LinearLayout>
 
-                <ImageButton
-                    android:id="@+id/imageButton2"
-                    style="@style/Base.Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:onClick="@{self::voteUp}"
-                    android:src="@drawable/ic_thumb_up_black_24dp"/>
 
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{comment.rating.toString()}"
-                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                    tools:text="0"/>
 
-                <ImageButton
-                    android:id="@+id/imageButton3"
-                    style="@style/Base.Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:onClick="@{self::voteDown}"
-                    android:src="@drawable/ic_thumb_down_black_24dp"
-                    android:textDirection="rtl"/>
+                    <ImageButton
+                        android:id="@+id/upVote"
+                        style="@style/Base.Widget.AppCompat.Button.Borderless"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:onClick="@{self::voteUp}"
+                        android:src="@drawable/ic_thumb_up_black_24dp"/>
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{CommentItem.formatRating(comment.rating)}"
+                        android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                        tools:text="0"/>
+
+                    <ImageButton
+                        android:id="@+id/downVote"
+                        style="@style/Base.Widget.AppCompat.Button.Borderless"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:onClick="@{self::voteDown}"
+                        android:src="@drawable/ic_thumb_down_black_24dp"
+                        android:textDirection="rtl"/>
+
             </LinearLayout>
 
             <ImageView
@@ -106,7 +109,7 @@
                 android:adjustViewBounds="true"
                 android:maxHeight="256dp"
                 android:scaleType="centerCrop"
-                android:visibility="@{VenueFragment.objectToVisibility(comment.photo)}"
+                android:visibility="@{DB.objectToVisibility(comment.photo)}"
                 app:venuePictureUrl="@{comment.photo.url}"
                 tools:src="@drawable/profile_coverfoto_default"
                 />

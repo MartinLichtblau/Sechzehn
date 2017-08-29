@@ -46,6 +46,14 @@ public class NestedListView extends LinearLayout {
         addView(v);
     }
 
+    public void add(int position, Item item) {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(item.getLayoutRes(), this, false);
+        item.bind(v);
+        items.add(position, item);
+        addView(v,position);
+    }
+
     public void add(Iterable<? extends Item> items) {
         for (Item i : items) {
             add(i);

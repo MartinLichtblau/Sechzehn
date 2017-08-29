@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/primary"/>
+    <item
+        android:drawable="@drawable/map_background"
+        android:gravity="center_horizontal|center_vertical"/>
+
+    <item
+        android:width="140dp"
+        android:height="140dp"
+        android:drawable="@drawable/ic_logo"
+        android:gravity="center_horizontal"
+        android:top="72dp"/>
+
+</layer-list>

@@ -9,6 +9,8 @@
         <!--   theme UI controls like checkboxes and text fields -->
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="android:windowBackground">@drawable/logo_background</item>
+
         <!--<item realname="android:buttonStyle">@style/PrimaryFlatButton</item>-->
         <!--<item realname="android:textViewStyle">@style/PrimaryText</item>-->
     </style>
