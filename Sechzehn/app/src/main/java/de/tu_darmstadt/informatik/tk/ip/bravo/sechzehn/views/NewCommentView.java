@@ -79,6 +79,8 @@ public class NewCommentView {
                     Comment myComment = response.body();
                     myComment.user = owner;
                     binding.setNewComment(newComment);
+                    binding.imageView.setImageBitmap(null);
+                    binding.imageView.setVisibility(View.GONE);
                     newCommentListener.addComment(myComment);
                 }
                 onFinally(call);
@@ -166,6 +168,7 @@ public class NewCommentView {
         imageLoading = true;
         binding.submit.setEnabled(false);
         binding.imageLoading.setVisibility(View.VISIBLE);
+        binding.imageView.setVisibility(View.VISIBLE);
     }
 
     @NonNull
