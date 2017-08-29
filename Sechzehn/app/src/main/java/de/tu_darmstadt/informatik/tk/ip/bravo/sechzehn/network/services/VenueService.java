@@ -53,7 +53,8 @@ public interface VenueService {
             @Query("section") Venue.Section section,
             @Query("query") String query,
             @Query("price") Integer price,
-            @Query("time") String time);
+            @Query("time") String time,
+            @Query("sort_by_distance") Boolean sortByDistance);
 
     /**
      * Gets detail info about a venue.

@@ -96,7 +96,7 @@ public class SearchViewModel extends ViewModel{
             vs.setLat(center.latitude); vs.setLng(center.longitude); vs.setRadius(radius);
         }
 
-        venueService.getVenues(vs.page, vs.perPage, vs.lat, vs.lng, vs.radius, vs.section, vs.query, vs.price, vs.time) //@TODO include sortByDistance
+        venueService.getVenues(vs.page, vs.perPage, vs.lat, vs.lng, vs.radius, vs.section, vs.query, vs.price, vs.time, vs.sortByDistance)
                 .enqueue(new Callback<Pagination<Venue>>() {
             @Override
             public void onResponse(Call<Pagination<Venue>> call, Response<Pagination<Venue>> response) {

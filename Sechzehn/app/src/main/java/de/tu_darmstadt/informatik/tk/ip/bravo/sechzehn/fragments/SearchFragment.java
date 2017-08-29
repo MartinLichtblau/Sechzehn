@@ -21,7 +21,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -130,6 +132,7 @@ public class SearchFragment extends BaseFragment {
 
         bssBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             CameraUpdate cu;
+            Boolean isSliding = false;
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 searchVM.lastBssState = newState;
@@ -593,6 +596,13 @@ public class SearchFragment extends BaseFragment {
         } else {
             bss.activeOpennow.setChecked(opennow);
         }
+    }
+
+    public void alterSortByDistance(View view){
+        VenueSearch alteredVS = searchVM.lastVS;
+        Boolean sortByDistance = ((CheckBox) view).isChecked();
+        alteredVS.setSortByDistance(sortByDistance);
+        searchVM.getVenues(alteredVS);
     }
 
     public void fab(View view) {
