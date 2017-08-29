@@ -118,11 +118,11 @@ The authentication in our project is done with JSON Web Tokens (JWTs) \cite{jwt}
 \subsection{Android Data Binding}
 Android Data Binding \cite{databinding} enables us to write declarative layouts. Those can be easily adapted with new data in various forms by just passing a data object. Therefore it minimizes the amount of glue code needed. Furthermore it implements a kind of view holder pattern, so it is not necessary to use \texttt{findViewById} since all views are available through the binding object.
 \subsection{Retrofit}
-In our app HTTP requests are done with Retrofit\cite{retrofit}. Retrofit is a type-safe client for Android that helps the developer to retrieve and upload structured data like JSON via a REST based web service. Retrofit itself is based on the OkHttp Library. We chose to use Retrofit because it is a state-of-the-art technology that is also recommended by the Google Guidelines.
+In our app HTTP requests are done with Retrofit \cite{retrofit}. Retrofit is a type-safe client for Android that helps the developer to retrieve and upload structured data like JSON via a REST based web service. Retrofit itself is based on the OkHttp Library. We chose to use Retrofit because it is a state-of-the-art technology that is also recommended by the Google Guidelines.
 \subsection{GSON}
-GSON\cite{gson} is a Java library that offers a simple way to serialize and deserialize JSON Objects to Java Objects and the other way around. One of the reason why we chose it, that it does not require additional class annotations like alternative libraries do. GSON is well documented and developed (and recommended) by Google.
+GSON \cite{gson} is a Java library that offers a simple way to serialize and deserialize JSON Objects to Java Objects and the other way around. One of the reason why we chose it, that it does not require additional class annotations like alternative libraries do. GSON is well documented and developed (and recommended) by Google.
 \subsection{ChatKit}
-ChatKit for Android \cite{chatkit} is a library that is designed to simplify the UI development of WebSocket based chats in Android. It offers predefined components like Dialog Lists, Message Lists, and Message Input. Furthermore it provides state-of-the-art messaging features like read receipts without too much additional effort.
+ChatKit for Android \cite{chatkit} is a library that is designed to simplify the UI development of chats in Android. It offers predefined components like Dialog Lists, Message Lists, and Message Input. Furthermore it is highly extensible which we used to  provide state-of-the-art messaging features like read receipts without too much additional effort.
 
 
 \chapter{App and Feature Explanation}\label{ch:app_and_feature_explanation}
@@ -132,7 +132,7 @@ ChatKit for Android \cite{chatkit} is a library that is designed to simplify the
 To run the app with all features Android Marshmallow (API 23) is needed. 
 In this section we briefly describe which permissions are requested by the app and why they are necessary.
 \begin{enumerate}
-\item Permission to take pictures and videos: This permission allows us to take pictures and add them to venues.
+\item Permission to take pictures and videos: This permission allows us to take picturesL and add them to venues.
 \item Permission to get access to pictures, media, and files on the device: Normally users use profile pictures for more than one app, what makes it necessary to load those pictures from the gallery. This permission is further needed to store the users login credentials on the phone.
 \item Permission to have access to the location of the device: The whole concept of the app is based on the users location. The location is necessary to see users and venues in the surroundings. With an incognito switch however, the user can hide his account from the map.
 \end{enumerate}
@@ -165,11 +165,11 @@ Our app not only gives you the opportunity to see friends on a map, you can also
 \item Venue Filters: \\
 The venue search offers filtering for opening hours and price category.
 \item Push Notifications: \\
-The user receives push notifications if a new message is sent to him.
+The user receives push notifications if a new message is sent to him. For this it is not required to have the app open.
 \item Web Interface: \\
 We also provide a web interface to confirm email addresses and set new passwords.
 \item Live Updates: \\
-The location is updated every 100m to provide a near to real-time feeling.
+The location is updated every 100m to provide a near to real-time feeling. This happens in the background even if the user interacts with another app or has no app open at all.
 \item Encryption: \\
 We use TLS as transport encryption to prevent eavesdropping.
 \item Venue Marker Coloured by Rating:\\
@@ -238,7 +238,7 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
 % Map View
 The first view appearing after the login, is the map view shown in \autoref{fig:map_view}. Per default it displays users and venues in your surrounding. Two buttons in the top left corner can be used to hide and show venues and users. The six icons right on top of the bottom navigation bar, can be used to trigger fast searches for food, drinks, coffee, shops, arts, and outdoor activities. If the map is moved around the search can be re-triggered by tapping on the floating action button appearing in the bottom right corner.
 Tapping on a venue opens the venue view while tapping on a user opens the profile of the user. 
-By sliding up the quick search bar, the extensive search view shown in \autoref{fig:search_view}.
+By sliding up the quick search bar, the extensive search view shown in \autoref{fig:search_view} gets visible.
 
 % Search View
 To find the venue of the users interest, we offer a more extensive search. Besides a keyword search, we also offer filtering for a price category and only displaying venues that are open at the moment. The search results are displayed in the map as well as in a list right below the search query. The filtering for categories mentioned in the previous paragraph, also works in this view. The results can be sorted by rating or by distance.
