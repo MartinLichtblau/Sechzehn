@@ -31,10 +31,4 @@
         <item name="android:background">@drawable/selector_pink_on_white</item>
     </style>
 
-    <style name="my_toolbar_text" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textSize">5sp</item>
-        <item name="android:textColor">@color/transparent</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
 </resources>

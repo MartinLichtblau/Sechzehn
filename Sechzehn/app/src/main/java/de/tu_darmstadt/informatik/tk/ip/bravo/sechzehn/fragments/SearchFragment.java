@@ -137,7 +137,7 @@ public class SearchFragment extends BaseFragment {
                     case BottomSheetBehavior.STATE_EXPANDED:
                         setMapPaddingBotttom(1f);
                         cu = CameraUpdateFactory.zoomTo(-1.1f + searchVM.lastSetZoom);
-                        searchVM.map.animateCamera(cu, 300, null);
+                        searchVM.map.animateCamera(cu, 500, null);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         setMapPaddingBotttom(0f);
@@ -402,8 +402,13 @@ public class SearchFragment extends BaseFragment {
             public void onChanged(@Nullable LinkedHashMap<Venue, Bitmap> venueIconMap) {
                 searchVM.createAddVenueMarkers(venueIconMap);
                 addVenuesOnList(venueIconMap);
-                //Open BottomSearchSheet
-                bssBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                //Open BottomSheet, use a handler so it runs little after and smoothly
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bssBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }
+                }, 100);
             }
         });
     }
@@ -516,24 +521,16 @@ public class SearchFragment extends BaseFragment {
 
         } else {
             //Sync Active
-            if(searchVM.lastBssState == BottomSheetBehavior.STATE_EXPANDED){
-                if (detailedSection.isChecked()) {
-                    activeSection.setTag(section);
-                    Drawable relatedDrawable = detailedSection.getButtonDrawable();
-                    activeSection.setButtonDrawable(relatedDrawable);
-                    activeSection.setChecked(true);
-                } else {
-                    section = null;
-                    activeSection.setChecked(false);
-                    //Leave the old ButtonDrawable and Tag as is
-                }
-            }else{
-                //Sections should act as instant search sections, making a new Search only with this section
-                VenueSearch newVS = new VenueSearch();
-                newVS.setSection(section);
-                searchVM.getVenues(newVS);
+            if (detailedSection.isChecked()) {
+                activeSection.setTag(section);
+                Drawable relatedDrawable = detailedSection.getButtonDrawable();
+                activeSection.setButtonDrawable(relatedDrawable);
+                activeSection.setChecked(true);
+            } else {
+                section = null;
+                activeSection.setChecked(false);
+                //Leave the old ButtonDrawable and Tag as is
             }
-
         }
 
         //make Search
