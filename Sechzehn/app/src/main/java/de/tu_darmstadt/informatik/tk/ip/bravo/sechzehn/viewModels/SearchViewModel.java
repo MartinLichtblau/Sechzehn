@@ -61,7 +61,11 @@ public class SearchViewModel extends ViewModel{
     public Integer lastBssState = BottomSheetBehavior.STATE_COLLAPSED;
 
     public void searchXUsersNearby(Integer numberUsers, Double lat, Double lng, Double radius){
-        getUsers(null, numberUsers, lat, lng,radius,null,null);
+        getUsers(null, numberUsers, lat, lng, radius, null, null);
+    }
+
+    public void searchAllFriends(){
+        getUsers(null, 1000, null, null, null, true, null);
     }
 
     public void getUsers(Integer page, Integer perPage, Double lat, Double lng, Double radius, Boolean isFriend, String searchedUsername){
@@ -82,7 +86,6 @@ public class SearchViewModel extends ViewModel{
             }
         });
     }
-
 
     public void getVenues (VenueSearch vs) {
         venueResults.setValue(Resource.loading(null));
@@ -154,8 +157,11 @@ public class SearchViewModel extends ViewModel{
         for (MarkerMarkerOptions oldMmo : mmoList) {
             Marker newMarker = map.addMarker(oldMmo.markerOptions);
             newMarker.setTag(oldMmo.marker.getTag()); //Retrieve saved Object (User or Venue) in Tag
-            if(selectedMarker.equals(oldMmo.marker)) //This marker was selecte on SaveLastState
-                newMarker.showInfoWindow();
+            if(selectedMarker != null){
+                //This marker was selecte on SaveLastState
+                if(selectedMarker.equals(oldMmo.marker))
+                    newMarker.showInfoWindow();
+            }
             newMmoList.add(new MarkerMarkerOptions(newMarker, oldMmo.markerOptions));
         }
         return newMmoList;

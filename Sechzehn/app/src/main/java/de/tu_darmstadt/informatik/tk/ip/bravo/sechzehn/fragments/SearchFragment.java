@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ToggleButton;
 import android.text.TextUtils;
@@ -218,6 +219,7 @@ public class SearchFragment extends BaseFragment {
 
         if (searchVM.lastStateSaved) {
             //Toast.makeText(getActivity(), "restore lastStateSaved", Toast.LENGTH_SHORT).show();
+            restoreActiveBar();
             if(bssBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) { //Open it collapsed or (in case it's onresumed) in it's last state
                 setMapPaddingBotttom(1f);
             }
@@ -335,8 +337,6 @@ public class SearchFragment extends BaseFragment {
     public void initalSearch() {
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
-        //searchVM.searchXVenuesNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
-
         VenueSearch initialVS = new VenueSearch(25);
         searchVM.getVenues(initialVS);
     }
@@ -356,6 +356,15 @@ public class SearchFragment extends BaseFragment {
                         Pagination<User> userPagination = (Pagination<User>) resource.data;
                         searchVM.removeAllUsersOnMap();
                         addUsers(userPagination.data);
+                        new Handler().postDelayed(new Runnable() {
+                            //Maps Bug UI Hang while replacing fragment
+                            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
+                            @Override
+                            public void run() {
+                                //Get User Update every 30 seconds
+                                searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
+                            }
+                        }, 30000);
                         break;
                 }
             }
@@ -596,6 +605,50 @@ public class SearchFragment extends BaseFragment {
         ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).
                 toggleSoftInput(InputMethodManager.SHOW_FORCED,
                 InputMethodManager.HIDE_IMPLICIT_ONLY);*/
+    }
+
+    private void restoreActiveBar(){
+        Log.d(TAG, "restoreActiveBar");
+        VenueSearch vs = searchVM.lastVS.getValue();
+
+        //Active Query
+        if(vs.getQuery() != null){
+            bss.activeQuery.setText(vs.getQuery());
+            bss.activeQuery.setChecked(true);
+            bss.activeQuery.setClickable(true);
+        }else{
+            bss.activeQuery.setChecked(false);
+        }
+        //Active Section
+        String selectedSection = vs.section == null ? "" : vs.section.toString();
+        if(! TextUtils.isEmpty(selectedSection)){
+            int resId = getResources().getIdentifier("section_"+selectedSection.toLowerCase(), "id", getActivity().getPackageName());
+            ToggleButton selectedToggleButton = (ToggleButton)  bss.getRoot().findViewById(resId);
+            Drawable relatedDrawable = selectedToggleButton.getButtonDrawable();
+            bss.activeSection.setTag(selectedSection);
+            bss.activeSection.setButtonDrawable(relatedDrawable);
+            bss.activeSection.setChecked(true);
+        }else{
+            bss.activeSection.setChecked(false);
+        }
+        //Active Price
+        //never show price any (0) in active bar, better UXP if it has cheapest price filter by default
+        Integer price = (vs.price == null ? 0 : vs.price);
+        ToggleButton activePrice = bss.activePrice;
+        if(price > 0){
+            // create a string made up of price copies of string "$"
+            activePrice.setText(String.format("%0" + price + "d", 0).replace("0","$"));
+            activePrice.setTag(vs.price);
+            activePrice.setChecked(true);
+        }else{
+            activePrice.setText("$");
+            activePrice.setTag(1);
+            activePrice.setChecked(false);
+        }
+        //Active Opennow
+        if(null != vs.getTime()){
+            bss.activeOpennow.setChecked(true);
+        }
     }
 
     //>>>>>>>>>>>>Forward Lifecycle for googlemaps MapView
