@@ -124,7 +124,7 @@ class PhotoController {
       return
     }
 
-    yield Comment.query().where('photo_id', photo.id).update('photo_id', null)
+    yield Database.table('comments').where('photo_id', photo.id).update('photo_id', null)
 
     const oldUrl = photo.url
     // Delete the old picture
