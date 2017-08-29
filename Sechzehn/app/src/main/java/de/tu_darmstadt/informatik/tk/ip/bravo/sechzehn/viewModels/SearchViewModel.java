@@ -134,6 +134,8 @@ public class SearchViewModel extends ViewModel{
                     .snippet("View Venue Rating: " + (venue.rating <= 0.0d ? "-.-" : venue.rating))
                     .infoWindowAnchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromBitmap(e.getValue()));
+            if(venueToggle == false)  //Do not show markers on map if they are hided
+                markerOptions.visible(false);
             Marker marker = map.addMarker(markerOptions);
             marker.setTag(pos++);
             venuesOnMap.add(new MarkerMarkerOptions(marker, markerOptions));

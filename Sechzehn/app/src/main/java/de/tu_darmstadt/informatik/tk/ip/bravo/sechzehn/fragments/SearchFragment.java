@@ -454,12 +454,13 @@ public class SearchFragment extends BaseFragment {
                                 .snippet("Open Profile")
                                 .infoWindowAnchor(0.5f, 0.5f)
                                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                        if(searchVM.userToggle == false)  //Do not show markers on map if they are hided
+                            markerOptions.visible(false);
                         Marker marker = searchVM.map.addMarker(markerOptions);
                         marker.setTag(user);
                         tempMmoList.add(new MarkerMarkerOptions(marker, markerOptions));
                         if (tempMmoList.size() >= (userList.size() - 1))
                             searchVM.usersOnMap = tempMmoList;
-
                         liveBitmap.removeObserver(this);
                     }
                 });
