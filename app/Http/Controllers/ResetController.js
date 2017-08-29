@@ -38,6 +38,7 @@ class ResetController {
 
     if (user) {
       const token = yield TokenGenerator.make()
+      user.isOwner = true
 
       yield ResetToken.create({
         token: token,
