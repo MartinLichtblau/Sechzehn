@@ -205,10 +205,13 @@ We use TLS as transport encryption to prevent eavesdropping.
 \end{minipage}%
 \end{figure}
 
+% Login View
 When the user starts our app for the first time, he enters the login view. This view is shown in \autoref{fig:login_view}. If the user enters his login credentials correctly, he is forwarded to the map view shown in \autoref{fig:map_view}. During the first start of our app, the user also has to accept the permissions mentioned in \autoref{sec:system_requirements}. Wrong credentials provided by the user lead to red warnings indicating the problem. The login credentials are stored to improve the user experience by not asking for them every time.
 
+% Register View
 If the user has no account to log in, he can create a new one. To do this he has to click on the ``Not registered?'' button. A click on this button directs the user to the register view shown in \autoref{fig:register_view}. The username as well as the mail address have to be unique. With this restriction we can ensure that there is only one account per mail address. We ensure that the password is free of typos by asking for the password two times. Only if the password is entered correctly twice, an account is created. A toast indicates a succesful registration. After a successfull registration, the user is redirected to the login view and a confirmation mail is sent to the given mail address. The login only works if the mail address is verfied. To confirm the account a the link in the email has to be clicked. The smartphone offers the possibility to open the link via a browser or the app 'Sechzehn'. If the link is opened with 'Sechzehn' the account will be activated and the login screen is shown again.
 
+% Forgot PW View
 We also provide the option to reset the account password if necessary (e.g. due to memory loss). 
 The user can enter the Forgot PW View shown in \autoref{fig:forgot_pw_view} by clicking the ``Forgot password?'' button. The user now can enter the email address and click the send button. A password reset request will be sent to that email address. The link in the email could be opened with 'Sechzehn' or with any browser. If the link in the email is opened with 'Sechzehn' a screen is opened where you have to insert a new password (two times). By clicking the confirm button the passwords are checked and if they are equal the new password is set. The same procedure could be done on a website by opening the link in a browser.
 
@@ -226,7 +229,7 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
   \centering
   \includegraphics[width=.8\linewidth]{./res/search.png}
   \captionof{figure}{Search View}
-  \label{fig:friends_view}
+  \label{fig:search_view}
 \end{minipage}
 \begin{minipage}{.3\textwidth}
   \centering
@@ -236,11 +239,15 @@ We further assume that the user is logged in. Now he sees a bottom navigation ba
 \end{minipage}%
 \end{figure}
 
-% TODO Map View
+% Map View
+The first view appearing after the login, is the map view shown in \autoref{fig:map_view}. Per default it displays users and venues in your surrounding. Two buttons in the top left corner can be used to hide and show venues and users. The six icons right on top of the bottom navigation bar, can be used to trigger fast searches for food, drinks, coffee, shops, arts, and outdoor activities. If the map is moved around the search can be retriggered by tapping on the ``HERE'' button appearing in the bottom right corner.
+Tapping on a venue opens the venue view, while tapping on a user opens the profile of the user. 
+By sliding up the quick search bar, the extensive search view shown in \autoref{fig:search_view}.
 
-% TODO Search View
+% Search View
+To find the venue of the users interest, we offer a more extensive search. Besides a keyword search, we also offer filtering for a price category and only displaying venues that are open at the moment. The search results are displayed in the map as well as in a list right below the search query. The filtering for categories mentioned in the previous paragraph, also works in this view. 
 
-% TODO Venue View
+% Venue View
 The venue view is shown in \autoref{fig:venue_view}. The venue view summarizes information about a venue provided by the community. This includes an average rating, pictures of the venue and comments that can contain a photo. Furthermore general information about the venue is shown. With general information we mean opening hours, address, and contact details. With a floating action button it is possible to check in into a venue and rate it. Based on those check ins we provide a bit of gamification: the three top visitors of a venue are highlighted to encourage users using the check in function and thereby rate the venue.
 
 
@@ -266,19 +273,18 @@ The venue view is shown in \autoref{fig:venue_view}. The venue view summarizes i
 \end{minipage}%
 \end{figure}
 
-% TODO User Profile
+% User Profile
 The profile view is shown in \autoref{fig:user_profile}. The profile picture is on the top of the profile view. By tapping on it the users photo gallery is opened and he can choose a new profile picture. In the profile section basic information about the user is displayed (respectively real name, age and home town).
 This information can be changed by clicking on the small pencil in the top right of the section. In this edit menu you also have the option to toggle the incognito mode described in \autoref{sec:features}. In this view the user can change all of this information. Furthermore this is where the log out option is located. In the bottom of the profile view there are several account settings not described in detail here.
 
-% TODO Friends View
+% Friends View
 The friends view is shown in \autoref{fig:friends_view}. In the first section open friendship requests are displayed. These requests can be accepted or declined. In the second section the chats are displayed. In the last section the user's friends are shown. By tapping on a friend his profile is shown, by tapping on the message symbol the live chat with the user is invoked. 
 All of those sections are only displayed if information in them is available. Without outstanding friendship requests, the section friendship requests is not shown. 
 It is tedious to scroll through this growing list. We therefore provided a search bar to filter the list. The search bar is also used to find and add new friends. 
 
 % TODO Live Chat
-The chat view is shown in \autoref{fig:live_chat}. On the top of the chat view the chat partner is shown. By tapping on the name his profile is shown. Check marks indicate that a message has been read. Push notifications % TODO
-
-%The other part of the view contains the chat history. 
+The chat view is shown in \autoref{fig:live_chat}. On the top of the chat view the chat partner is shown.
+With a tap on the name of the chat partner, his profile is entered. Checks marks next to the messages indicate that you chat partner has read a message of yours. To make the live chat useful even if the app is not in the foreground, we provide push notifications. This push notifications are displayed for every incoming message. They contain the name of the chat partner and the first few words of the message.
 
 
 \chapter{Feature List}\label{ch:feature_list}
