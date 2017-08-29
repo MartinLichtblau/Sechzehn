@@ -2,8 +2,6 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
 
 import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -40,6 +38,7 @@ public class DataBindingAdapters {
         Picasso.with(view.getContext())
                 .load(url)
                 .placeholder(R.drawable.profile_coverfoto_default) //Placeholders and error images are not resized and must be fairly small images.
+                .centerCrop().resize(1080, 688)
                 .into(view);
     }
 

@@ -3,12 +3,14 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.squareup.picasso.Picasso;
+import java.io.IOException;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
@@ -16,7 +18,6 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Comment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Photo;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.ViewCommentNewBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.IgnoreErrorTarget;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.OnTextChangedListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import okhttp3.MediaType;
@@ -78,6 +79,8 @@ public class NewCommentView {
                     Comment myComment = response.body();
                     myComment.user = owner;
                     binding.setNewComment(newComment);
+                    binding.imageView.setImageBitmap(null);
+                    binding.imageView.setVisibility(View.GONE);
                     newCommentListener.addComment(myComment);
                 }
                 onFinally(call);
@@ -105,39 +108,51 @@ public class NewCommentView {
         //Result receive in @onActivityResult
     }
 
+    private Pair<Integer, Integer> calcSize(Bitmap bitmap, int maxSize) {
+        int outWidth;
+        int outHeight;
+        int inWidth = bitmap.getWidth();
+        int inHeight = bitmap.getHeight();
+        if (inWidth > inHeight) {
+            outWidth = maxSize;
+            outHeight = (inHeight * maxSize) / inWidth;
+        } else {
+            outHeight = maxSize;
+            outWidth = (inWidth * maxSize) / inHeight;
+        }
+        return new Pair<>(outWidth, outHeight);
+    }
 
     public void setPhoto(@Nullable Uri imageUri) {
         if (imageUri != null) {
             startImageLoading();
-            Picasso.with(context)
-                    .load(imageUri)
-                    .into(new IgnoreErrorTarget() {
-                        @Override
-                        public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                            binding.imageView.setImageBitmap(bitmap);
-                            binding.imageView.setAlpha(0.5f);
-                            VenueService.addPhoto(venueId, bitmapToBodyPart(bitmap)).enqueue(new DefaultCallback<Photo>(context) {
-                                @Override
-                                public void onResponse(Call<Photo> call, Response<Photo> response) {
-                                    if (response.isSuccessful()) {
-                                        newComment.photoId = response.body().id;
-                                        binding.imageView.setAlpha(1.f);
-                                    } else {
-                                        binding.imageView.setImageBitmap(null);
-                                    }
-                                    onFinally(call);
-                                }
-
-                                @Override
-                                public void onFinally(Call<Photo> call) {
-                                    endImageLoading();
-                                }
-                            });
-
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+                Pair<Integer, Integer> size = calcSize(bitmap, 1920);
+                bitmap = Bitmap.createScaledBitmap(bitmap, size.first, size.second, true);
+                binding.imageView.setImageBitmap(bitmap);
+                binding.imageView.setAlpha(0.5f);
+                VenueService.addPhoto(venueId, bitmapToBodyPart(bitmap)).enqueue(new DefaultCallback<Photo>(context) {
+                    @Override
+                    public void onResponse(Call<Photo> call, Response<Photo> response) {
+                        if (response.isSuccessful()) {
+                            newComment.photoId = response.body().id;
+                            binding.imageView.setAlpha(1.f);
+                        } else {
+                            binding.imageView.setImageBitmap(null);
                         }
+                        onFinally(call);
+                    }
 
+                    @Override
+                    public void onFinally(Call<Photo> call) {
+                        endImageLoading();
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-                    });
         }
     }
 
@@ -153,6 +168,7 @@ public class NewCommentView {
         imageLoading = true;
         binding.submit.setEnabled(false);
         binding.imageLoading.setVisibility(View.VISIBLE);
+        binding.imageView.setVisibility(View.VISIBLE);
     }
 
     @NonNull
