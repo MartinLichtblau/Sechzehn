@@ -41,7 +41,7 @@ class UserController {
       const similarityQueryString = 'GREATEST(similarity(username, :searchQuery), similarity(real_name, :searchQuery))'
       const queryParams = {
         searchQuery: searchQuery,
-        threshold: 0
+        threshold: Config.get('app.search.thresholdUser')
       }
 
       query.select(Database.raw(similarityQueryString + ' as similarity', {searchQuery: searchQuery}))

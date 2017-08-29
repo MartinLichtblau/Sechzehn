@@ -205,5 +205,29 @@ module.exports = {
      |
      */
     fallbackLocale: 'en'
+  },
+
+  search: {
+    /*
+     |--------------------------------------------------------------------------
+     | Search threshold for User search
+     |--------------------------------------------------------------------------
+     |
+     | The minimum similarity that is needed that a User appears in the search
+     | results.
+     |
+     */
+    thresholdUser: Number(Env.get('SEARCH_THRESHOLD_USER', '0')),
+
+    /*
+     |--------------------------------------------------------------------------
+     | Search threshold for Venue search
+     |--------------------------------------------------------------------------
+     |
+     | The minimum similarity that is needed that a Venue appears in the search
+     | results.
+     |
+     */
+    thresholdVenue: Number(Env.get('SEARCH_THRESHOLD_VENUE', '0'))
   }
 }

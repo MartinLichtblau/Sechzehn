@@ -1,5 +1,6 @@
 'use strict'
 
+const Config = use('Config')
 const Database = use('Database')
 const Exceptions = require('adonis-lucid/src/Exceptions')
 const Moment = require('moment')
@@ -67,7 +68,7 @@ class VenueController {
       const similarityQueryString = 'GREATEST(similarity(venues.name, :searchQuery), similarity(venue_categories.name, :searchQuery))'
       const queryParams = {
         searchQuery: searchQuery,
-        threshold: 0
+        threshold: Config.get('app.search.thresholdVenue')
       }
 
       currentPageQuery.select(Database.raw(similarityQueryString + ' as similarity', {searchQuery: searchQuery}))
