@@ -229,6 +229,8 @@ class UserController {
       return
     }
 
+    user.isOwner = true
+
     try {
       yield request.auth.validate(user.email, userData.old_password)
     } catch (e) {
