@@ -49,7 +49,7 @@ public class SearchViewModel extends ViewModel{
     public ArrayList<MarkerMarkerOptions> usersOnMap = new ArrayList<>();
     public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
     public ArrayList<MarkerMarkerOptions> venuesOnMap = new ArrayList<>();
-    public MutableLiveData<VenueSearch> lastVS = new MutableLiveData<>();
+    public VenueSearch lastVS;
 
     public Boolean lastStateSaved = false;
     public GoogleMap map;
@@ -111,13 +111,13 @@ public class SearchViewModel extends ViewModel{
                     venueResults.setValue(Resource.error(t.getCause().toString(), null));
             }
         });
-        lastVS.setValue(vs);
+        lastVS = vs;
     }
 
     public void searchHere(View view){
         LatLng center = map.getCameraPosition().target;
         Double radius = getVisibleRadius();
-        VenueSearch vs = lastVS.getValue();
+        VenueSearch vs = lastVS;
         vs.setLat(center.latitude); vs.setLng(center.longitude); vs.setRadius(radius);
         getVenues(vs);
     }
