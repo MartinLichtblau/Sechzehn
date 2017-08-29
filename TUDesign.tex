@@ -116,7 +116,7 @@ The authentication in our project is done with JSON Web Tokens (JWTs)\cite{jwt}.
 
 \section{Client}\label{sec:client}
 \subsection{Android Data Binding}
-\cite{databinding}
+Android Data Binding \cite{databinding} enables us to write declarative layouts. Those can be easiliy apdated with new data in various forms by just passing a data object. Therefore it minimizes the amount of glue code needed. Furthermore it implements a kind of view holder pattern, so it is not necessary to use findViewById since all views are availible through the binding object.
 \subsection{Retrofit}
 In our app HTTP requests are done with Retrofit\cite{retrofit}. Retrofit is a type-safe client for Android that helps the developer to retrieve and upload structured data like JSON via a REST based webservice. Retrofit itself is based on the OkHttp Library. We chose to use Retrofit because it is a state-of-the-art technology that is also recommended by the Google Guidelines.
 \subsection{GSON}
@@ -177,7 +177,8 @@ We also provide a web interface to confirm email addresses and set new passwords
 The location is updated every 100m to provide a near to real-time feeling.
 \item Encryption: \\
 We use TLS as transport encryption to prevent eavesdropping.
-
+\item Venue Marker Colored by Rating:\\
+Our venue markers are colored by the rating of the venue. Where green means a higher rating and red a lower rating. The colors of other ratings are interpolated between these colors.
 \end{enumerate}
 
 \section{App Flow}
