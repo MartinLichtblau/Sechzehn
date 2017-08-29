@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -105,12 +106,28 @@ public class NewCommentView {
         //Result receive in @onActivityResult
     }
 
+    private Pair<Integer, Integer> calcSize(Bitmap bitmap, int maxSize) {
+        int outWidth;
+        int outHeight;
+        int inWidth = bitmap.getWidth();
+        int inHeight = bitmap.getHeight();
+        if (inWidth > inHeight) {
+            outWidth = maxSize;
+            outHeight = (inHeight * maxSize) / inWidth;
+        } else {
+            outHeight = maxSize;
+            outWidth = (inWidth * maxSize) / inHeight;
+        }
+        return new Pair<>(outWidth, outHeight);
+    }
 
     public void setPhoto(@Nullable Uri imageUri) {
         if (imageUri != null) {
             startImageLoading();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+                Pair<Integer, Integer> size = calcSize(bitmap, 1920);
+                bitmap = Bitmap.createScaledBitmap(bitmap, size.first, size.second, true);
                 binding.imageView.setImageBitmap(bitmap);
                 binding.imageView.setAlpha(0.5f);
                 VenueService.addPhoto(venueId, bitmapToBodyPart(bitmap)).enqueue(new DefaultCallback<Photo>(context) {
