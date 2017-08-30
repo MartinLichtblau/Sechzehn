@@ -66,10 +66,6 @@ public class VenueItem extends DataBindingItem<Venue, ItemVenueBinding, VenueIte
         return R.layout.item_venue;
     }
 
-    public void onMessageClick(View v){
-        fragNavController.pushFragment(VenueFragment.newInstance(getVenue().id));
-    }
-
     //Init the viewHolder for this Item
     @Override
     public ViewHolder getViewHolder(View v) {
@@ -85,13 +81,11 @@ public class VenueItem extends DataBindingItem<Venue, ItemVenueBinding, VenueIte
          */
         public ViewHolder(ItemVenueBinding binding) {
             super(binding);
-            /*binding.itemVenueIcon.setImageBitmap(pinIcon);*/
         }
 
         @Override
         protected void bindItemImplementation(ItemVenueBinding binding, Venue venue) {
             binding.setVenue(venue);
-            //binding.itemVenueIcon.setImageBitmap(pinIcon);
         }
     }
 }

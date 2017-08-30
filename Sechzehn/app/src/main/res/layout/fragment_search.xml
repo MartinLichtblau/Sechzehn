@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity">
 
     <data>
-        <variable name="frag" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment" />
-        <variable name="searchVM" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel" />
-        <variable name="activeSearch" type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.VenueSearch" />
+
+        <variable
+            name="frag"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment"/>
+
+        <variable
+            name="searchVM"
+            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -37,28 +42,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:layout_marginTop="12dp"
                 android:layout_marginStart="12dp"
-                app:orientation="vertical"
+                android:layout_marginTop="12dp"
+                app:allowUnselected="true"
                 app:exclusive="false"
-                app:allowUnselected="true">
+                app:orientation="vertical">
+
                 <android.support.v7.widget.ToggleButton
                     android:id="@+id/user_toggle"
-                    android:layout_height="40dp"
-                    android:layout_width="40dp"
-                    android:gravity="center"
                     style="@style/Widget.Material.ToggleButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:button="@drawable/ic_person"
                     android:checked='@{safeUnbox(searchVM.userToggle)}'
+                    android:gravity="center"
                     android:onClick="@{searchVM::toggleUsers}"/>
+
                 <android.support.v7.widget.ToggleButton
                     android:id="@+id/venue_toggle"
-                    android:layout_height="40dp"
-                    android:layout_width="40dp"
-                    android:gravity="center"
                     style="@style/Widget.Material.ToggleButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:button="@drawable/ic_venue_icon"
                     android:checked='@{safeUnbox(searchVM.venueToggle)}'
+                    android:gravity="center"
                     android:onClick="@{searchVM::toggleVenues}"/>
             </android.support.v7.widget.ToggleGroup>
         </FrameLayout>
@@ -66,34 +73,33 @@
         <include
             android:id="@+id/bottomsheet_search"
             layout="@layout/bottomsheet_search"
-            app:searchVM="@{searchVM}"
-            app:frag="@{frag}"
-            app:activeSearch="@{activeSearch}"/>
+            app:frag="@{frag}"/>
 
         <View
             android:id="@+id/bottomsheet_shadow"
             android:layout_width="match_parent"
             android:layout_height="10dp"
+            android:background="@drawable/shadow"
             app:layout_anchor="@id/bottomsheet_search"
-            app:layout_anchorGravity="top"
-            android:background="@drawable/shadow"/>
+            app:layout_anchorGravity="top"/>
 
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_anchor="@id/bottomsheet_shadow"
             app:layout_anchorGravity="top|end">
+
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/search_again_here"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:fabSize="normal"
-                android:src="@drawable/ic_search_again"
-                android:tint="@color/white"
                 android:layout_marginBottom="60dp"
                 android:layout_marginRight="16dp"
+                android:onClick="@{searchVM::searchHere}"
+                android:src="@drawable/ic_search_again"
+                android:tint="@color/white"
                 android:visibility="visible"
-                android:onClick="@{searchVM::searchHere}"/>
+                app:fabSize="normal"/>
         </FrameLayout>
 
     </android.support.design.widget.CoordinatorLayout>

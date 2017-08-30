@@ -3,6 +3,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.MarkerMarkerOptions;
@@ -122,24 +124,38 @@ public class SearchViewModel extends ViewModel{
         getVenues(vs);
     }
 
-    public void createAddVenueMarkers(LinkedHashMap<Venue, Bitmap> venueIconMap) {
-        Integer pos = 0;
-        for (Map.Entry<Venue, Bitmap> e : venueIconMap.entrySet()) {
-            Venue venue = e.getKey();
-            MarkerOptions markerOptions = new MarkerOptions()
-                    .position(new LatLng(venue.lat, venue.lng))
-                    .title(venue.name)
-                    .flat(true) //To save performance
-                    .zIndex((float) (venueIconMap.size() - pos)) //Top list items should show on top
-                    .snippet("View Venue Rating: " + (venue.rating <= 0.0d ? "-.-" : venue.rating))
-                    .infoWindowAnchor(0.5f, 0.5f)
-                    .icon(BitmapDescriptorFactory.fromBitmap(e.getValue()));
-            if(venueToggle == false)  //Do not show markers on map if they are hided
-                markerOptions.visible(false);
-            Marker marker = map.addMarker(markerOptions);
-            marker.setTag(pos++);
-            venuesOnMap.add(new MarkerMarkerOptions(marker, markerOptions));
-        }
+    public void createAddVenueMarkers(final LinkedHashMap<Venue, Bitmap> venueIconMap) {
+        new AsyncTask<Void, Void, List<MarkerOptions>>() {
+            @Override
+            protected List<MarkerOptions> doInBackground(Void... params) {
+                Integer pos = 0;
+                List<MarkerOptions> moList = new ArrayList<>();
+                for (Map.Entry<Venue, Bitmap> e : venueIconMap.entrySet()) {
+                    Venue venue = e.getKey();
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(new LatLng(venue.lat, venue.lng))
+                            .title(venue.name)
+                            .flat(true) //To save performance
+                            .zIndex((float) (venueIconMap.size() - pos)) //Top list items should show on top
+                            .snippet("View Venue Rating: " + (venue.rating <= 0.0d ? "-.-" : venue.rating))
+                            .infoWindowAnchor(0.5f, 0.5f)
+                            .icon(BitmapDescriptorFactory.fromBitmap(e.getValue()));
+                    if(venueToggle == false)  //Do not show markers on map if they are hided
+                        markerOptions.visible(false);
+                    moList.add(markerOptions);
+                }
+                return moList;
+            }
+            @Override
+            protected void onPostExecute(List<MarkerOptions> moList) {
+                for(int i = 0; i < moList.size(); i++){
+                    MarkerOptions mo = moList.get(i);
+                    Marker marker = map.addMarker(mo);
+                    marker.setTag(i);
+                    venuesOnMap.add(new MarkerMarkerOptions(marker, mo));
+                }
+            }
+        }.execute();
     }
 
     public void reAddUserMarkersOnMap(ArrayList<MarkerMarkerOptions> userMmoList){
@@ -238,10 +254,10 @@ public class SearchViewModel extends ViewModel{
         //To get smallest visible radius is in height or width
         if(distHeight < distWidth){
             Log.d(TAG," getVisibleRadius | distHeight");
-            distKM = (distHeight / 1000) * 0.50;
+            distKM = (distHeight / 1000) * 0.4;
         } else{
             Log.d(TAG," getVisibleRadius | distWidth");
-            distKM = (distWidth / 1000) * 0.8;
+            distKM = (distWidth / 1000) * 0.70;
         }
         return distKM;
     }

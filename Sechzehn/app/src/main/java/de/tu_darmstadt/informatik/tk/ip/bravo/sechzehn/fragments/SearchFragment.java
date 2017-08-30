@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -80,8 +81,7 @@ public class SearchFragment extends BaseFragment {
     BottomSheetBehavior bssBehavior;
 
     public static SearchFragment newInstance() {
-        SearchFragment fragment = new SearchFragment();
-        return fragment;
+        return new SearchFragment();
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -91,9 +91,7 @@ public class SearchFragment extends BaseFragment {
 
         //Most IMPORTANT NOTE: Observer method must be called only once or multiple instances of the observer functions observe the same
         //This is why they must be put in onCreate!! because here they only get called once onCreate (and this is as long as the existing Observer functions exists)
-        //@TODO check code where I fell for this tricky time dimension trap
         observeSearchResults();
-        //observeVenueSearch();
     }
 
     @Override
@@ -132,7 +130,6 @@ public class SearchFragment extends BaseFragment {
 
         bssBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             CameraUpdate cu;
-            Boolean isSliding = false;
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 searchVM.lastBssState = newState;
@@ -259,20 +256,20 @@ public class SearchFragment extends BaseFragment {
                         // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
                         @Override
                         public void run() {
+                            //Maps Bug UI Hang while replacing fragment
+                            // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
                             fragNavController().pushFragment(UserProfileFragment.newInstance(((User) marker.getTag()).getUsername()));
                         }
-                    }, 100);
+                    }, 10);
                 } else { //It's a venue with it's ListPosition as Tag
                     Integer pos = (Integer) marker.getTag();
                     final Venue venue = ((VenueItem) fastAdapter.getAdapterItem(pos)).getVenue();
                     new Handler().postDelayed(new Runnable() {
-                        //Maps Bug UI Hang while replacing fragment
-                        // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
                         @Override
                         public void run() {
                             fragNavController().pushFragment(VenueFragment.newInstance(venue.id));
                         }
-                    }, 100);
+                    }, 10);
                 }
             }
         });
@@ -386,8 +383,6 @@ public class SearchFragment extends BaseFragment {
                         break;
                     case SUCCESS:
                         Pagination<Venue> venuePagination = (Pagination<Venue>) resource.data;
-                        searchVM.removeAllVenuesOnMap();
-                        clearVenueList();
                         addVenues(venuePagination.data);
                         break;
                 }
@@ -403,6 +398,8 @@ public class SearchFragment extends BaseFragment {
         createVenueMarkerPins(venueList).observe(this, new Observer<LinkedHashMap<Venue, Bitmap>>() {
             @Override
             public void onChanged(@Nullable LinkedHashMap<Venue, Bitmap> venueIconMap) {
+                Log.d(TAG,"addVenues");
+                searchVM.removeAllVenuesOnMap();
                 searchVM.createAddVenueMarkers(venueIconMap);
                 addVenuesOnList(venueIconMap);
                 //Open BottomSheet, use a handler so it runs little after and smoothly
@@ -411,7 +408,7 @@ public class SearchFragment extends BaseFragment {
                     public void run() {
                         bssBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     }
-                }, 100);
+                }, 500);
             }
         });
     }
@@ -421,16 +418,16 @@ public class SearchFragment extends BaseFragment {
         final LinkedHashMap<Venue, Bitmap> tempVenueIconMap = new LinkedHashMap<>();
         final int[] count = {0};
         for (final Venue venue : venueList) {
-            final MutableLiveData liveBitmap = SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon);
             tempVenueIconMap.put(venue, null); //to set entry at correct position
-            liveBitmap.observe(this, new Observer<Bitmap>() {
+            SzUtils.createVenuePin(getContext(), venue.rating, venue.category.icon).observe(this, new Observer<Bitmap>() {
                 @Override
                 public void onChanged(@Nullable Bitmap bitmap) {
                     tempVenueIconMap.put(venue, bitmap); //Overwrite entry at already correctly set position
                     count[0]++;
-                    if (count[0] >= (venueList.size())) //If the last bitmap returned (at some point in time)
+                    if (count[0] == venueList.size()){
+                        //If the last bitmap returned (at some point in time)
                         liveVenueIconMap.setValue(tempVenueIconMap);  //setValue to call Observer
-                    liveBitmap.removeObservers(SearchFragment.this);
+                    }
                 }
             });
         }
@@ -510,6 +507,7 @@ public class SearchFragment extends BaseFragment {
     }
 
     public void alterSearchSection(View view) {
+        Log.d(TAG,"alterSearchSection");
         Venue.Section section = Venue.Section.valueOf(view.getTag().toString());
         //Sync detailed_view and active_view
         ToggleButton activeSection = bss.activeSection;
@@ -703,6 +701,7 @@ public class SearchFragment extends BaseFragment {
         if (mapView != null) {
             mapView.onLowMemory();
         }
+        Log.d(TAG+": ","onLowMemory");
     }
 
     @Override
@@ -741,26 +740,31 @@ public class SearchFragment extends BaseFragment {
             public boolean onLongClick(View v, IAdapter adapter, IItem item, int position) {
                 Log.d(TAG,"fastAdapter.withOnLongClickListener | "+"pos = "+position);
                 final Venue venue = ((VenueItem) item).getVenue();
-                new Handler().postDelayed(new Runnable() {
-                    //Maps Bug UI Hang while replacing fragment
-                    // Ref. > http://www.javacms.tech/questions/1113754/ui-hang-while-replacing-fragment-from-setoninfowindowclicklistener-interface-met
-                    @Override
-                    public void run() {
-                        /*openVenue(venue.id);*/
-                        fragNavController().pushFragment(VenueFragment.newInstance(venue.id));
-                    }
-                }, 100);
+                fragNavController().pushFragment(VenueFragment.newInstance(venue.id));
                 return false;
             }
         });
     }
 
-    private void addVenuesOnList(LinkedHashMap<Venue, Bitmap> venueIconMap){
+    private void addVenuesOnList(final LinkedHashMap<Venue, Bitmap> venueIconMap){
         Log.d(TAG, "addVenuesOnList");
         //Create out of the venueIconMap the list entries for the fastAdapter ResultList
-        for(Map.Entry<Venue, Bitmap> e : venueIconMap.entrySet()){
-            fastAdapter.add(new VenueItem(e.getKey(), e.getValue(), SearchFragment.this.fragNavController()));
-        }
+        new AsyncTask<Void, Void, Void>() {
+            List<VenueItem> venueItemList = new ArrayList<VenueItem>();
+            @Override
+            protected Void doInBackground(Void... params) {
+                for (Map.Entry<Venue, Bitmap> e : venueIconMap.entrySet()) {
+                    venueItemList.add(new VenueItem(e.getKey(), e.getValue(), SearchFragment.this.fragNavController()));
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                Log.d(TAG,"addVenuesOnList - onPostExecute");
+                clearVenueList();
+                fastAdapter.add(venueItemList);
+            }
+        }.execute();
     }
 
     private  void clearVenueList(){
@@ -769,5 +773,3 @@ public class SearchFragment extends BaseFragment {
 
 
 }
-
-

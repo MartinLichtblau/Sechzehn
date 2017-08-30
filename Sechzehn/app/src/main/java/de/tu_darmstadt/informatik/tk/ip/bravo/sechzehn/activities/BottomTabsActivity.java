@@ -423,4 +423,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         throw new IllegalStateException("Need to send an index that we know");
     }
 
+    public void onLowMemory() {
+        super.onLowMemory();
+        Log.d("BottomTabsActivity: ","onLowMemory");
+    }
+
 }

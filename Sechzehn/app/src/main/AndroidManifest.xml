@@ -3,26 +3,22 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn">
 
-
     <!--Permissions that are automatically granted >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>-->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
 
     <!--Permissions that senderUser manually has to grant>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>-->
     <!--What's the difference? >>> https://inthecheesefactory.com/blog/things-you-need-to-know-about-android-m-permission-developer-edition/en-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/><!-- Reason: For foto picker-->
     <uses-permission android:name="android.permission.CAMERA"/><!-- Reason: For foto picker to make fotos-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/><!-- Reason: To share location -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/> <!-- Reason: ? -->
-    <uses-permission android:name="android.permission.READ_PROFILE"/> <!-- Reason: ? -->
-    <uses-permission android:name="android.permission.READ_CONTACTS"/> <!-- Reason: ? -->
 
 
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/SzMaterialTheme"

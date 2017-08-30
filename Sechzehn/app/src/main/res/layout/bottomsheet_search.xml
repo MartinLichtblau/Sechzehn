@@ -10,14 +10,6 @@
             name="frag"
             type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.SearchFragment"/>
 
-        <variable
-            name="searchVM"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel"/>
-
-        <variable
-            name="activeSearch"
-            type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.VenueSearch"/>
-
         <import type="de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue"/>
     </data>
 

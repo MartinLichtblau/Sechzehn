@@ -13,6 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.AttrRes;
@@ -28,6 +29,7 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,7 +48,6 @@ public final class SzUtils {
     public static final CropCircleTransformation CROP_CIRCLE_TRANSFORMATION = new CropCircleTransformation();
     private static String ownername;
     private static String token;
-    public enum ThumbType {USER, VENUE}
     final static List<Target> strongReferenceTargetList = new ArrayList<>();
     public final static Gson gson = new Gson();
 
@@ -102,7 +103,6 @@ public final class SzUtils {
         // https://stackoverflow.com/questions/477572/strange-out-of-memory-issue-while-loading-an-image-to-a-bitmap-object/823966#823966
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
-        //bitmap.recycle();  //currently kills the app
         return stream.toByteArray();
     }
 
@@ -132,12 +132,12 @@ public final class SzUtils {
     }
 
     private static Bitmap compressBitmap(Bitmap original){
-        return original;
-      /*  ByteArrayOutputStream out = new ByteArrayOutputStream();
-        original.compress(Bitmap.CompressFormat.PNG, 50, out);
+        //return original;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        original.compress(Bitmap.CompressFormat.WEBP, 50, out);
         Bitmap compressed = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
         //Log.d("compress:", "Compressed = "+compressed.getByteCount()+" Original = "+original.getByteCount());
-        return compressed;*/
+        return compressed;
 
         //return Bitmap.createScaledBitmap(original, 150, 150, false);
     }
@@ -145,8 +145,11 @@ public final class SzUtils {
 
     public static Bitmap userPinBackground = null;
     public static  Bitmap venuePinBackground = null;
-    public static void checkInitDrawablesOnce(Context context){
+    public static Bitmap defaultUserPin = null;
+    public static Bitmap defaultVenueIcon = null;
+    public static void checkInitDrawablesOnce(final Context context){
         if(venuePinBackground == null){
+            Log.d("SZ:", "venuePinBackground init");
             //Alpha/Transparency is first two chars Ref.: https://stackoverflow.com/a/17239853/3965610
             Integer color = Color.parseColor("#D9FFFFFF"); //BF or D9 Transparency is good
             venuePinBackground = tintBitmap(Bitmap.createScaledBitmap(
@@ -156,21 +159,18 @@ public final class SzUtils {
             userPinBackground = Bitmap.createScaledBitmap(
                     BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin_background), 120, 120, false);
         }
+        if(defaultUserPin == null){
+            defaultUserPin = compressBitmap(mergeToPin(userPinBackground,
+                    Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin_pic_default), 100, 100, false)));
+        }
+        if(defaultVenueIcon == null){
+            defaultVenueIcon = compressBitmap(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_venue_pin_pic_default), 100, 100, false));
+        }
     }
 
     public static MutableLiveData<Bitmap> createUserPin(Context context, Boolean highlight, @Nullable String url){
         checkInitDrawablesOnce(context);
-
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
-        final Bitmap background;
-        if(highlight){
-            background = tintBitmap(userPinBackground, Color.parseColor("#FF4081"));
-        }else {
-            background = userPinBackground;
-        }
-
-        final Bitmap defaultUserPin = compressBitmap(mergeToPin(background,
-                Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_user_pin_pic_default), 100, 100, false)));
 
         if(TextUtils.isEmpty(url)){
             //User has no profile picture
@@ -179,62 +179,97 @@ public final class SzUtils {
             final Target target = new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    scaledImg.postValue(mergeToPin(userPinBackground, bitmap));
                     strongReferenceTargetList.remove(this);
-                    Bitmap original = mergeToPin(background, bitmap);
-                    Bitmap compressed = compressBitmap(original);
-                    Log.d("compress:", "Compressed = "+compressed.getByteCount()+" Original = "+original.getByteCount());
-                    scaledImg.postValue(compressed);
                 }
                 @Override
                 public void onBitmapFailed(Drawable errorDrawable) {
-                    strongReferenceTargetList.add(this);
                     scaledImg.postValue(defaultUserPin);
+                    strongReferenceTargetList.remove(this);
                 }
                 @Override
                 public void onPrepareLoad(Drawable placeHolderDrawable) {
                 }
             };
-            strongReferenceTargetList.add(target);
-
             Picasso.with(context)
                     .load(url)
                     .centerCrop().resize(100, 100)
                     .transform(CROP_CIRCLE_TRANSFORMATION)
                     .into(target);
+            strongReferenceTargetList.add(target);
         }
-
         return scaledImg;
     }
 
-    public static MutableLiveData<Bitmap> createVenuePin(Context context, Double rating, @Nullable String url){
+    public static MutableLiveData<Bitmap> createVenuePin(Context context, final Double rating, @Nullable String url){
         checkInitDrawablesOnce(context);
         final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
-        //color background based on rating (copy background or it fucks up, since background is static var, still less resource consuming)
-        final Bitmap coloredBack = tintBitmapByRating(venuePinBackground.copy(venuePinBackground.getConfig(),venuePinBackground.isMutable()), rating);
+
+        final AsyncTask processVenueIcon = new AsyncTask<Bitmap, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Bitmap... params) {
+                Bitmap coloredIcon = params[0];
+                coloredIcon = tintBitmap(coloredIcon, Color.BLACK);
+                Bitmap coloredBack = tintBitmapByRating(venuePinBackground, rating);
+                return mergeToPin(coloredBack, coloredIcon);
+            }
+            @Override
+            protected void onPostExecute(Bitmap finalBitmap) {
+                scaledImg.setValue(finalBitmap);
+            }
+        };
+
         final Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                processVenueIcon.execute(new Bitmap[]{bitmap,null,null});
                 strongReferenceTargetList.remove(this);
-                Bitmap coloredIcon = tintBitmap(bitmap, Color.BLACK);
-                scaledImg.postValue(compressBitmap(mergeToPin(coloredBack, coloredIcon)));
             }
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
-                strongReferenceTargetList.add(this);
-                scaledImg.postValue(venuePinBackground);
+                processVenueIcon.execute(new Bitmap[]{defaultVenueIcon,null,null});
+                strongReferenceTargetList.remove(this);
             }
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
             }
         };
-        strongReferenceTargetList.add(target);
-
         Picasso.with(context)
                 .load(url)
-                .centerCrop().resize(100, 100)
+                .resize(100, 100)
                 .into(target);
+        strongReferenceTargetList.add(target);
         return scaledImg;
     }
+
+   /* public static MutableLiveData<Bitmap> createVenuePin(Context context, final Double rating, @Nullable String url){
+        checkInitDrawablesOnce(context);
+        final MutableLiveData<Bitmap> scaledImg = new MutableLiveData<>();
+
+        final Target target = new Target() {
+            Bitmap coloredBack = tintBitmapByRating(venuePinBackground, rating);
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                Bitmap coloredIcon = tintBitmap(bitmap, Color.BLACK);
+                scaledImg.postValue(compressBitmap(mergeToPin(coloredBack, coloredIcon)));
+                strongReferenceTargetList.remove(this);
+            }
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                scaledImg.postValue(venuePinBackground);
+                strongReferenceTargetList.remove(this);
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        };
+        Picasso.with(context)
+                .load(url)
+                .resize(100, 100)
+                .into(target);
+        strongReferenceTargetList.add(target);
+        return scaledImg;
+    }*/
 
     public static Bitmap tintBitmap(Bitmap bitmap, int color) {
         Paint paint = new Paint();
@@ -259,7 +294,8 @@ public final class SzUtils {
             return orig;
         float[] hslColor = ratingToHslColor(rating);
         int color = ColorUtils.HSLToColor(hslColor);
-        return tintBitmap(orig, color);
+        orig = tintBitmap(orig, color);
+        return orig;
     }
 
     public static float[] ratingToHslColor(Double rating){

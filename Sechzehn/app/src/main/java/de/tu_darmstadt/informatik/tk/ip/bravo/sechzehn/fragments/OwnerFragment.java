@@ -49,12 +49,15 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = BottomTabsActivity.getOwnerViewModel();
+        observeOwner();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_owner, container, false);
         binding.setFrag(this); //Most important to actually bind the variables specified in layout.xml | The owner binding goes in ownerSetup() triggered by async map
+        this.owner = viewModel.getOwner().getValue();
+        updateUI(owner);
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         return binding.getRoot();
@@ -79,35 +82,45 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         //Correct usage of maps fragment > https://stackoverflow.com/a/33525515/3965610
         map = googleMap;
-        updateOwner();
+        updateMapMarker();
     }
 
-    private void updateOwner() {
+    private void observeOwner() {
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
-            public void onChanged(User user) {
+            public void onChanged(User owner) {
                 /*Gets updates on change and updates the UI*/
-                owner = user;
-                binding.setUser(owner);
-
-                Picasso.with(getActivity())
-                        .load(user.getProfilePicture()) //Picasso needs "http://" or "https://" url
-                        .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
-                        .error(R.drawable.ic_owner)
-                        //.centerCrop().resize(256,256) not neccessary since we do that for each uploaded img by default
-                        .transform(new CropCircleTransformation())
-                        .into(binding.ownerPicture);
-
-                LatLng pos = viewModel.getLatLng();
-                if (map != null && pos != null) {
-                    map.addMarker(new MarkerOptions()
-                            .position(pos)
-                            .title(viewModel.getOwnername())
-                            .icon(BitmapDescriptorFactory.defaultMarker(340)));
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
-                }
+                updateUI(owner);
             }
         });
+    }
+
+    private void updateUI(User owner){
+        this.owner = owner;
+        binding.setUser(owner);
+
+        Picasso.with(getActivity())
+                .load(owner.getProfilePicture()) //Picasso needs "http://" or "https://" url
+                .placeholder(R.drawable.ic_owner) //Placeholders and error images are not resized and must be fairly small images.
+                .error(R.drawable.ic_owner)
+                //.centerCrop().resize(256,256) not neccessary since we do that for each uploaded img by default
+                .transform(new CropCircleTransformation())
+                .into(binding.ownerPicture);
+
+        updateMapMarker();
+    }
+
+    private void updateMapMarker(){
+        LatLng pos = viewModel.getLatLng();
+        if(pos == null)
+            return;
+        if (map != null && pos != null) {
+            map.addMarker(new MarkerOptions()
+                    .position(pos)
+                    .title(viewModel.getOwnername())
+                    .icon(BitmapDescriptorFactory.defaultMarker(340)));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+        }
     }
 
     public void editProfile(View view) {

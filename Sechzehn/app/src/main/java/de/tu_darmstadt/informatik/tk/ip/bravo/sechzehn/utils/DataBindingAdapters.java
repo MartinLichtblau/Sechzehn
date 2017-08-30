@@ -2,6 +2,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils;
 
 import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -43,8 +44,15 @@ public class DataBindingAdapters {
     }
 
     @BindingAdapter({"venuePictureBitmap"})
-    public static void setVenuePicture(ImageView view, Bitmap bitmap) {
+    public static void setVenuePicture(final ImageView view, final Bitmap bitmap) {
         view.setImageBitmap(bitmap);
+        // When a bitmap is downloaded you do:
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                view.setImageBitmap(bitmap);
+            }
+        });
     }
 
 }
