@@ -43,7 +43,11 @@ class Storage {
     } else {
       if (Config.get('external.cloudinary.url')) {
         // Upload to Cloudinary
-        const uploadedFile = yield Cloudinary.uploader.upload(fileWrapper.file.path, function (result) {
+        const uploadedFile = yield Cloudinary.v2.uploader.upload(fileWrapper.file.path, {
+          width: 1500,
+          height: 1500,
+          crop: 'limit'
+        }, result => {
           return result
         })
 
