@@ -25,6 +25,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Android Service which sends the users location to th server.
+ */
 //Ref. > https://github.com/nickfox/GpsTracker/blame/master/phoneClients/android/app/src/main/java/com/websmithing/gpstracker/LocationService.java
 public class LocationService extends Service implements
         GoogleApiClient.ConnectionCallbacks,
@@ -85,6 +88,10 @@ public class LocationService extends Service implements
         Log.d(TAG, "onDestroy");
     }
 
+    /**
+     * Not Bindable.
+     * @return always null
+     */
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -132,6 +139,12 @@ public class LocationService extends Service implements
         Log.e(TAG, "GoogleApiClient connection has been suspend");
     }
 
+    /**
+     * Determines if the location should be updated.
+     * @param location new loaction
+     * @param currentBestLocation current best location.
+     * @return true if the location should be updated, else fals.
+     */
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
         //Ref. > https://stackoverflow.com/a/14478281/3965610
         if (currentBestLocation == null) {

@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.views;
 
 /**
+ * An Fab for usage with Sheet animation.
  * @author Alexander Geiß on 21.08.2017.
  */
 

@@ -13,9 +13,10 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 /**
+ *
  * @author Alexander Geiß on 27.08.2017.
  */
-
+@Deprecated
 public class ImageGallery extends ViewPager implements FullScreenImageGalleryAdapter.FullScreenImageLoader {
     public ImageGallery(Context context) {
         super(context);

@@ -1,6 +1,5 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.services;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,7 +15,6 @@ import android.text.TextUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
-import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.activities.BottomTabsActivity;
@@ -70,10 +68,20 @@ public class ChatNotificationService extends Service {
         }
     };
 
+    /**
+     * Block notifications for a user
+     *
+     * @param username the user's username
+     */
     public static void blockUser(String username) {
         blockedUsers.add(username);
     }
 
+    /**
+     * Unlock notifications for a user
+     *
+     * @param username the user's username
+     */
     public static void unblockUser(String username) {
         if (blockedUsers.contains(username)) {
             blockedUsers.remove(username);
@@ -116,7 +124,8 @@ public class ChatNotificationService extends Service {
     }
 
     /**
-     * Calculates the notification ID based on {@link Message#id} and {@link #MESSAGE_NOTIFICATION_OFFSET}
+     * Calculates the notification ID based on {@link Message#id} and {@link
+     * #MESSAGE_NOTIFICATION_OFFSET}
      *
      * @param msg The message for which the id is calculated.
      * @return The calculated notification ID.
@@ -128,7 +137,7 @@ public class ChatNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(TextUtils.isEmpty(SzUtils.getOwnername()))
+        if (TextUtils.isEmpty(SzUtils.getOwnername()))
             SzUtils.initialize(getApplicationContext());
 
         if (socket == null) {

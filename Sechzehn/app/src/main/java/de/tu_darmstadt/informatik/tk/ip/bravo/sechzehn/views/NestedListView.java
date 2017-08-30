@@ -37,6 +37,10 @@ public class NestedListView extends LinearLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    /**
+     * Add an item
+     * @param item the item
+     */
     public void add(Item item) {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(item.getLayoutRes(), this, false);
@@ -44,6 +48,11 @@ public class NestedListView extends LinearLayout {
         addView(v);
     }
 
+    /**
+     * Add item at position
+     * @param position the position
+     * @param item item
+     */
     public void add(int position, Item item) {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(item.getLayoutRes(), this, false);
@@ -51,19 +60,38 @@ public class NestedListView extends LinearLayout {
         addView(v,position);
     }
 
+    /**
+     * Add an item list.
+     * @param items list of items.
+     */
     public void add(Iterable<? extends Item> items) {
         for (Item i : items) {
             add(i);
         }
     }
 
+    /**
+     * Item interface
+     */
     public interface Item {
+        /**
+         *
+         * @return The items layout id.
+         */
         @LayoutRes
         int getLayoutRes();
 
+        /**
+         * Called when the item should bind to a view.
+         * @param view
+         */
         void bind(View view);
     }
 
+    /**
+     * Helper calss for DataBinding Items.
+     * @param <Binding> the binding of the item.
+     */
     public static abstract class ItemDB<Binding extends ViewDataBinding> implements Item {
         protected Binding binding;
 

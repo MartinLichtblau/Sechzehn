@@ -102,6 +102,12 @@ public interface VenueService {
             @NonNull @Body Comment comment
     );
 
+    /**
+     * Load Comments for a venue
+     * @param venueId the venues id
+     * @param page    the page number. Default: 1.
+     * @param perPage the number of elements per page. Default: 10.
+     */
     @GET("venues/{venue_id}/comments")
     Call<Pagination<Comment>> getComments(
             @NonNull @Path("venue_id") String venueId,
@@ -110,7 +116,7 @@ public interface VenueService {
     );
 
     /**
-     * Add a photo
+     * Add a photo to a venue
      */
     @Multipart
     @POST("venues/{venue_id}/photos")
