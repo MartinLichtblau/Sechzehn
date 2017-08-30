@@ -3,10 +3,8 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.textservice.TextInfo;
 import android.widget.TextView;
 
-import com.google.gson.annotations.SerializedName;
 import com.mikepenz.fastadapter.items.AbstractItem;
 
 import java.util.List;
@@ -14,6 +12,8 @@ import java.util.List;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 
 /**
+ * Display a Header
+ *
  * @author Alexander Geiß on 20.07.2017.
  */
 

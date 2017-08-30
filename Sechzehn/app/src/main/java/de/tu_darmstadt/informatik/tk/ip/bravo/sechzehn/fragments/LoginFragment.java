@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,9 +25,7 @@ import retrofit2.Response;
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.LoginService;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an UserService of this fragment.
+ * Provides the login screen.
  */
 public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -39,8 +36,8 @@ public class LoginFragment extends DataBindingFragment<FragmentLoginBinding> {
     }
 
     /**
-     * Use this factory method to create a new UserService of
-     * this fragment using the provided parameters.
+     * Use this factory method to create a new Instance of
+     * this fragment.
      *
      * @return A new UserService of fragment LoginFragment.
      */

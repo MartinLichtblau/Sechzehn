@@ -6,6 +6,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 
 /**
+ * This class represents a photo of a venue.
  * @author Alexander Geiß on 24.08.2017.
  */
 

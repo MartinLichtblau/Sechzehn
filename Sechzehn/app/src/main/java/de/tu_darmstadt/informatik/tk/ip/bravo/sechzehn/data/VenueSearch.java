@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
 
 /**
+ * This class represents the Search for a venue.
  * Created by marti on 22.08.2017.
  */
 

@@ -8,6 +8,7 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Message;
 
 /**
+ * Add support for reading reciepts to outgoing messages.
  * @author Alexander Geiß on 10.08.2017.
  */
 

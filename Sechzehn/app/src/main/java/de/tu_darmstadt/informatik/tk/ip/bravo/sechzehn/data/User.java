@@ -8,6 +8,9 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.squareup.picasso.Picasso;
 
+/**
+ * This class represents a user.
+ */
 public class User {
 
 

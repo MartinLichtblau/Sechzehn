@@ -1,6 +1,7 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data;
 
 /**
+ * A user object and the corresponding auth token.
  * Created by JohannesTP on 28.06.2017.
  */
 

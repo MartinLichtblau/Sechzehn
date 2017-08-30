@@ -49,7 +49,7 @@ import retrofit2.Response;
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService.VenueService;
 
 /**
- * A simple {@link Fragment} subclass.
+ * The Venue Fragment.
  * Use the {@link VenueFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -59,6 +59,9 @@ public class VenueFragment extends DataBindingFragment<FragmentVenueBinding> imp
     private static final String ARG_PARAM1 = "venueId";
     private static DecimalFormat ratingFormatter = new DecimalFormat("#0.0");
     public final HourItem UNKNOWN_HOUR = new HourItem(new Hour(Hour.Day.UNKNOWN, null, null));
+    /**
+     * The Listener for new Comment actions.
+     */
     public final NewCommentView.Listener newCommentListener = new NewCommentView.Listener() {
         @Override
         public void addComment(Comment comment) {

@@ -8,6 +8,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.LastChat;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.ItemLastChatBinding;
 
 /**
+ * Display a recent chat.
  * @author Alexander Geiß on 19.08.2017.
  */
 

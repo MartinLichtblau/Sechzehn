@@ -27,7 +27,9 @@ public class LoginActivity extends AppCompatActivity {
         return this;
     }
 
-
+    /**
+     * Handle new Intents. In this case links from our mails.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         if (intent.hasCategory("android.intent.category.BROWSABLE")) {

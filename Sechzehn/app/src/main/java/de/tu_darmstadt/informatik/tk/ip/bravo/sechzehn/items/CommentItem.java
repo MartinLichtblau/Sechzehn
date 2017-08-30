@@ -15,6 +15,7 @@ import retrofit2.Response;
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService.VenueService;
 
 /**
+ * Displays the Layout for a comment.
  * @author Alexander Geiß on 21.08.2017.
  */
 

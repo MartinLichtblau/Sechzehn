@@ -1,7 +1,6 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -24,7 +23,7 @@ import retrofit2.Response;
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.LoginService.LoginService;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Provides the user with the aibility to reset his password.
  */
 public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBinding> {
 
@@ -43,6 +42,11 @@ public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBindin
         return FragmentForgotPwBinding.inflate(inflater, container, false);
     }
 
+    /**
+     * Goes back to {@link LoginFragment}
+     *
+     * @param view not used
+     */
     public void backToLogin(View view) {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.loginContainer, LoginFragment.newInstance());
@@ -60,6 +64,11 @@ public class ForgotPwFragment extends DataBindingFragment<FragmentForgotPwBindin
         });
     }
 
+    /**
+     * Executes the reset by sending a request to the server.
+     *
+     * @param view not used
+     */
     public void confirmReset(View view) {
         LoginService.requestResetPassword(user).enqueue(new DefaultCallback<ApiMessage>(getActivityEx()) {
             @Override

@@ -64,6 +64,9 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.OwnerViewModel;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.SearchViewModel;
 
+/**
+ * Shows the search for a venue and the map.
+ */
 public class SearchFragment extends BaseFragment {
     private final String TAG = "SearchFragment";
     private FragmentSearchBinding binding;
@@ -119,6 +122,9 @@ public class SearchFragment extends BaseFragment {
         return binding.getRoot();
     }
 
+    /**
+     * Setup the bottom sheet with the search
+     */
     private void setupBottomSheet() {
         Log.d(TAG, "setupBottomSheet");
         bss = binding.bottomsheetSearch;
@@ -178,6 +184,9 @@ public class SearchFragment extends BaseFragment {
         });
     }
 
+    /**
+     * Setup the Searchbar views.
+     */
     private void setupSearchbarViews() {
         Log.d(TAG, "setupSearchbarViews");
         final SearchView searchviewVenue = binding.bottomsheetSearch.detailedQuery;
@@ -213,6 +222,10 @@ public class SearchFragment extends BaseFragment {
 
     }
 
+    /**
+     * Setup the map , with custom style at the current location.
+     * @param googleMap
+     */
     public void setupMap(GoogleMap googleMap) {
         searchVM.map = googleMap;
         searchVM.map.setMyLocationEnabled(true);
@@ -235,6 +248,9 @@ public class SearchFragment extends BaseFragment {
         }
     }
 
+    /**
+     * Start the map listeners for map markers, info windows, the map position and the map buttons.
+     */
     private void setupMapListeners() {
         searchVM.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -337,6 +353,9 @@ public class SearchFragment extends BaseFragment {
         searchVM.map.setPadding(0, 0, 0, Math.round(offset * maxMapPaddingBottom));
     }
 
+    /**
+     * Start Initial Search.
+     */
     public void initalSearch() {
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
@@ -344,6 +363,9 @@ public class SearchFragment extends BaseFragment {
         searchVM.getVenues(initialVS);
     }
 
+    /**
+     * update on new search results.
+     */
     public void observeSearchResults() {
         searchVM.userResults.observe(this, new Observer<Resource>() {
             @Override
@@ -395,10 +417,16 @@ public class SearchFragment extends BaseFragment {
         });
     }
 
+    /**
+     * Add user to map.
+     * @param userList
+     */
     public void addUsers(List<User> userList) {
         createAddUserMarkers(userList);
     }
-
+/**
+ * Add Venues to map and list.
+ */
     public void addVenues(final List<Venue> venueList) {
         createVenueMarkerPins(venueList).observe(this, new Observer<LinkedHashMap<Venue, Bitmap>>() {
             @Override
@@ -416,6 +444,11 @@ public class SearchFragment extends BaseFragment {
         });
     }
 
+    /**
+     * Create the colored venue item.
+     * @param venueList
+     * @return
+     */
     public MutableLiveData<LinkedHashMap<Venue, Bitmap>> createVenueMarkerPins(final List<Venue> venueList) {
         final MutableLiveData<LinkedHashMap<Venue, Bitmap>> liveVenueIconMap = new MutableLiveData<>();
         final LinkedHashMap<Venue, Bitmap> tempVenueIconMap = new LinkedHashMap<>();
@@ -437,6 +470,10 @@ public class SearchFragment extends BaseFragment {
         return liveVenueIconMap;
     }
 
+    /**
+     * create the user marker with profile picture
+     * @param userList
+     */
     private void createAddUserMarkers(final List<User> userList) {
         final ArrayList<MarkerMarkerOptions> tempMmoList = new ArrayList<>();
         Boolean highlight = false;
@@ -468,6 +505,10 @@ public class SearchFragment extends BaseFragment {
         }
     }
 
+    /**
+     * Update a search query.
+     * @param view
+     */
     public void alterSearchQuery(View view) {
         ToggleButton activeQuery = bss.activeQuery;
         SearchView detailedQuery = bss.detailedQuery;
@@ -509,6 +550,10 @@ public class SearchFragment extends BaseFragment {
         searchVM.getVenues(alteredVS);
     }
 
+    /**
+     * change the search section.
+     * @param view
+     */
     public void alterSearchSection(View view) {
         Venue.Section section = Venue.Section.valueOf(view.getTag().toString());
         //Sync detailed_view and active_view
@@ -542,7 +587,10 @@ public class SearchFragment extends BaseFragment {
         alteredVS.setSection(section); //Convert the string section to enum section
         searchVM.getVenues(alteredVS);
     }
-
+    /**
+     * Update a search query with a new price filter.
+     * @param view
+     */
     public void alterSearchPrice(View view) {
         Integer price = Integer.valueOf(view.getTag().toString());
         VenueSearch alteredVS = searchVM.lastVS;
@@ -574,7 +622,10 @@ public class SearchFragment extends BaseFragment {
         alteredVS.setPrice(price);
         searchVM.getVenues(alteredVS);
     }
-
+    /**
+     * Update a search query for opening hours.
+     * @param view
+     */
     public void alterSearchOpennow(View view) {
         Boolean opennow;
         if (view instanceof CheckBox)
@@ -599,6 +650,10 @@ public class SearchFragment extends BaseFragment {
         }
     }
 
+    /**
+     * Sort by distance instead of ratings.
+     * @param view
+     */
     public void alterSortByDistance(View view){
         VenueSearch alteredVS = searchVM.lastVS;
         Boolean sortByDistance = ((CheckBox) view).isChecked();
@@ -620,6 +675,9 @@ public class SearchFragment extends BaseFragment {
                 InputMethodManager.HIDE_IMPLICIT_ONLY);*/
     }
 
+    /**
+     * Restores the Search's layout.
+     */
     private void restoreActiveBar(){
         Log.d(TAG, "restoreActiveBar");
         VenueSearch vs = searchVM.lastVS;

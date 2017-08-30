@@ -14,6 +14,9 @@ import com.ncapdevi.fragnav.FragNavTransactionOptions;
 import java.util.Stack;
 
 /**
+ * Wrapper for a FragNavController which adds basic Animations.
+ * All methods are delegated. Decorator Pattern.
+ *
  * @author Alexander Geiß on 20.07.2017.
  */
 
@@ -27,10 +30,16 @@ public class AnimatedFragNavController {
     public static final int TAB4 = 3;
     public static final int TAB5 = 4;
 
+    /**
+     * Creates a new AnimatedFragNavController
+     * @param fragNavController the {@link FragNavController} to get animated.
+     */
     public AnimatedFragNavController(FragNavController fragNavController) {
         this.fragNavController = fragNavController;
     }
-    private static final FragNavTransactionOptions DEFAULT_SWITCH_TRANSITION =FragNavTransactionOptions.newBuilder().transition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).build();
+
+    private static final FragNavTransactionOptions DEFAULT_SWITCH_TRANSITION = FragNavTransactionOptions.newBuilder().transition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).build();
+
     public void switchTab(int index, @Nullable FragNavTransactionOptions transactionOptions) throws IndexOutOfBoundsException {
         fragNavController.switchTab(index, transactionOptions);
     }
@@ -43,7 +52,9 @@ public class AnimatedFragNavController {
         fragNavController.pushFragment(fragment, transactionOptions);
 
     }
- private static final FragNavTransactionOptions DEFAULT_PUSH_TRANSITION =FragNavTransactionOptions.newBuilder().transition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).build();
+
+    private static final FragNavTransactionOptions DEFAULT_PUSH_TRANSITION = FragNavTransactionOptions.newBuilder().transition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).build();
+
     public void pushFragment(@Nullable Fragment fragment) {
         fragNavController.pushFragment(fragment, DEFAULT_PUSH_TRANSITION);
     }
@@ -51,7 +62,9 @@ public class AnimatedFragNavController {
     public void popFragment(@Nullable FragNavTransactionOptions transactionOptions) throws UnsupportedOperationException {
         fragNavController.popFragments(1, transactionOptions);
     }
-    private static final FragNavTransactionOptions DEFAULT_POP_TRANSITION =FragNavTransactionOptions.newBuilder().transition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE).build();
+
+    private static final FragNavTransactionOptions DEFAULT_POP_TRANSITION = FragNavTransactionOptions.newBuilder().transition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE).build();
+
     public void popFragment() throws UnsupportedOperationException {
         fragNavController.popFragment(DEFAULT_POP_TRANSITION);
     }

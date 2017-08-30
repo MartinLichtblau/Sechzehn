@@ -21,6 +21,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.DiafragFriend
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.UserProfileViewModel;
 
 /**
+ * Presents the Friendship Dialog.
  * Created by marti on 10.08.2017.
  */
 
@@ -52,61 +53,70 @@ public class FriendshipDiafrag extends DialogFragment implements LifecycleRegist
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    private void customizeFragment(){
-        if(status == Friendship.Status.NONE){
-            getDialog().setTitle("Add "+userProfileVM.getUsername()+" as Friend");
-        }else if(status == Friendship.Status.RELATED_CONFIRMED){
+    /**
+     * Chooses th correct message.
+     */
+    private void customizeFragment() {
+        if (status == Friendship.Status.NONE) {
+            getDialog().setTitle("Add " + userProfileVM.getUsername() + " as Friend");
+        } else if (status == Friendship.Status.RELATED_CONFIRMED) {
             getDialog().setTitle("Abort Friend Request");
-        }else if(status == Friendship.Status.RELATING_CONFIRMED){
-            getDialog().setTitle("Accept "+userProfileVM.getUsername()+" Friend Request");
+        } else if (status == Friendship.Status.RELATING_CONFIRMED) {
+            getDialog().setTitle("Accept " + userProfileVM.getUsername() + " Friend Request");
             binding.Negative.setVisibility(View.VISIBLE);
-        }else if(status == Friendship.Status.CONFIRMED){
-            getDialog().setTitle("Unfriend "+userProfileVM.getUsername());
-        }else {
+        } else if (status == Friendship.Status.CONFIRMED) {
+            getDialog().setTitle("Unfriend " + userProfileVM.getUsername());
+        } else {
             throw new IllegalArgumentException("Invalid Frienship Status");
         }
     }
 
-    public void onCancel(View view){
+    public void onCancel(View view) {
         dismiss();
     }
 
-    public void onPositive(View view){
-        if(status == Friendship.Status.NONE){
+    /**
+     * Executes the matching positive Action.
+     */
+    public void onPositive(View view) {
+        if (status == Friendship.Status.NONE) {
             userProfileVM.requestFriendship().observe(this, new Observer<Resource>() {
                 @Override
                 public void onChanged(@Nullable Resource resource) {
                     feedback(resource);
                 }
             });
-        }else if(status == Friendship.Status.RELATED_CONFIRMED){
+        } else if (status == Friendship.Status.RELATED_CONFIRMED) {
             userProfileVM.deleteFriendship().observe(this, new Observer<Resource>() {
                 @Override
                 public void onChanged(@Nullable Resource resource) {
                     feedback(resource);
                 }
             });
-        }else if(status == Friendship.Status.RELATING_CONFIRMED){
+        } else if (status == Friendship.Status.RELATING_CONFIRMED) {
             userProfileVM.answerFriendship("CONFIRMED").observe(this, new Observer<Resource>() {
                 @Override
                 public void onChanged(@Nullable Resource resource) {
                     feedback(resource);
                 }
             });
-        }else if(status == Friendship.Status.CONFIRMED){
+        } else if (status == Friendship.Status.CONFIRMED) {
             userProfileVM.deleteFriendship().observe(this, new Observer<Resource>() {
                 @Override
                 public void onChanged(@Nullable Resource resource) {
                     feedback(resource);
                 }
             });
-        }else {
+        } else {
             throw new IllegalArgumentException("Invalid Owner DialogFragment Type");
         }
     }
 
-    public void onNegative(View view){
-        if(status == Friendship.Status.RELATING_CONFIRMED){
+    /**
+     * Executes the matching negative Action.
+     */
+    public void onNegative(View view) {
+        if (status == Friendship.Status.RELATING_CONFIRMED) {
             userProfileVM.answerFriendship("DECLINED").observe(this, new Observer<Resource>() {
                 @Override
                 public void onChanged(@Nullable Resource resource) {
@@ -116,8 +126,11 @@ public class FriendshipDiafrag extends DialogFragment implements LifecycleRegist
         }
     }
 
-    private void feedback(Resource resource){
-        if(resource.status == Resource.Status.SUCCESS){
+    /**
+     * Update userprofile and return to it.
+     */
+    private void feedback(Resource resource) {
+        if (resource.status == Resource.Status.SUCCESS) {
             userProfileVM.refreshUser();
             //Toast.makeText(getActivity(), resource.message, Toast.LENGTH_SHORT).show();
             dismiss();

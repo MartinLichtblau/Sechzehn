@@ -34,6 +34,9 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 import static android.app.Activity.RESULT_OK;
 
+/**
+ * This fragment shows the owners profile and enables the owner to edit his profile.
+ */
 public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
     private FragmentOwnerBinding binding;
     public OwnerViewModel viewModel;
@@ -82,6 +85,9 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         updateOwner();
     }
 
+    /**
+     * Updates the owner profile
+     */
     private void updateOwner() {
         viewModel.getOwner().observe(this, new Observer<User>() {
             @Override
@@ -110,36 +116,58 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         });
     }
 
+    /**
+     * Displays the editing Dialog.
+     */
     public void editProfile(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("editProfile");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
+    /**
+     * Shows the logout dialog.
+     */
     public void logout(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("logout");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
+    /**
+     * Shows the reset password dialog.
+     */
     public void resetPassword(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("requestResetPassword");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
+    /**
+     * Shows the change password dialog.
+     */
     public void changePassword(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changePassword");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
+    /**
+     * Shows the change email dialog.
+     */
     public void changeEmail(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("changeEmail");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
+    /**
+     * Shows the delete account dialog.
+     */
     public void deleteAccount(View view) {
         DialogFragment ownerDiaFrag = OwnerDiaFrag.newInstance("deleteAccount");
         fragNavController().showDialogFragment(ownerDiaFrag);
     }
 
+    /**
+     * Starts the picture selector for the profile picture.
+     * Result received in {@link #onActivityResult(int, int, Intent)}
+     */
     public void changePicture(View view) {
         Matisse.from(OwnerFragment.this)
                 .choose(MimeType.allOf())
@@ -165,6 +193,12 @@ public class OwnerFragment extends BaseFragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Calculates the Age from the Birthday.
+     *
+     * @param timestamp Birthday.
+     * @return Age.
+     */
     public String getAge(String timestamp) {
         if (timestamp != null)
             return SzUtils.getAge(SzUtils.timestampToCal(timestamp));

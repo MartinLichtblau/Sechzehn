@@ -41,6 +41,8 @@ import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.C
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService.UserService;
 
 /**
+ * Provides the chat view to send and display messages.
+ * <p>
  * A simple {@link Fragment} subclass.
  * Use the {@link MessageFragment#newInstance} factory method to
  * create an object of this fragment.

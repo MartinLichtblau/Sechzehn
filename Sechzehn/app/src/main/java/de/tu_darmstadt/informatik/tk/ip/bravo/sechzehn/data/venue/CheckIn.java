@@ -7,11 +7,13 @@ import com.google.gson.annotations.SerializedName;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Venue;
 
 /**
+ * This class represents a venue checkin.
  * @author Alexander Geiß on 21.08.2017.
  */
 
 public class CheckIn {
     public Integer id;
+
     @SerializedName("created_at")
     public String createdAt;
 
@@ -27,6 +29,7 @@ public class CheckIn {
      */
     @IntRange(from = 0, to = 2)
     public Integer rating;
+
     public Venue venue;
 
 }

@@ -8,11 +8,14 @@ import com.etiennelawlor.imagegallery.library.activities.FullScreenImageGalleryA
 import com.squareup.picasso.Picasso;
 
 /**
+ * The Image Gallery Activity. Shows images in Fullscreen with zoom, pan and swipe.
  * @author Alexander Geiß on 27.08.2017.
  */
 
 public class ImageGalleryActivity extends FullScreenImageGalleryActivity {
-
+    /**
+     * Provides the implementation for loading the images.
+     */
     @Override
     public void loadFullScreenImage(final ImageView iv, String imageUrl, int width, LinearLayout bglinearLayout) {
         if (!TextUtils.isEmpty(imageUrl)) {

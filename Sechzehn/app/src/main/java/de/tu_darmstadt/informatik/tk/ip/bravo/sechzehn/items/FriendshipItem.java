@@ -1,34 +1,19 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.items;
 
-import android.content.Context;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.view.ActionMode;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.mikepenz.fastadapter.IItem;
-import com.mikepenz.fastadapter.items.AbstractItem;
-
-import java.util.List;
 
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.Friendship;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentMessageBinding;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.ItemFriendshipBinding;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.DataBindingFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.FriendsFragment;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments.LoginFragment;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.FriendshipService;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
-import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 
 /**
+ * Displays a friendship request.
+ *
  * @author Alexander Geiß on 11.08.2017.
  */
 
@@ -45,6 +30,9 @@ public class FriendshipItem extends DataBindingItem<Friendship, ItemFriendshipBi
         super(friendship);
 
         this.friendsFragment = friendsFragment;
+        /**
+         * Update after request answered.
+         */
         answerFriendshipCallback = new DefaultCallback<Friendship>(friendsFragment.getActivityEx()) {
             @Override
             public void onResponse(Call<Friendship> call, Response<Friendship> response) {
@@ -68,15 +56,24 @@ public class FriendshipItem extends DataBindingItem<Friendship, ItemFriendshipBi
         return R.layout.item_friendship;
     }
 
-    public Friendship getFriendship(){
+    public Friendship getFriendship() {
         return getData();
     }
 
-
+    /**
+     * Accept friendship request.
+     *
+     * @param v
+     */
     public void onAccept(View v) {
         FriendshipService.FriendshipService.answerFriendship(getFriendship().relatedUser.getUsername(), CONFIRMED_FRIENDSHIP).enqueue(answerFriendshipCallback);
     }
 
+    /**
+     * Decline friendship request.
+     *
+     * @param v
+     */
     public void onDecline(View v) {
         FriendshipService.FriendshipService.answerFriendship(getFriendship().relatedUser.getUsername(), DECLINED_FRIENDSHIP).enqueue(answerFriendshipCallback);
     }

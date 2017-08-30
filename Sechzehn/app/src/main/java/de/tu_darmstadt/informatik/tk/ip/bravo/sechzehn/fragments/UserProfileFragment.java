@@ -36,7 +36,9 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.viewModels.UserProfileVie
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
-
+/**
+ * Shows a User's profile.
+ */
 public class UserProfileFragment extends BaseFragment {
     private UserProfileViewModel userProfileVM;
     private FragmentProfileUserBinding binding;

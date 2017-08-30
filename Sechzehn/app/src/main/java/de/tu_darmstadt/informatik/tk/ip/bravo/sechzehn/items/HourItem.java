@@ -11,6 +11,7 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue.Hour;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 
 /**
+ * Display a opening hour.
  * @author Alexander Geiß on 22.08.2017.
  */
 

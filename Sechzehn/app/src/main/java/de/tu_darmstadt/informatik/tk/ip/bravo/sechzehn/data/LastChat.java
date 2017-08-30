@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.SzUtils;
 
 /**
+ * This class represents the last hhat, which contains the last message and the user who this chat
+ * belongs to.
+ *
  * @author Alexander Geiß on 19.08.2017.
  */
 

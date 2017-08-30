@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
+ * Pair of Marker and MarkerOptions.
  * Created by marti on 28.08.2017.
  */
 

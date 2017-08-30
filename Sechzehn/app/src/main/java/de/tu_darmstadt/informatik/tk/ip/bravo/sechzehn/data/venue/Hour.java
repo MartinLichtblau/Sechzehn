@@ -3,6 +3,7 @@ package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.venue;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * This class represents a venue's opening hours.
  * @author Alexander Geiß on 21.08.2017.
  */
 
@@ -23,7 +24,7 @@ public class Hour {
 
 
     /**
-     *
+     * This class represents a day in a {@link Hour}.
      */
 
     public enum Day {
@@ -36,6 +37,7 @@ public class Hour {
         @SerializedName("Sat")SAT(6, "Sat"),
         @SerializedName("Sun")SUN(7, "Sun"),
         UNKNOWN(0, "");
+
         private final int id;
         private final String name;
 

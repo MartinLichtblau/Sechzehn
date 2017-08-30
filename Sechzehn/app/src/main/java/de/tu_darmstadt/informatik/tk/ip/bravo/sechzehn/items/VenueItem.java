@@ -33,6 +33,7 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
+ * Displays a venue.
  * Created by marti on 19.07.2017.
  */
 
@@ -66,6 +67,11 @@ public class VenueItem extends DataBindingItem<Venue, ItemVenueBinding, VenueIte
         return R.layout.item_venue;
     }
 
+    /**
+     * Not used here.
+     * @param v
+     */
+    @Deprecated
     public void onMessageClick(View v){
         fragNavController.pushFragment(VenueFragment.newInstance(getVenue().id));
     }

@@ -29,6 +29,8 @@ import retrofit2.Response;
 import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.VenueService.VenueService;
 
 /**
+ * The logic for the view for creating a new Comment
+ *
  * @author Alexander Geiß on 28.08.2017.
  */
 
@@ -50,6 +52,15 @@ public class NewCommentView {
     private Comment newComment = new Comment();
     private boolean imageLoading = false;
 
+    /**
+     * Creates new comment view logic
+     *
+     * @param context            The context.
+     * @param binding            The binding of the comment view.
+     * @param venueId            The venueid of the containing venue.
+     * @param newCommentListener an instance of the {@link NewCommentView.Listener} for
+     *                           communication with the parent fragment.
+     */
     public NewCommentView(@NonNull Context context, @NonNull final ViewCommentNewBinding binding, @NonNull String venueId, @NonNull Listener newCommentListener) {
         this.context = context;
         this.binding = binding;
@@ -62,11 +73,24 @@ public class NewCommentView {
     }
 
     public interface Listener {
+        /**
+         * Add a comment to the comment list.
+         *
+         * @param comment the newly created comment.
+         */
         void addComment(Comment comment);
 
+        /**
+         * Start a request for a new photo.
+         */
         void addPhotoToNewComment();
     }
 
+    /**
+     * Submits a new comment.
+     *
+     * @param v
+     */
     public void submitNewComment(View v) {
         newCommentSetEnabled(false);
         binding.imageLoading.setVisibility(View.VISIBLE);
@@ -96,18 +120,31 @@ public class NewCommentView {
 
     }
 
+    /**
+     * Sets enabled or disabled of the whole view.
+     */
     private void newCommentSetEnabled(boolean b) {
         binding.body.setEnabled(b);
         binding.submit.setEnabled(b);
         binding.imageButton.setEnabled(b);
     }
 
-
+    /**
+     * Add a new photo to the comment.
+     * Delegated to parent view.
+     */
     public void addPhotoToNewComment(View v) {
         newCommentListener.addPhotoToNewComment();
         //Result receive in @onActivityResult
     }
 
+    /**
+     * Calculates the scale down image size.
+     *
+     * @param bitmap  the source bitmap.
+     * @param maxSize maximal size.
+     * @return he scale down image size.
+     */
     private Pair<Integer, Integer> calcSize(Bitmap bitmap, int maxSize) {
         int outWidth;
         int outHeight;
@@ -123,6 +160,11 @@ public class NewCommentView {
         return new Pair<>(outWidth, outHeight);
     }
 
+    /**
+     * Sets the new Photo from the image uri.
+     *
+     * @param imageUri The uri of the new photo.
+     */
     public void setPhoto(@Nullable Uri imageUri) {
         if (imageUri != null) {
             startImageLoading();
@@ -156,6 +198,9 @@ public class NewCommentView {
         }
     }
 
+    /**
+     * End loading indication.
+     */
     private void endImageLoading() {
         binding.imageLoading.setVisibility(View.GONE);
         imageLoading = false;
@@ -164,6 +209,10 @@ public class NewCommentView {
         }
     }
 
+    /**
+     * Start loading indication
+     */
+
     private void startImageLoading() {
         imageLoading = true;
         binding.submit.setEnabled(false);
@@ -171,6 +220,12 @@ public class NewCommentView {
         binding.imageView.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Create MultipartBody.Part from bitmap.
+     *
+     * @param bitmap The source bitmap.
+     * @return the part.
+     */
     @NonNull
     private MultipartBody.Part bitmapToBodyPart(Bitmap bitmap) {
         byte[] byteArray = SzUtils.compressWithJpgToByte(bitmap);

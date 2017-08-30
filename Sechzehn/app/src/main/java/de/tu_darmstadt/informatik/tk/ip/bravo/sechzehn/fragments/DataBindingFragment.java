@@ -28,6 +28,10 @@ public abstract class DataBindingFragment<Binding extends ViewDataBinding> exten
 
     private Activity activity;
 
+    /**
+     * Creates the fragment's view.
+     * @return the new view.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = initDataBinding(inflater, container);

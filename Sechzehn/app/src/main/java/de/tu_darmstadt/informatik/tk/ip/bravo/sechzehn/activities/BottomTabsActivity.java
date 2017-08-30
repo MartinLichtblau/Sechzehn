@@ -55,6 +55,9 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
+/**
+ * Our main activity. It checks for all prerequisites and displays the main UI.
+ */
 @RuntimePermissions
 public class BottomTabsActivity extends LifecycleActivity implements BaseFragment.NavController, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
 
@@ -69,9 +72,13 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     public static OwnerViewModel ownerVM;
     public MutableLiveData<Integer> checkStages = new MutableLiveData<>();
 
+    /**
+     * Accessed two times on first ever start of app: 1. to login 2. forwarded from loginfragment
+     * after successful.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Accessed two times on first ever start of app: 1. to login 2.forwarded from loginfragment after succesfull
+
         super.onCreate(null); //don't do super.onCreate(savedInstanceState) or it will load e.g. searchFragment before fully checks and initialization
         checkRequirements().observe(this, new Observer<Boolean>() {
             @Override
@@ -83,6 +90,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         });
     }
 
+    /**
+     * Animates setContentView.
+     */
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         LayoutInflater inflator = getLayoutInflater();
@@ -91,6 +101,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         setContentView(view);
     }
 
+    /**
+     * Setup and start the main UI.
+     */
     private void runApp() {
         setContentView(de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R.layout.activity_bottom_tabs);
         mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
@@ -123,6 +136,12 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         });
         postOwnerToasts();
     }
+
+    /**
+     * Starts the check for requirements.
+     *
+     * @return A LiveDataObject which is updated if the status of the requirements changed.
+     */
 
     public MutableLiveData<Boolean> checkRequirements() {
         final MutableLiveData<Boolean> requirementsOK = new MutableLiveData<>();
@@ -164,6 +183,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         return requirementsOK;
     }
 
+    /**
+     * Check if user is logged in, else forward to {@link LoginActivity}.
+     */
     public void checkLoggedIn() {
         SzUtils.initialize(this);
         if (TextUtils.isEmpty(SzUtils.getToken()) || TextUtils.isEmpty(SzUtils.getOwnername())) {
@@ -175,6 +197,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         }
     }
 
+    /**
+     * Check for installed Google Play Services
+     */
     public void checkPlayServices() {
         //Ref. > https://stackoverflow.com/questions/42005217/detecting-play-services-installed-and-play-services-used-in-app
         final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -197,6 +222,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         }
     }
 
+    /**
+     * Check if the UserProfile is loaded and a GPS position can be obtained.
+     */
     public void checkProfile() {
         ownerVM = ViewModelProviders.of(this).get(OwnerViewModel.class);
 
@@ -229,6 +257,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         });
     }
 
+    /**
+     * @return true if a GPS position can be obtained, else false.
+     */
     private Boolean isGPSOk() {
         Location localLoc = LocationService.getPreviousBestLocation();
         LatLng remoteLatLng = ownerVM.getLatLng();
@@ -251,6 +282,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         return false;
     }
 
+    /**
+     * Checks for User permissons.
+     */
     @NeedsPermission({
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -260,6 +294,11 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         Log.d("Has observer", String.valueOf(checkStages.hasActiveObservers()));
     }
 
+    /**
+     * Shows the reason why the permission is needed.
+     *
+     * @param request The permisson request.
+     */
     @OnShowRationale({
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -284,6 +323,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                 .show();
     }
 
+    /**
+     *
+     */
     @OnPermissionDenied({
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -292,6 +334,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         BottomTabsActivityPermissionsDispatcher.checkPermissionsWithCheck(BottomTabsActivity.this);
     }
 
+    /**
+     * Shows a message if user checked Never ask again.
+     */
     @OnNeverAskAgain({
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -320,6 +365,10 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
                 .show();
     }
 
+    /**
+     * Listener for permission request results.
+     * Delegated to {@link BottomTabsActivityPermissionsDispatcher}.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -327,19 +376,30 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         BottomTabsActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
+    /**
+     * Use OwnerViewModel to access all data and functions concerning the owner
+     * It in here and not in BaseFragment since this MainActivity is the one and only element that
+     * we can access always
+     * also from Fragments and so not related to BaseFragment
+     *
+     * @return the owner view model.
+     */
     public static OwnerViewModel getOwnerViewModel() {
-        //Use OwnerViewModel to access all data and functions concerning the owner
-        //It in here and not in BaseFragment since this MainActivity is the one and only element that we can access always
-        //also from Fragments and so not related to BaseFragment
         return ownerVM;
     }
 
+    /**
+     * Does a factory reset of our app by cleaning the user data.
+     */
     public void factoryReset() {
         //Awesome new function > clearApplicationUserData > https://developer.android.com/reference/android/app/ActivityManager.html
         ((ActivityManager) getSystemService(ACTIVITY_SERVICE))
                 .clearApplicationUserData();
     }
 
+    /**
+     * Enables toasts from the owner view model.
+     */
     private void postOwnerToasts() {
         ownerVM.receiveToast().observe(this, new Observer<String>() {
             @Override
@@ -349,6 +409,11 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         });
     }
 
+    /**
+     * Handles new Intents. Here the ContentIntent of our notifications.
+     *
+     * @param intent The new Intent.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -359,10 +424,17 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
 
     //-------------------------------------Frag Nav Code------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+    /**
+     * @return the FragNavController which is used for all navigation between fragments in this
+     * activity.
+     */
     public AnimatedFragNavController getNavController() {
         return mNavController;
     }
 
+    /**
+     * Handles back button press. Delegates to FragNavController
+     */
     @Override
     public void onBackPressed() {
         if (mNavController.isRootFragment()) { //Bottom of fragment stack is reached
@@ -373,12 +445,21 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         }
     }
 
-    //To switch tab fragment, and at the same time, select the according tab in bottom bar
+    /**
+     * Switch tab fragment, and at the same time, select the according tab in bottom bar
+     *
+     * @param tabId the tabID to be selected.
+     */
     public void switchTabAndBar(int tabId) {
         mBottomBar.selectTabAtPosition(tabId);
         mNavController.switchTab(tabId);
     }
 
+    /**
+     * Restores SaveInstanceState
+     *
+     * @param outState the state.
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -387,12 +468,21 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         }
     }
 
+    /**
+     * Push a new fragment to the Stack.
+     *
+     * @param fragment the new fragment.
+     */
+    @Deprecated
     public void pushFragment(Fragment fragment) {
         if (mNavController != null) {
             mNavController.pushFragment(fragment);
         }
     }
 
+    /**
+     * On tab transaction listener
+     */
     @Override
     public void onTabTransaction(Fragment fragment, int index) {
         // If we have a backstack, show the back button
@@ -401,6 +491,9 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         }
     }
 
+    /**
+     * On fragment transaction listener
+     */
     @Override
     public void onFragmentTransaction(Fragment fragment, FragNavController.TransactionType transactionType) {
         //do fragmentty stuff. Maybe change title, I'm not going to tell you how to live your life
@@ -410,6 +503,12 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
         }
     }
 
+    /**
+     * Gets the root fragment of the tab.
+     *
+     * @param index index of the tab.
+     * @return the corresponding root fragment.
+     */
     @Override
     public Fragment getRootFragment(int index) {
         switch (index) {

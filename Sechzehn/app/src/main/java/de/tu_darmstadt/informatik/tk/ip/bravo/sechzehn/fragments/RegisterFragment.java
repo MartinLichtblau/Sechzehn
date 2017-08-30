@@ -1,6 +1,5 @@
 package de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -17,19 +16,16 @@ import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.R;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.User;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.data.UserToken;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.databinding.FragmentRegisterBinding;
-
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.ActionDoneListener;
 import de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.utils.DefaultCallback;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService.*;
+import static de.tu_darmstadt.informatik.tk.ip.bravo.sechzehn.network.services.UserService.UserService;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link RegisterFragment#newInstance} factory method to
- * create an UserService of this fragment.
+ * Provides the user with the registration screen.
  */
 public class RegisterFragment extends DataBindingFragment<FragmentRegisterBinding> {
 
@@ -39,8 +35,8 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
     }
 
     /**
-     * Use this factory method to create a new UserService of
-     * this fragment using the provided parameters.
+     * Use this factory method to create a new instance of
+     * this fragment.
      *
      * @return A new UserService of fragment RegisterFragment.
      */
@@ -74,7 +70,8 @@ public class RegisterFragment extends DataBindingFragment<FragmentRegisterBindin
     }
 
     /**
-     * handles the registration process. Account is created and email is sent if credentials are valid.
+     * handles the registration process. Account is created and email is sent if credentials are
+     * valid.
      *
      * @param v
      */
