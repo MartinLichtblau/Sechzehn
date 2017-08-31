@@ -337,8 +337,8 @@ public class SearchFragment extends BaseFragment {
     public void initalSearch() {
         //Show only nearby users and venues
         searchVM.searchXUsersNearby(50, ownerVM.getLatLng().latitude, ownerVM.getLatLng().longitude, searchVM.getVisibleRadius());
-        VenueSearch initialVS = new VenueSearch();
-        searchVM.getVenues(initialVS);
+/*        VenueSearch initialVS = new VenueSearch();
+        searchVM.getVenues(initialVS);*/ //No initial search that annonying in the long term
     }
 
     public void observeSearchResults() {
@@ -376,7 +376,6 @@ public class SearchFragment extends BaseFragment {
                     case LOADING:
                         //Toast.makeText(getContext(), "Loading....", Toast.LENGTH_SHORT).show();
                         binding.searchAgainHere.setVisibility(View.GONE);
-                        //@TODO show loading dialog progress bar
                         break;
                     case ERROR:
                         Toast.makeText(getContext(), "Error: " + resource.message, Toast.LENGTH_SHORT).show();
@@ -403,12 +402,13 @@ public class SearchFragment extends BaseFragment {
                 searchVM.createAddVenueMarkers(venueIconMap);
                 addVenuesOnList(venueIconMap);
                 //Open BottomSheet, use a handler so it runs little after and smoothly
-                new Handler().postDelayed(new Runnable() {
+                //No that sucks, if user wants to he can swipe up
+                /*new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         bssBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     }
-                }, 500);
+                }, 500);*/
             }
         });
     }

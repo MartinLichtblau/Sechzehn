@@ -51,7 +51,7 @@ public class SearchViewModel extends ViewModel{
     public ArrayList<MarkerMarkerOptions> usersOnMap = new ArrayList<>();
     public MutableLiveData<Resource> venueResults = new MutableLiveData<>();
     public ArrayList<MarkerMarkerOptions> venuesOnMap = new ArrayList<>();
-    public VenueSearch lastVS;
+    public VenueSearch lastVS = new VenueSearch();
 
     public Boolean lastStateSaved = false;
     public GoogleMap map;

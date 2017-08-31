@@ -98,7 +98,7 @@
                 android:onClick="@{searchVM::searchHere}"
                 android:src="@drawable/ic_search_again"
                 android:tint="@color/white"
-                android:visibility="visible"
+                android:visibility="invisible"
                 app:fabSize="normal"/>
         </FrameLayout>
 

@@ -404,7 +404,6 @@ public class BottomTabsActivity extends LifecycleActivity implements BaseFragmen
     @Override
     public void onFragmentTransaction(Fragment fragment, FragNavController.TransactionType transactionType) {
         //do fragmentty stuff. Maybe change title, I'm not going to tell you how to live your life
-        // If we have a backstack, show the back button @TODO perhaps we should show the title bar with back button. What do you think?
         if (getActionBar() != null && mNavController != null) {
             getActionBar().setDisplayHomeAsUpEnabled(!mNavController.isRootFragment());
         }
